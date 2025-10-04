@@ -1,0 +1,9 @@
+body { margin: 0; font-family: Arial, sans-serif; background: #030106; color: white; }
+header { background: rgba(0,0,0,0.8); padding: 1em; position: fixed; width: 100%; top: 0; z-index: 1000; }
+.logo { height: 40px; }
+.nav-links { list-style: none; display: flex; gap: 1em; }
+.nav-links li a { color: white; text-decoration: none; }
+.main-section { height: 100vh; display: flex; justify-content: center; align-items: center; background: url('assets/CatedralNoche.jpg') center/cover no-repeat; position: relative; }
+.cta-button { padding: 1em 2em; font-size: 1.2em; cursor: pointer; border: none; border-radius: 8px; background: #ffcc00; color: #000; font-weight: bold; }
+.ar-ui { position: fixed; bottom: 16px; left: 50%; transform: translateX(-50%); display: flex; gap: 8px; z-index: 10; }
+.ar-ui button, .ar-ui a { padding: 10px 14px; border-radius: 10px; border: none; font-weight: 600; background: rgba(255,255,255,0.9); color: #222; text-decoration: none; }
