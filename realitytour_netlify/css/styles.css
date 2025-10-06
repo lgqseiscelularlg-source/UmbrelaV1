@@ -83,8 +83,7 @@ html {
 
 .main-section {
   height: 100vh;
-  background: url("https://cdn.glitch.global/88be49be-bbb6-4319-918c-faf18a9375d2/CatedralNoche.jpg?v=1724888813573")
-    no-repeat center center/cover;
+  background: url("../assets/images/CatedralNoche.jpg") no-repeat center center/cover;
   position: relative;
   display: flex;
   justify-content: center;
