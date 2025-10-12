@@ -1,19 +1,42 @@
-body {
+/* ==============================
+   REALITYTOUR – INTERFAZ OPTIMIZADA
+   ============================== */
+
+/* RESET GENERAL */
+* {
+  box-sizing: border-box;
   margin: 0;
-  font-family: Arial, sans-serif;
-  background-color: #111112; /* Fondo negro */
-  color: white; /* Texto en blanco */
+  padding: 0;
 }
 
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: "Arial", sans-serif;
+  background-color: #030106;
+  color: #fff;
+  overflow-x: hidden;
+}
+
+/* ==============================
+   NAVBAR Y ENCABEZADO
+   ============================== */
+
 header {
-  background: transparent;
-  transition: background 0.5s ease, top 0.5s ease; /*Añade transición al fondo y al posicionamiento*/
   width: 100%;
   position: fixed;
   top: 0;
   z-index: 1000;
-  padding: 1em 0;
-  color: white;
+  transition: background 0.6s ease, backdrop-filter 0.6s ease, top 0.5s ease;
+  background: transparent;
+  backdrop-filter: blur(0px);
+}
+
+header.scrolled-up {
+  background: rgba(3, 1, 6, 0.85);
+  backdrop-filter: blur(10px);
 }
 
 nav {
@@ -22,15 +45,15 @@ nav {
   align-items: center;
   max-width: 1200px;
   margin: 0 auto;
-  padding: 0 1em;
-}
-
-html {
-  scroll-behavior: smooth;
+  padding: 1em;
 }
 
 .logo {
   height: 50px;
+  transition: transform 0.3s ease;
+}
+.logo:hover {
+  transform: scale(1.05);
 }
 
 .nav-links {
@@ -53,13 +76,12 @@ html {
   height: 2px;
   bottom: -5px;
   left: 0;
-  background-color: white;
+  background-color: #249da6;
   visibility: hidden;
   transition: all 0.3s ease-in-out;
 }
 
 .nav-links li a:hover {
-  /*color: blueviolet;*/
   color: #249da6;
 }
 
@@ -68,7 +90,7 @@ html {
   width: 100%;
 }
 
-
+/* Menú hamburguesa */
 .menu-toggle {
   display: none;
   cursor: pointer;
@@ -79,7 +101,12 @@ html {
   height: 3px;
   background: white;
   margin: 5px 0;
+  transition: all 0.3s ease;
 }
+
+/* ==============================
+   SECCIÓN PRINCIPAL (HERO)
+   ============================== */
 
 .main-section {
   height: 100vh;
@@ -88,6 +115,7 @@ html {
   display: flex;
   justify-content: center;
   align-items: center;
+  text-align: center;
   color: white;
 }
 
@@ -97,95 +125,98 @@ html {
   left: 0;
   right: 0;
   bottom: 0;
-  background: rgba(0, 0, 0, 0.5);
+  background: linear-gradient(to bottom, rgba(0,0,0,0.4), rgba(3,1,6,0.9));
+  z-index: 0;
 }
 
 .cta-button {
   background: #249da6;
   border: none;
-  padding: 1em 2em;
+  padding: 1.2em 2.4em;
   cursor: pointer;
-  font-size: 1.2em;
+  font-size: 1.3em;
   color: white;
   border-radius: 50px;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
-  transition: transform 0.3s ease, background 0.3s ease;
+  box-shadow: 0 0 20px rgba(36, 157, 166, 0.6);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
   position: relative;
-  overflow: hidden;
   z-index: 1;
 }
 
-.cta-button::before {
-  content: "";
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  width: 300%;
-  height: 300%;
-  background: rgba(255, 255, 255, 0.2);
-  transition: all 0.3s ease;
-  transform: translate(-50%, -50%) scale(0);
-  border-radius: 50%;
-  z-index: -1;
-}
-
 .cta-button:hover {
-  /*background: rgb(101, 33, 165);*/
-  background: #249da6;
   transform: scale(1.1);
-}
-
-.cta-button:hover::before {
-  transform: translate(-50%, -50%) scale(1);
+  box-shadow: 0 0 40px rgba(36, 157, 166, 0.9);
 }
 
 .cta-button:active {
-  transform: scale(0.9);
+  transform: scale(0.95);
 }
+
+/* ==============================
+   EFECTOS DE APARICIÓN
+   ============================== */
 
 .hidden {
   opacity: 0;
-  transform: translateY(150px) scale(0.95); /* Desplazamiento y reducción de tamaño */
-  transition: opacity 1.2s ease-out, transform 1.2s cubic-bezier(0.25, 1, 0.5, 1); /* Efecto suavizado */
+  transform: translateY(100px) scale(0.95);
+  transition: opacity 1.2s ease-out, transform 1.2s cubic-bezier(0.25, 1, 0.5, 1);
 }
 
 .visible {
   opacity: 1;
-  transform: translateY(0) scale(1); /* Escala y posición final */
+  transform: translateY(0) scale(1);
 }
 
-.biography-section,
-.services-section,
-.ra-section {
-  padding: 4em 1em;
+/* ==============================
+   SECCIONES GENERALES
+   ============================== */
+
+section {
+  padding: 5em 1em;
   text-align: center;
 }
 
-.biography-section h2,
-.services-section h2,
-.ra-section h2 {
+h2 {
+  font-size: 2.2em;
   margin-bottom: 1em;
+  letter-spacing: 1px;
+  color: #249da6;
 }
+
+/* ==============================
+   SECCIÓN BIOGRAFÍA
+   ============================== */
 
 .bio-container {
   display: flex;
   justify-content: space-around;
   flex-wrap: wrap;
+  gap: 2em;
 }
 
 .bio {
   max-width: 45%;
-  text-align: left;
+  text-align: center;
 }
 
 .bio img {
   width: 100%;
   height: auto;
+  border-radius: 15px;
+  transition: transform 0.4s ease, box-shadow 0.4s ease;
 }
+
+.bio img:hover {
+  transform: scale(1.05);
+  box-shadow: 0 0 25px rgba(36, 157, 166, 0.5);
+}
+
+/* ==============================
+   SECCIÓN SERVICIOS
+   ============================== */
 
 .services-section {
   position: relative;
-  color: white;
 }
 
 .services-content {
@@ -194,199 +225,98 @@ html {
   max-width: 800px;
   margin: 0 auto;
   padding: 2em;
-  background: #1b1c1e;
+  background: rgba(27, 28, 30, 0.8);
   border-radius: 15px;
-}
-
-.services-content h2 {
-  margin-bottom: 1em;
+  box-shadow: 0 0 20px rgba(36, 157, 166, 0.1);
 }
 
 .service-image {
   width: 100%;
-  height: auto;
   border-radius: 10px;
   margin-bottom: 1em;
-  opacity: 0.8;
-  transition: opacity 0.3s ease;
+  transition: transform 0.4s ease, opacity 0.4s ease;
+  opacity: 0.85;
 }
 
 .service-image:hover {
   opacity: 1;
+  transform: scale(1.05);
 }
 
-.service-description {
-  font-size: 1.2em;
-  line-height: 1.5;
-}
-
-.services-section .overlay {
-  background: #111112;
-}
+/* ==============================
+   SECCIÓN RA
+   ============================== */
 
 .ra-content {
   display: flex;
   justify-content: space-between;
   align-items: center;
   flex-wrap: wrap;
+  gap: 2em;
 }
 
 .description {
   flex: 1;
-  margin-right: 1em;
-}
-
-.image-slider {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  position: relative;
-  overflow: hidden;
+  min-width: 280px;
+  text-align: left;
 }
 
 .slider-image {
   max-width: 100%;
+  border-radius: 12px;
   display: none;
+  transition: transform 0.4s ease;
 }
 
 .slider-image.active {
   display: block;
 }
 
-                                /* SEGUNDA PAGINA */
-#camera-section {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 80vh;
-  padding: 20px;
-  margin-top: 10vh;
- /* margin-top: 80px; /* Ajusta este valor según el espacio que necesites */
+.slider-image:hover {
+  transform: scale(1.03);
 }
 
-.camera-container {
-  position: relative;
-  width: 100%;
-  max-width: 400px;
-  aspect-ratio: 9/16;
-  background-color: #000000;
-  border: 2px solid #333333;
-  overflow: hidden;
-
-}
-
-#camera-stream {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-
-#switch-camera-btn {
-  position: absolute;
-  top: 10px;
-  right: 10px;
-  padding: 10px 15px;
-  background-color: rgba(0, 0, 0, 0.7);
-  color: white;
-  border: none;
-  cursor: pointer;
-  border-radius: 5px;
-  font-size: 14px;
-}
-
-#fullscreen-btn {
-  position: absolute;
-  bottom: 10px;
-  right: 10px;
-  padding: 10px 15px;
-  background-color: rgba(0, 0, 0, 0.7);
-  color: white;
-  border: none;
-  cursor: pointer;
-  border-radius: 5px;
-  font-size: 14px;
-}
-
-#fullscreen-btn:hover {
-  background-color: rgba(0, 0, 0, 0.9);
-}
-
-
-
-
-                            /* FIN DE SEGUNDA PAGINA */
-
+/* ==============================
+   RESPONSIVE
+   ============================== */
 
 @media (max-width: 768px) {
-  
-  header {
-    background: transparent; /* Hacer la barra de navegación transparente */
-    color: white; /* Asegurar que el texto sea visible sobre la imagen */
-    padding: 1em 0;
-    position: fixed;
-    width: 100%;
-    top: 0;
-    z-index: 1000;
-  }
-  
 
-  .main-section {
-    height: 100vh;
-    background: url("../assets/img/CatedralNoche.jpg") no-repeat center center/cover;
-    margin-top: 0; /* Eliminar cualquier margen superior */
-  }
-
-  /* Menu responsive */
   .nav-links {
-    opacity: 0; /* Iniciar con opacidad 0 */
+    opacity: 0;
     position: fixed;
     top: 0;
     left: 0;
     height: 100%;
     width: 100%;
-    background-color: rgba(0, 0, 0, 0.9);
+    background-color: rgba(3, 1, 6, 0.95);
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
     transform: translateY(-100%);
-    transition: transform 0.5s ease-in-out, opacity 0.5s ease-in-out; /* Hacer la transición más lenta y añadir opacidad */
+    transition: transform 0.5s ease-in-out, opacity 0.5s ease-in-out;
     z-index: 999;
   }
 
-  /* Estilos para el menú activo */
   .nav-links.active {
     transform: translateY(0);
-    opacity: 1; /* Cambia la opacidad a 1 cuando está activo */
+    opacity: 1;
   }
 
   .nav-links li {
-    margin: 1em 0; /* Espaciado entre las opciones del menú */
+    margin: 1em 0;
   }
 
   .nav-links li a {
     color: white;
     font-size: 1.5em;
     text-decoration: none;
-    transition: color 0.3s ease;
-  }
-
-  .nav-links li a:hover {
-   color: #249da6; /* Color al pasar el ratón */
-  }
-
-  .logo,
-  .menu-toggle {
-    position: relative; /* Mantener el logo y el menú por encima de la imagen */
-    z-index: 1001;
   }
 
   .menu-toggle {
-    display: block; /* Asegura que el menú hamburguesa sea visible */
-    cursor: pointer;
-    position: relative;
-    z-index: 1002; /* Aumenta el z-index para asegurar su visibilidad sobre otros elementos */
+    display: block;
+    z-index: 1002;
   }
 
   .hamburger {
@@ -394,16 +324,10 @@ html {
     height: 3px;
     background: white;
     margin: 5px 0;
-    transition: all 0.3s ease;
   }
 
-  /* Efecto hover en el menú hamburguesa */
   .menu-toggle:hover .hamburger {
-    background: #249da6; /* Cambia el color de las barras del menú hamburguesa */
-  }
-
-  .menu-toggle.active .hamburger {
-    background: #249da6; /* Cambia el color de las barras del menú hamburguesa */
+    background: #249da6;
   }
 
   .bio-container {
@@ -412,7 +336,6 @@ html {
 
   .bio {
     max-width: 100%;
-    margin-bottom: 2em;
   }
 
   .ra-content {
@@ -420,7 +343,11 @@ html {
   }
 
   .description {
-    margin-right: 0;
-    margin-bottom: 1em;
+    text-align: center;
   }
 }
+
+/* ==============================
+   FIN DE CSS OPTIMIZADO
+   ============================== */
+
