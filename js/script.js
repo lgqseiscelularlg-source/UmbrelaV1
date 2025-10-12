@@ -1,4 +1,10 @@
+// ================================
+// RealityTour – Interfaz Optimizada (JS)
+// ================================
 document.addEventListener("DOMContentLoaded", function () {
+  /* --------------------------------------------
+     SLIDER AUTOMÁTICO (SECCIÓN RA)
+  -------------------------------------------- */
   let currentImageIndex = 0;
   const images = document.querySelectorAll(".slider-image");
   const totalImages = images.length;
@@ -8,11 +14,14 @@ document.addEventListener("DOMContentLoaded", function () {
     currentImageIndex = (currentImageIndex + 1) % totalImages;
     images[currentImageIndex].classList.add("active");
   }
+  if (images.length > 0) {
+    setInterval(showNextImage, 3000);
+  }
 
-  setInterval(showNextImage, 3000); // Cambia de imagen cada 3 segundos
-
-  // Funcionalidad del menú hamburguesa
-  const navLinks = document.querySelectorAll(".nav-links a"); // Selecciona todos los enlaces del menú
+  /* --------------------------------------------
+     MENÚ HAMBURGUESA
+  -------------------------------------------- */
+  const navLinks = document.querySelectorAll(".nav-links a");
   const menuToggle = document.querySelector(".menu-toggle");
   const navMenu = document.querySelector(".nav-links");
 
@@ -23,143 +32,123 @@ document.addEventListener("DOMContentLoaded", function () {
   // Cierra el menú al seleccionar una opción
   navLinks.forEach((link) => {
     link.addEventListener("click", () => {
-      navMenu.classList.remove("active"); // Remueve la clase 'active' para cerrar el menú
+      navMenu.classList.remove("active");
     });
   });
 
-  // Funcionalidad de ocultar y mostrar menu hamburguesa e icono
-  let lastScrollTop = 0; // Variable para guardar la última posición del scroll
-  const nav = document.querySelector("header"); // Selecciona el header que contiene el menú
+  /* --------------------------------------------
+     EFECTO SCROLL: ocultar/mostrar header + BLUR
+  -------------------------------------------- */
+  const header = document.querySelector("header");
+  let lastScrollTop = 0;
+  let ticking = false;
 
   window.addEventListener("scroll", function () {
-    let scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+    if (!ticking) {
+      window.requestAnimationFrame(function () {
+        const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
 
-    if (scrollTop > lastScrollTop) {
-      // Desplazamiento hacia abajo
-      nav.style.top = "-100px"; // Ajusta este valor según la altura de tu barra de navegación
-      nav.style.background = "transparent"; // Fondo transparente al deslizar hacia abajo
-    } else {
-      // Desplazamiento hacia arriba
-      nav.style.top = "0px";
-      nav.style.background = "#111112"; // Fondo oscuro al deslizar hacia arriba
+        // 1. Mostrar/ocultar al deslizar
+        if (scrollTop > lastScrollTop && scrollTop > 100) {
+          // Bajando
+          header.style.top = "-100px";
+        } else {
+          // Subiendo
+          header.style.top = "0";
+        }
+
+        // 2. Controlar el fondo blur dinámico
+        if (scrollTop <= 100) {
+          header.classList.remove("scrolled-up");
+          header.style.background = "transparent";
+          header.style.backdropFilter = "blur(0px)";
+        } else {
+          header.classList.add("scrolled-up");
+        }
+
+        lastScrollTop = scrollTop;
+        ticking = false;
+      });
+      ticking = true;
     }
-
-    // Hacer la barra transparente en la parte superior de la página
-    if (scrollTop <= 100) {
-      // Ajusta este valor según sea necesario
-      nav.style.background = "transparent";
-    }
-
-    lastScrollTop = scrollTop; // Guarda la nueva posición del scroll
   });
 
-  // Comportamiento del contenido al deslizar por primera vez hacia abajo
-
-  let hasScrolled = false;
+  /* --------------------------------------------
+     EFECTO DE APARICIÓN EN SCROLL
+  -------------------------------------------- */
   const elements = document.querySelectorAll(".hidden");
-
-  // Configuración del Intersection Observer
-  const observerOptions = {
-    threshold: 0.1, // Se activará cuando el 10% del elemento sea visible
-  };
+  const observerOptions = { threshold: 0.1 };
 
   const observer = new IntersectionObserver((entries, observer) => {
     entries.forEach((entry) => {
       if (entry.isIntersecting) {
-        // Cuando el elemento entra en la vista
         entry.target.classList.add("visible");
-        observer.unobserve(entry.target); // Deja de observar el elemento una vez que es visible
+        observer.unobserve(entry.target);
       }
     });
   }, observerOptions);
 
-  // Aplicar el Observer a cada elemento con la clase .hidden
-  elements.forEach((el) => {
-    observer.observe(el);
-  });
+  elements.forEach((el) => observer.observe(el));
 
-  /* -------------------------------------------- SEGUNDA PAGINA */
-
+  /* --------------------------------------------
+     CONFIGURACIÓN PARA SEGUNDA PÁGINA (realitytour.html)
+  -------------------------------------------- */
   let currentStream = null;
-  let useFrontCamera = false; // Empezamos con la cámara trasera
+  let useFrontCamera = false;
 
-  // Verificar si estamos en la página realitytour.html
   if (window.location.pathname.includes("realitytour.html")) {
-    const video = document.getElementById('camera-stream');
-    const fullscreenBtn = document.getElementById('fullscreen-btn');
-    const switchCameraBtn = document.getElementById('switch-camera-btn');
-    const cameraContainer = document.querySelector('.camera-container');
+    const video = document.getElementById("camera-stream");
+    const fullscreenBtn = document.getElementById("fullscreen-btn");
+    const switchCameraBtn = document.getElementById("switch-camera-btn");
 
-      // Función para detener el stream actual
     function stopCameraStream() {
-    if (currentStream) {
+      if (currentStream) {
         currentStream.getTracks().forEach((track) => track.stop());
         currentStream = null;
       }
     }
-  
-    // Función para iniciar la cámara
+
     function startCamera() {
       const constraints = {
         video: {
-          facingMode: useFrontCamera ? "user" : "environment", // Alternar entre cámara frontal y trasera
+          facingMode: useFrontCamera ? "user" : "environment",
         },
       };
 
-      // Detener la cámara si ya está en uso
       stopCameraStream();
 
-    // Acceder a la cámara
-    navigator.mediaDevices.getUserMedia(constraints)
-      .then(function (stream) {
-        currentStream = stream;
-        video.srcObject = stream;
-      })
-      .catch(function (error) {
-        console.error("Error al acceder a la cámara: ", error);
-      });
+      navigator.mediaDevices
+        .getUserMedia(constraints)
+        .then((stream) => {
+          currentStream = stream;
+          video.srcObject = stream;
+        })
+        .catch((error) => {
+          console.error("Error al acceder a la cámara: ", error);
+        });
     }
 
-    // Iniciar la cámara trasera por defecto al cargar la página
     startCamera();
 
-  // Función para alternar entre la cámara frontal y la trasera
-  switchCameraBtn.addEventListener('click', function () {
-    useFrontCamera = !useFrontCamera; // Cambiamos entre la cámara frontal y trasera
-    startCamera(); // Reiniciamos la cámara con la nueva configuración
-  });
+    switchCameraBtn.addEventListener("click", function () {
+      useFrontCamera = !useFrontCamera;
+      startCamera();
+    });
 
-// Función para activar y desactivar pantalla completa en dispositivos móviles
-  fullscreenBtn.addEventListener('click', function () {
-    if (!document.fullscreenElement && !document.webkitFullscreenElement) {
-      // Activar pantalla completa en el video
-      if (video.requestFullscreen) {
-        video.requestFullscreen();
-      } else if (video.webkitRequestFullscreen) { // Para Safari
-        video.webkitRequestFullscreen();
-      } else if (video.msRequestFullscreen) { // Para IE/Edge
-        video.msRequestFullscreen();
-      } else if (video.mozRequestFullScreen) { // Para Firefox
-        video.mozRequestFullScreen();
+    fullscreenBtn.addEventListener("click", function () {
+      if (!document.fullscreenElement && !document.webkitFullscreenElement) {
+        if (video.requestFullscreen) video.requestFullscreen();
+        else if (video.webkitRequestFullscreen) video.webkitRequestFullscreen();
+        else if (video.msRequestFullscreen) video.msRequestFullscreen();
+        else if (video.mozRequestFullScreen) video.mozRequestFullScreen();
+      } else {
+        if (document.exitFullscreen) document.exitFullscreen();
+        else if (document.webkitExitFullscreen) document.webkitExitFullscreen();
+        else if (document.msExitFullscreen) document.msExitFullscreen();
+        else if (document.mozCancelFullScreen) document.mozCancelFullScreen();
       }
-    } else {
-      // Salir de pantalla completa
-      if (document.exitFullscreen) {
-        document.exitFullscreen();
-      } else if (document.webkitExitFullscreen) { // Para Safari
-        document.webkitExitFullscreen();
-      } else if (document.msExitFullscreen) { // Para IE/Edge
-        document.msExitFullscreen();
-      } else if (document.mozCancelFullScreen) { // Para Firefox
-        document.mozCancelFullScreen();
-      }
-    }
-  });
-    
-      // Detener la cámara cuando se cambia de página
-  window.addEventListener("beforeunload", stopCameraStream);
-    
+    });
+
+    window.addEventListener("beforeunload", stopCameraStream);
   }
-
-  /* -------------------------------------------- FIN DE SEGUNDA PAGINA */
 });
