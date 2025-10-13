@@ -458,6 +458,91 @@ html {
   z-index: 1;
 }
 
+/* ===== SECCIÓN CONTACTO ===== */
+.contact-section {
+  background-color: #111112;
+  color: white;
+  text-align: center;
+  padding: 4em 1em;
+  position: relative;
+}
+
+.contact-section h2 {
+  font-size: 2em;
+  margin-bottom: 1em;
+  letter-spacing: 2px;
+}
+
+.contact-email {
+  font-size: 1.2em;
+  font-weight: 600;
+  color: white;
+  margin-bottom: 2em;
+}
+
+.contact-container {
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+.contact-grid {
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  flex-wrap: wrap;
+  gap: 2em;
+  margin-top: 1em;
+}
+
+.contact-item {
+  flex: 1;
+  min-width: 200px;
+}
+
+.contact-item h3 {
+  font-size: 1.1em;
+  font-weight: bold;
+  margin-bottom: 0.5em;
+}
+
+.contact-item p {
+  margin: 0.2em 0;
+  font-size: 0.95em;
+}
+
+.contact-link {
+  display: inline-block;
+  margin-top: 0.5em;
+  color: #249da6;
+  text-decoration: none;
+  transition: color 0.3s ease;
+}
+
+.contact-link:hover {
+  color: white;
+}
+
+.divider {
+  width: 2px;
+  background-color: white;
+  opacity: 0.5;
+  height: auto;
+}
+
+@media (max-width: 768px) {
+  .contact-grid {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .divider {
+    display: none;
+  }
+
+  .contact-item {
+    text-align: center;
+  }
+}
 
 
 
