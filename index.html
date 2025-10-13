@@ -8,26 +8,23 @@
   </head>
     
 <script>
-document.addEventListener("DOMContentLoaded", function () {
-  const desktopVideo = document.getElementById("videoDesktop");
-  const mobileVideo = document.getElementById("videoMobile");
+document.addEventListener("DOMContentLoaded", () => {
+  const video = document.getElementById("mobileVideo");
 
-  [desktopVideo, mobileVideo].forEach((vid) => {
-    if (!vid) return;
-    vid.muted = true;
-    vid.play().catch(() => {
-      // Si el navegador bloquea autoplay, lo intentamos otra vez tras interacción
-      const retryPlay = () => {
-        vid.play();
-        document.removeEventListener("click", retryPlay);
-        window.removeEventListener("scroll", retryPlay);
-      };
-      document.addEventListener("click", retryPlay);
-      window.addEventListener("scroll", retryPlay);
-    });
-  });
+  if (video) {
+    video.muted = true;
+    const tryPlay = () => {
+      video.play().catch(() => {
+        // algunos navegadores requieren interacción
+        document.addEventListener("click", () => video.play(), { once: true });
+        window.addEventListener("touchstart", () => video.play(), { once: true });
+      });
+    };
+    tryPlay();
+  }
 });
 </script>
+
 
 
   
@@ -65,7 +62,7 @@ document.addEventListener("DOMContentLoaded", function () {
     preload="auto"
     class="mobile-video-bg"
   >
-    <source src="assets/video/hero-desktop-sin-audio.mp4" type="video/mp4" />
+    <source src="assets/video/hero-mobile.mp4" type="video/mp4" />
     Tu navegador no soporta video en formato mp4.
   </video>
 
