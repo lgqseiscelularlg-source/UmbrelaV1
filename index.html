@@ -6,6 +6,41 @@
     <title>Realidad Aumentada</title>
     <link rel="stylesheet" href="css/styles.css" />
   </head>
+    
+    <script>
+      document.addEventListener("DOMContentLoaded", function () {
+        const desktopVideo = document.querySelector(".hero-video--desktop");
+        const mobileVideo = document.querySelector(".hero-video--mobile");
+    
+        // Intenta reproducir ambos (el que exista visible)
+        [desktopVideo, mobileVideo].forEach((vid) => {
+          if (vid) {
+            const playPromise = vid.play();
+            if (playPromise !== undefined) {
+              playPromise
+                .then(() => {
+                  vid.muted = true;
+                  vid.loop = true;
+                  vid.play();
+                })
+                .catch((error) => {
+                  console.warn("Autoplay bloqueado, esperando interacción del usuario...");
+                  // Como fallback, reproduce al hacer scroll o clic
+                  const triggerPlay = () => {
+                    vid.play();
+                    window.removeEventListener("scroll", triggerPlay);
+                    document.removeEventListener("click", triggerPlay);
+                  };
+                  window.addEventListener("scroll", triggerPlay);
+                  document.addEventListener("click", triggerPlay);
+                });
+            }
+          }
+        });
+      });
+    </script>
+
+  
   <body>
     <header>
       <nav>
