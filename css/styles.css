@@ -464,7 +464,6 @@ html {
   color: white;
   text-align: center;
   padding: 4em 1em;
-  position: relative;
 }
 
 .contact-section h2 {
@@ -487,16 +486,16 @@ html {
 
 .contact-grid {
   display: flex;
-  justify-content: center;
+  justify-content: space-between;
   align-items: flex-start;
+  gap: 3em;
   flex-wrap: wrap;
-  gap: 2em;
-  margin-top: 1em;
 }
 
 .contact-item {
   flex: 1;
-  min-width: 200px;
+  min-width: 250px;
+  text-align: center;
 }
 
 .contact-item h3 {
@@ -506,15 +505,16 @@ html {
 }
 
 .contact-item p {
-  margin: 0.2em 0;
+  margin: 0.3em 0;
   font-size: 0.95em;
+  text-decoration: none; /* ✅ elimina subrayado */
 }
 
 .contact-link {
   display: inline-block;
   margin-top: 0.5em;
   color: #249da6;
-  text-decoration: none;
+  text-decoration: none; /* ✅ sin subrayado */
   transition: color 0.3s ease;
 }
 
@@ -529,6 +529,7 @@ html {
   height: auto;
 }
 
+/* Móvil */
 @media (max-width: 768px) {
   .contact-grid {
     flex-direction: column;
@@ -543,8 +544,3 @@ html {
     text-align: center;
   }
 }
-
-
-
-
-
