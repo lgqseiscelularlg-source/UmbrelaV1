@@ -424,6 +424,7 @@ html {
     margin-bottom: 1em;
   }
 }
+
 /* ====== VIDEO DE FONDO EN HERO (FINAL CORRECTO) ====== */
 .main-section {
   position: relative;
@@ -462,5 +463,6 @@ html {
   .hero-video--desktop { display: none !important; }
   .hero-video--mobile { display: block !important; }
 }
+
 
 
