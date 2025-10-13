@@ -425,56 +425,48 @@ html {
   }
 }
 
-/* ====== VIDEO DE FONDO EN HERO (VERSIÓN FUNCIONAL 2025) ====== */
+/* ====== VIDEO DE FONDO EN HERO (versión fija garantizada) ====== */
 .main-section {
   position: relative;
   overflow: hidden;
 }
 
 .hero-video {
-  position: absolute;
+  position: fixed;           /* antes era absolute */
   top: 0;
   left: 0;
-  width: 100%;
-  height: 100%;
+  width: 100vw;
+  height: 100vh;
   object-fit: cover;
-  z-index: -1;             /* <-- el punto clave: mandamos el video detrás */
+  z-index: -1;               /* detrás de todo */
   pointer-events: none;
+  background-color: black;
 }
 
-/* Por defecto mostramos escritorio y ocultamos móvil */
-.hero-video--desktop {
-  display: block;
-}
-.hero-video--mobile {
-  display: none;
-}
+/* Desktop visible por defecto */
+.hero-video--desktop { display: block; }
+.hero-video--mobile  { display: none; }
 
-/* Overlay por encima del video, debajo del botón */
+/* Overlay */
 .overlay {
   position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
+  inset: 0;
   background: rgba(0, 0, 0, 0.4);
-  z-index: 0;             /* debajo del botón, encima del video */
+  z-index: 0;
 }
 
+/* Botón arriba */
 .cta-button {
   position: relative;
-  z-index: 1;             /* encima de todo */
+  z-index: 1;
 }
 
 /* En móvil activamos el video vertical */
 @media (max-width: 768px) {
-  .hero-video--desktop {
-    display: none !important;
-  }
-  .hero-video--mobile {
-    display: block !important;
-  }
+  .hero-video--desktop { display: none !important; }
+  .hero-video--mobile  { display: block !important; }
 }
+
 
 
 
