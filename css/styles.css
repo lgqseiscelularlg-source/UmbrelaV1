@@ -424,3 +424,34 @@ html {
     margin-bottom: 1em;
   }
 }
+
+/* ====== VIDEO DE FONDO EN HERO ====== */
+.main-section {
+  position: relative; /* ya lo tenías, lo dejamos explícito */
+  overflow: hidden;   /* evita cualquier desborde del video */
+}
+
+.hero-video {
+  position: absolute;
+  inset: 0;               /* top:0; right:0; bottom:0; left:0 */
+  width: 100%;
+  height: 100%;
+  object-fit: cover;      /* llena sin deformar */
+  z-index: 0;             /* por detrás del overlay y botón */
+  pointer-events: none;   /* no bloquea taps/clicks */
+}
+
+/* Por defecto mostramos escritorio y ocultamos el móvil */
+.hero-video--desktop { display: block; }
+.hero-video--mobile  { display: none; }
+
+/* Aseguramos capas correctas de overlay y botón */
+.overlay { z-index: 1; }
+.cta-button { z-index: 2; position: relative; }
+
+/* En MÓVIL activamos el video 9:16 y ocultamos el de escritorio */
+@media (max-width: 768px) {
+  .hero-video--desktop { display: none; }
+  .hero-video--mobile  { display: block; }
+}
+
