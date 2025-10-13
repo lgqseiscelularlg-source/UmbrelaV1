@@ -55,37 +55,24 @@ document.addEventListener("DOMContentLoaded", function () {
 
     <!-- Sección Principal -->
 <section id="home" class="main-section">
-  <!-- Video para ESCRITORIO -->
+  <!-- Solo video móvil -->
   <video
-    id="videoDesktop"
-    class="hero-video hero-video--desktop"
+    id="mobileVideo"
     autoplay
     muted
     loop
     playsinline
     preload="auto"
-    poster="assets/img/CatedralNoche.jpg"
+    class="mobile-video-bg"
   >
     <source src="assets/video/hero-desktop-sin-audio.mp4" type="video/mp4" />
-  </video>
-
-  <!-- Video para MÓVIL (9:16) -->
-  <video
-    id="videoMobile"
-    class="hero-video hero-video--mobile"
-    autoplay
-    muted
-    loop
-    playsinline
-    preload="auto"
-    poster="assets/img/CatedralNoche.jpg"
-  >
-    <source src="assets/video/hero-mobile.mp4" type="video/mp4" />
+    Tu navegador no soporta video en formato mp4.
   </video>
 
   <div class="overlay"></div>
   <button class="cta-button" onclick="window.location.href='realitytour.html'">RealityTour</button>
 </section>
+
 
 
 
