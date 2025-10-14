@@ -164,6 +164,7 @@ document.addEventListener("DOMContentLoaded", function () {
   /* -------------------------------------------- FIN DE SEGUNDA PAGINA */
 
 /* === Inicialización del carrusel Swiper === */
+/* === Inicialización del carrusel Swiper === */
 if (document.querySelector(".ra-swiper")) {
   new Swiper(".ra-swiper", {
     loop: true,
@@ -183,8 +184,17 @@ if (document.querySelector(".ra-swiper")) {
     spaceBetween: 20,
     centeredSlides: true,
     grabCursor: true,
+
+    // En escritorio mostramos 3 imágenes simultáneamente
+    breakpoints: {
+      769: {
+        slidesPerView: 2.5, /* se ven la central + dos laterales */
+        spaceBetween: 30,
+      },
+    },
   });
 }
+
 
   
 });
