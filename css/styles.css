@@ -645,64 +645,64 @@ html {
 }
 
 /* ===== AJUSTES DE LA SECCIÓN ¿Qué es la RA? PARA ESCRITORIO ===== ----------------------------------------------------------------- */
+/* ===== NUEVO DISEÑO ¿Qué es la RA? PARA ESCRITORIO ===== */
 @media (min-width: 769px) {
-  /* Forzamos el layout vertical centrado */
+  .ra-section {
+    text-align: center;
+    padding: 5em 0;
+  }
+
   .ra-section .ra-content {
     display: flex;
-    flex-direction: column !important;
-    align-items: center !important;
-    text-align: center !important;
+    flex-direction: column;
+    align-items: center;
   }
 
   .ra-section h2 {
-    margin-bottom: 0.5em;
     font-size: 2em;
-    letter-spacing: 1px;
+    margin-bottom: 0.5em;
   }
 
   .ra-section .description {
     max-width: 800px;
-    margin: 0 auto 2em auto;
     font-size: 1.1em;
-    line-height: 1.6;
+    margin-bottom: 2.5em;
     color: #e6e6e6;
   }
 
-  /* Carrusel ocupa toda la anchura visible */
+  /* --- Carrusel tipo “Wix Showcase” --- */
   .ra-swiper {
-    width: 90%;
+    width: 100%;
     max-width: 1200px;
     margin: 0 auto;
+    padding-bottom: 40px;
   }
 
   .ra-swiper .swiper-slide {
+    opacity: 0.5;
     transform: scale(0.9);
-    transition: transform 0.4s ease;
+    transition: all 0.4s ease;
   }
 
   .ra-swiper .swiper-slide-active {
+    opacity: 1;
     transform: scale(1);
   }
 
   .ra-swiper img {
-    height: 420px;
-    border-radius: 12px;
+    width: 100%;
+    height: 400px;
     object-fit: cover;
+    border-radius: 12px;
   }
 
-  .ra-swiper .swiper-wrapper {
-    padding: 20px 0;
-  }
-
-  .ra-swiper .swiper-slide {
-    width: 60%;
-  }
-
+  /* Flechas laterales */
   .swiper-button-next,
   .swiper-button-prev {
     color: #249da6;
-    width: 45px;
-    height: 45px;
+    top: 45%;
+    width: 50px;
+    height: 50px;
   }
 
   .swiper-button-next:hover,
@@ -710,5 +710,8 @@ html {
     color: white;
     transform: scale(1.15);
   }
-}
 
+  .swiper-pagination {
+    bottom: 0;
+  }
+}
