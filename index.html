@@ -88,43 +88,31 @@ document.addEventListener("DOMContentLoaded", () => {
 
     <!-- ¿Qué es la RA? -->
 <section id="ra" class="ra-section">
-  <h2 class="hidden">¿Qué es la RA?</h2>
-  <div class="ra-content hidden">
-    <div class="description hidden">
-      <p>
-        La Realidad Aumentada (RA) combina el mundo real con elementos
-        digitales, permitiendo explorar espacios turísticos de una forma única
-        e interactiva.
-      </p>
+  <h2>¿Qué es la RA?</h2>
+  <div class="ra-description">
+    <p>
+      La Realidad Aumentada (RA) combina el mundo real con elementos digitales,
+      permitiendo explorar espacios turísticos de una forma única e interactiva.
+    </p>
+  </div>
+
+  <!-- Carrusel Swiper -->
+  <div class="swiper ra-swiper">
+    <div class="swiper-wrapper">
+      <div class="swiper-slide"><img src="assets/img/imggob.jpg" alt="Imagen 1"></div>
+      <div class="swiper-slide"><img src="assets/img/paseo.png" alt="Imagen 2"></div>
+      <div class="swiper-slide"><img src="assets/img/plaza.jpg" alt="Imagen 3"></div>
     </div>
 
-    <!-- === NUEVO CARRUSEL SWIPER === -->
-    <div class="swiper ra-swiper">
-      <div class="swiper-wrapper">
-        <!-- Cada imagen debe tener mismas dimensiones -->
-        <div class="swiper-slide">
-          <img src="assets/img/imggob.jpg" alt="Gobierno" />
-        </div>
-        <div class="swiper-slide">
-          <img src="assets/img/paseo.png" alt="Paseo" />
-        </div>
-        <div class="swiper-slide">
-          <img src="assets/img/plaza.jpg" alt="Plaza" />
-        </div>
-        <div class="swiper-slide">
-          <img src="assets/img/capturacorregido.png" alt="Captura" />
-        </div>
-      </div>
+    <!-- Flechas -->
+    <div class="swiper-button-prev"></div>
+    <div class="swiper-button-next"></div>
 
-      <!-- Flechas de navegación para escritorio -->
-      <div class="swiper-button-next"></div>
-      <div class="swiper-button-prev"></div>
-
-      <!-- Paginación (puntitos para móvil) -->
-      <div class="swiper-pagination"></div>
-    </div>
+    <!-- Puntos -->
+    <div class="swiper-pagination"></div>
   </div>
 </section>
+
 
 
     <!-- Nuestro Servicio -->
