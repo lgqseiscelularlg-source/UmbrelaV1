@@ -644,32 +644,6 @@ html {
   }
 }
 
-/* ===== AJUSTES DE LA SECCIÓN ¿Qué es la RA? PARA ESCRITORIO ===== ----------------------------------------------------------------- */
-/* ===== NUEVO DISEÑO ¿Qué es la RA? PARA ESCRITORIO ===== */
-@media (min-width: 769px) {
-  .ra-section {
-    text-align: center;
-    padding: 5em 0;
-  }
-
-  .ra-section .ra-content {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-  }
-
-  .ra-section h2 {
-    font-size: 2em;
-    margin-bottom: 0.5em;
-  }
-
-  .ra-section .description {
-    max-width: 800px;
-    font-size: 1.1em;
-    margin-bottom: 2.5em;
-    color: #e6e6e6;
-  }
-
   /* --- Carrusel tipo “Wix Showcase” --- */
 /* =========================
    SECCIÓN ¿QUÉ ES LA RA?
