@@ -164,35 +164,31 @@ document.addEventListener("DOMContentLoaded", function () {
   /* -------------------------------------------- FIN DE SEGUNDA PAGINA */
 
 /* === Inicialización del carrusel Swiper === */
-/* === Carrusel Swiper mejorado con profundidad y loop real === */
+/* === Carrusel Swiper con efecto profundidad y loop continuo === */
 if (document.querySelector(".ra-swiper")) {
   new Swiper(".ra-swiper", {
-    loop: true, // carrusel infinito real (sin espacios en blanco)
-    speed: 1000,
+    loop: true,
+    speed: 4000, // movimiento continuo
     autoplay: {
-      delay: 3000,
+      delay: 0, // sin pausa entre imágenes
       disableOnInteraction: false,
+    },
+    slidesPerView: "auto",
+    centeredSlides: true,
+    grabCursor: true,
+    spaceBetween: 40,
+    allowTouchMove: true,
+    navigation: {
+      nextEl: ".swiper-button-next",
+      prevEl: ".swiper-button-prev",
     },
     pagination: {
       el: ".swiper-pagination",
       clickable: true,
     },
-    navigation: {
-      nextEl: ".swiper-button-next",
-      prevEl: ".swiper-button-prev",
-    },
-    centeredSlides: true,
-    grabCursor: true,
-    slidesPerView: 1,
-    spaceBetween: 20,
-    breakpoints: {
-      769: {
-        slidesPerView: 3, // tres imágenes visibles (una central, dos laterales)
-        spaceBetween: 40,
-      },
-    },
   });
 }
+
 
 
 
