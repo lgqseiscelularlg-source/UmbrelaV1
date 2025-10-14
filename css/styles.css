@@ -466,6 +466,37 @@ html {
   padding: 4em 1em;
 }
 
+/* ===== CORRECCIÓN FINAL: eliminar subrayado de emails y teléfonos ===== */
+
+/* Aplica a todos los links, incluso los que el navegador detecta automáticamente */
+a,
+a:link,
+a:visited,
+a:hover,
+a:active {
+  text-decoration: none !important;
+  border-bottom: none !important;
+  outline: none !important;
+  color: inherit;
+}
+
+/* Anula el estilo automático de detección de teléfonos/emails en móviles */
+a[href^="mailto"],
+a[href^="tel"] {
+  text-decoration: none !important;
+  color: inherit !important;
+  border: none !important;
+  -webkit-text-decoration-skip: none !important;
+}
+
+/* Algunos navegadores subrayan el texto dentro de <p> con direcciones detectadas */
+p,
+span {
+  text-decoration: none !important;
+}
+
+
+
 .contact-section h2 {
   font-size: 2em;
   margin-bottom: 1em;
