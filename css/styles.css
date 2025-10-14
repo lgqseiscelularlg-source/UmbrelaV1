@@ -458,39 +458,124 @@ html {
   z-index: 1;
 }
 
-/* === AJUSTE VISUAL SECCIÓN CONTACTO === */
+/* === SECCIÓN CONTACTO AJUSTADA FINAL === --------------------------------------------------------*/
 .contact-section {
-  background-color: #080809; /* 🔹 Negro más uniforme y profundo */
-  padding: 3.5em 1em 4em 1em; /* 🔹 Reajuste suave para emparejar con otras secciones */
-  margin: 0; /* 🔹 Asegura que no haya salto visual */
+  background-color: #050506; /* Fondo más oscuro para cierre visual */
+  padding: 3em 1em 4em 1em;
   text-align: center;
   color: white;
-  position: relative;
-  z-index: 2; /* Evita que se mezcle con la sección anterior */
 }
 
-/* Ajuste fino de la grilla para mantener simetría */
+.contact-section h2 {
+  font-size: 1.8em;
+  margin-bottom: 0.8em;
+  letter-spacing: 2px;
+}
+
+.contact-email {
+  font-size: 1.1em;
+  font-weight: 600;
+  color: white;
+  margin-bottom: 2em;
+}
+
+/* Contenedor general */
+.contact-container {
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+/* Grilla de contactos */
 .contact-grid {
   display: flex;
-  justify-content: space-evenly;
+  justify-content: center;
   align-items: flex-start;
   flex-wrap: nowrap;
-  gap: 1.2em;
+  gap: 1.5em;
   width: 100%;
   max-width: 900px;
   margin: 0 auto;
 }
 
-/* Línea divisoria centrada */
-.divider {
-  width: 1px;
-  background-color: rgba(255, 255, 255, 0.35);
-  height: 85px;
-  align-self: center;
-  margin: 0;
+/* Elementos individuales */
+.contact-item {
+  flex: 1 1 45%;
+  text-align: center;
 }
 
-/* Ajuste en móviles para mantener equilibrio vertical */
+.contact-item h3 {
+  font-size: 1em;
+  font-weight: bold;
+  margin-bottom: 0.4em;
+}
+
+.contact-item p {
+  margin: 0.25em 0;
+  font-size: 0.85em; /* 🔹 Tamaño ligeramente más pequeño en móvil */
+  text-decoration: none;
+  color: white;
+}
+
+/* Enlaces de LinkedIn */
+.contact-link {
+  display: inline-block;
+  margin-top: 0.4em;
+  color: #249da6 !important; /* 🔹 Mismo color que el botón RealityTour */
+  text-decoration: none !important;
+  font-size: 0.9em;
+  transition: color 0.3s ease;
+}
+
+.contact-link:hover {
+  color: white !important;
+}
+
+/* Línea divisoria central visible también en móvil */
+.divider {
+  width: 1px;
+  background: linear-gradient(
+    rgba(255, 255, 255, 0),
+    rgba(255, 255, 255, 0.4),
+    rgba(255, 255, 255, 0)
+  );
+  height: 90px;
+  opacity: 0.8;
+  align-self: stretch;
+}
+
+/* 📱 Ajustes móviles específicos */
+@media (max-width: 768px) {
+  .contact-section {
+    padding: 3em 1em;
+  }
+
+  .contact-grid {
+    flex-direction: row;
+    justify-content: space-evenly;
+    align-items: stretch;
+    gap: 0.8em;
+  }
+
+  .contact-item h3 {
+    font-size: 0.95em;
+  }
+
+  .contact-item p {
+    font-size: 0.8em;
+  }
+
+  .contact-link {
+    font-size: 0.85em;
+  }
+
+  .divider {
+    display: block; /* 🔹 Mantiene la línea visible en móvil */
+    height: 90px;
+  }
+}
+
+
+/* Ajuste en móviles para mantener equilibrio vertical --------------------------------------------------*/
 @media (max-width: 768px) {
   .contact-section {
     padding: 3em 0.5em 3.5em 0.5em;
