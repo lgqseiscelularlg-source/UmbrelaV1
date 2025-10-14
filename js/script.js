@@ -164,27 +164,30 @@ document.addEventListener("DOMContentLoaded", function () {
   /* -------------------------------------------- FIN DE SEGUNDA PAGINA */
 
 /* === Inicialización del carrusel Swiper === */
-/* ==== Carrusel Swiper ¿Qué es la RA? ==== */
+/* === Carrusel Swiper con efecto profundidad y loop continuo === */
 if (document.querySelector(".ra-swiper")) {
   new Swiper(".ra-swiper", {
     loop: true,
-    centeredSlides: true,
-    slidesPerView: "auto",
-    spaceBetween: 40,
-    speed: 4000,
+    speed: 4000, // movimiento continuo
     autoplay: {
-      delay: 0,
+      delay: 0, // sin pausa entre imágenes
       disableOnInteraction: false,
     },
+    slidesPerView: "auto",
+    centeredSlides: true,
+    grabCursor: true,
+    spaceBetween: 40,
+    allowTouchMove: true,
     navigation: {
       nextEl: ".swiper-button-next",
       prevEl: ".swiper-button-prev",
     },
-    allowTouchMove: true,
-    grabCursor: true,
+    pagination: {
+      el: ".swiper-pagination",
+      clickable: true,
+    },
   });
 }
-
 
 
 
