@@ -671,46 +671,45 @@ html {
   }
 
   /* --- Carrusel tipo “Wix Showcase” --- */
-/* ===== EFECTO DE PROFUNDIDAD Y ESCALA ===== */
+/* ===== EFECTO CARRUSEL 3D ESTILO WIX ===== */
 @media (min-width: 769px) {
   .ra-swiper {
-    width: 95%;
-    max-width: 1400px;
+    width: 100%;
+    max-width: 1500px;
     margin: 0 auto;
-    padding-bottom: 60px;
+    padding: 3em 0 4em 0;
   }
 
   .ra-swiper .swiper-slide {
-    transition: all 0.6s ease;
-    opacity: 0.5;
-    transform: scale(0.85);
+    width: 420px; /* ancho individual */
+    height: 500px;
+    transition: transform 0.6s ease, filter 0.6s ease, opacity 0.6s ease;
+    opacity: 0.6;
+    transform: scale(0.8);
     filter: blur(2px);
-    transform-origin: center center;
   }
 
   /* Imagen central destacada */
   .ra-swiper .swiper-slide-active {
+    transform: scale(1.15);
     opacity: 1;
-    transform: scale(1.1);
     filter: blur(0);
     z-index: 3;
-    box-shadow: 0 10px 35px rgba(0, 0, 0, 0.6);
+    box-shadow: 0 12px 45px rgba(0, 0, 0, 0.6);
     border-radius: 14px;
   }
 
-  /* Imágenes laterales ligeramente visibles */
+  /* Laterales */
   .ra-swiper .swiper-slide-next,
   .ra-swiper .swiper-slide-prev {
+    transform: scale(0.9);
     opacity: 0.8;
-    transform: scale(0.95);
     filter: blur(1.5px);
-    z-index: 2;
   }
 
-  /* Tamaño de las imágenes */
   .ra-swiper img {
     width: 100%;
-    height: 520px; /* más grandes */
+    height: 100%;
     object-fit: cover;
     border-radius: 14px;
   }
@@ -721,19 +720,19 @@ html {
     color: #249da6;
     width: 50px;
     height: 50px;
-    top: 48%;
-    transition: transform 0.3s ease;
+    top: 50%;
+    transform: translateY(-50%);
+    transition: transform 0.3s ease, color 0.3s ease;
   }
 
   .swiper-button-next:hover,
   .swiper-button-prev:hover {
     color: white;
-    transform: scale(1.2);
+    transform: translateY(-50%) scale(1.2);
   }
 
-  /* Paginación */
+  /* Puntos de paginación */
   .swiper-pagination {
-    bottom: 10px;
+    bottom: 15px;
   }
 }
-
