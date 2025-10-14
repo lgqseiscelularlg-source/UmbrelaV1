@@ -164,12 +164,13 @@ document.addEventListener("DOMContentLoaded", function () {
   /* -------------------------------------------- FIN DE SEGUNDA PAGINA */
 
 /* === Inicialización del carrusel Swiper === */
-/* === Inicialización del carrusel Swiper === */
+/* === Carrusel Swiper optimizado === */
 if (document.querySelector(".ra-swiper")) {
   new Swiper(".ra-swiper", {
-    loop: true,
+    loop: true,                // Repetición infinita
+    speed: 1200,               // Transición suave
     autoplay: {
-      delay: 3500,
+      delay: 2500,             // Tiempo entre cambios
       disableOnInteraction: false,
     },
     pagination: {
@@ -180,16 +181,16 @@ if (document.querySelector(".ra-swiper")) {
       nextEl: ".swiper-button-next",
       prevEl: ".swiper-button-prev",
     },
-    slidesPerView: 1,
-    spaceBetween: 20,
     centeredSlides: true,
     grabCursor: true,
+    slidesPerView: 1,
+    spaceBetween: 20,
+    effect: "slide",
 
-    // En escritorio mostramos 3 imágenes simultáneamente
     breakpoints: {
       769: {
-        slidesPerView: 2.5, /* se ven la central + dos laterales */
-        spaceBetween: 30,
+        slidesPerView: 2.8,     // Se ve la central y parte de las laterales
+        spaceBetween: 40,
       },
     },
   });
