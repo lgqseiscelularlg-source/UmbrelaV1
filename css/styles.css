@@ -589,3 +589,57 @@ html {
     height: 80px;
   }
 }
+
+/* === SWIPER – SECCIÓN ¿Qué es la RA? === */
+.ra-swiper {
+  width: 100%;
+  max-width: 800px;
+  margin: 2em auto;
+  position: relative;
+  overflow: hidden;
+  border-radius: 12px;
+  box-shadow: 0 0 15px rgba(0, 0, 0, 0.3);
+}
+
+.ra-swiper .swiper-slide {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.ra-swiper img {
+  width: 100%;
+  height: 300px; /* Mantiene proporción estable */
+  object-fit: cover;
+  border-radius: 10px;
+}
+
+/* Flechas de navegación (escritorio) */
+.swiper-button-next,
+.swiper-button-prev {
+  color: #249da6;
+  transition: color 0.3s ease, transform 0.3s ease;
+}
+
+.swiper-button-next:hover,
+.swiper-button-prev:hover {
+  color: white;
+  transform: scale(1.1);
+}
+
+/* Paginación (móvil) */
+.swiper-pagination-bullet {
+  background: #249da6;
+  opacity: 0.6;
+}
+
+.swiper-pagination-bullet-active {
+  opacity: 1;
+}
+
+/* Ajuste responsive */
+@media (max-width: 768px) {
+  .ra-swiper img {
+    height: 240px;
+  }
+}
