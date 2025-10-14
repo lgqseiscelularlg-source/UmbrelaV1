@@ -460,7 +460,7 @@ html {
 
 /* ===== SECCIÓN CONTACTO ===== */
 .contact-section {
-  background-color: #111112;
+  background-color: #0b0b0c; /* 🔹 Más oscuro que el resto */
   color: white;
   text-align: center;
   padding: 4em 1em;
@@ -488,8 +488,8 @@ html {
   display: flex;
   justify-content: center;
   align-items: flex-start;
-  flex-wrap: nowrap; /* 🔹 No permite que se apilen */
-  gap: 2em;
+  flex-wrap: nowrap;
+  gap: 1.5em;
 }
 
 .contact-item {
@@ -506,14 +506,14 @@ html {
 .contact-item p {
   margin: 0.3em 0;
   font-size: 0.95em;
-  text-decoration: none; /* ✅ sin subrayado */
+  text-decoration: none; /* 🚫 sin subrayado */
 }
 
 .contact-link {
   display: inline-block;
   margin-top: 0.5em;
   color: #249da6;
-  text-decoration: none; /* ✅ sin subrayado */
+  text-decoration: none; /* 🚫 sin subrayado */
   transition: color 0.3s ease;
 }
 
@@ -522,24 +522,23 @@ html {
 }
 
 .divider {
-  width: 1.5px;
-  background-color: white;
-  opacity: 0.5;
-  height: auto;
+  width: 1px;
+  background-color: rgba(255, 255, 255, 0.4); /* 🔹 Sutil */
+  height: 90px;
+  align-self: center;
+  margin-top: 1em;
 }
 
-/* 🔹 En móviles: forzamos que también se mantengan lado a lado */
+/* 📱 Ajustes móviles */
 @media (max-width: 768px) {
   .contact-grid {
     flex-direction: row;
     justify-content: space-evenly;
     align-items: flex-start;
-    gap: 1em;
   }
 
   .divider {
     display: block;
-    height: auto;
   }
 
   .contact-item {
