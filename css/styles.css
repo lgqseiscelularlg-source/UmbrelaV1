@@ -671,58 +671,69 @@ html {
   }
 
   /* --- Carrusel tipo “Wix Showcase” --- */
-  /* ===== MEJORAS VISUALES RA SWIPER ===== */
+/* ===== EFECTO DE PROFUNDIDAD Y ESCALA ===== */
 @media (min-width: 769px) {
   .ra-swiper {
     width: 95%;
     max-width: 1400px;
     margin: 0 auto;
-    padding-bottom: 50px;
+    padding-bottom: 60px;
   }
 
   .ra-swiper .swiper-slide {
+    transition: all 0.6s ease;
     opacity: 0.5;
     transform: scale(0.85);
     filter: blur(2px);
-    transition: all 0.6s ease;
+    transform-origin: center center;
   }
 
+  /* Imagen central destacada */
   .ra-swiper .swiper-slide-active {
     opacity: 1;
-    transform: scale(1.05);
+    transform: scale(1.1);
     filter: blur(0);
+    z-index: 3;
+    box-shadow: 0 10px 35px rgba(0, 0, 0, 0.6);
+    border-radius: 14px;
+  }
+
+  /* Imágenes laterales ligeramente visibles */
+  .ra-swiper .swiper-slide-next,
+  .ra-swiper .swiper-slide-prev {
+    opacity: 0.8;
+    transform: scale(0.95);
+    filter: blur(1.5px);
     z-index: 2;
   }
 
-  .ra-swiper .swiper-slide-next,
-  .ra-swiper .swiper-slide-prev {
-    opacity: 0.7;
-    transform: scale(0.9);
-    filter: blur(1.5px);
-  }
-
+  /* Tamaño de las imágenes */
   .ra-swiper img {
     width: 100%;
-    height: 480px; /* Imágenes más grandes */
+    height: 520px; /* más grandes */
     object-fit: cover;
     border-radius: 14px;
   }
 
+  /* Flechas */
   .swiper-button-next,
   .swiper-button-prev {
     color: #249da6;
     width: 50px;
     height: 50px;
-    top: 45%;
+    top: 48%;
+    transition: transform 0.3s ease;
   }
 
   .swiper-button-next:hover,
   .swiper-button-prev:hover {
     color: white;
-    transform: scale(1.15);
+    transform: scale(1.2);
   }
 
+  /* Paginación */
   .swiper-pagination {
-    bottom: 5px;
+    bottom: 10px;
   }
 }
+
