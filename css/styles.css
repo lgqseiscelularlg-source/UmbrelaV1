@@ -458,122 +458,49 @@ html {
   z-index: 1;
 }
 
-/* ===== SECCIÓN CONTACTO ===== */
+/* === AJUSTE VISUAL SECCIÓN CONTACTO === */
 .contact-section {
-  background-color: #0b0b0c; /* 🔹 Más oscuro que el resto */
-  color: white;
+  background-color: #080809; /* 🔹 Negro más uniforme y profundo */
+  padding: 3.5em 1em 4em 1em; /* 🔹 Reajuste suave para emparejar con otras secciones */
+  margin: 0; /* 🔹 Asegura que no haya salto visual */
   text-align: center;
-  padding: 4em 1em;
-}
-
-/* ===== CORRECCIÓN FINAL: eliminar subrayado de emails y teléfonos ===== */
-
-/* Aplica a todos los links, incluso los que el navegador detecta automáticamente */
-a,
-a:link,
-a:visited,
-a:hover,
-a:active {
-  text-decoration: none !important;
-  border-bottom: none !important;
-  outline: none !important;
-  color: inherit;
-}
-
-/* Anula el estilo automático de detección de teléfonos/emails en móviles */
-a[href^="mailto"],
-a[href^="tel"] {
-  text-decoration: none !important;
-  color: inherit !important;
-  border: none !important;
-  -webkit-text-decoration-skip: none !important;
-}
-
-/* Algunos navegadores subrayan el texto dentro de <p> con direcciones detectadas */
-p,
-span {
-  text-decoration: none !important;
-}
-
-
-
-.contact-section h2 {
-  font-size: 2em;
-  margin-bottom: 1em;
-  letter-spacing: 2px;
-}
-
-.contact-email {
-  font-size: 1.2em;
-  font-weight: 600;
   color: white;
-  margin-bottom: 2em;
+  position: relative;
+  z-index: 2; /* Evita que se mezcle con la sección anterior */
 }
 
-.contact-container {
+/* Ajuste fino de la grilla para mantener simetría */
+.contact-grid {
+  display: flex;
+  justify-content: space-evenly;
+  align-items: flex-start;
+  flex-wrap: nowrap;
+  gap: 1.2em;
+  width: 100%;
   max-width: 900px;
   margin: 0 auto;
 }
 
-.contact-grid {
-  display: flex;
-  justify-content: center;
-  align-items: flex-start;
-  flex-wrap: nowrap;
-  gap: 1.5em;
-}
-
-.contact-item {
-  flex: 1 1 45%;
-  text-align: center;
-}
-
-.contact-item h3 {
-  font-size: 1.1em;
-  font-weight: bold;
-  margin-bottom: 0.5em;
-}
-
-.contact-item p {
-  margin: 0.3em 0;
-  font-size: 0.95em;
-  text-decoration: none; /* 🚫 sin subrayado */
-}
-
-.contact-link {
-  display: inline-block;
-  margin-top: 0.5em;
-  color: #249da6;
-  text-decoration: none; /* 🚫 sin subrayado */
-  transition: color 0.3s ease;
-}
-
-.contact-link:hover {
-  color: white;
-}
-
+/* Línea divisoria centrada */
 .divider {
   width: 1px;
-  background-color: rgba(255, 255, 255, 0.4); /* 🔹 Sutil */
-  height: 90px;
+  background-color: rgba(255, 255, 255, 0.35);
+  height: 85px;
   align-self: center;
-  margin-top: 1em;
+  margin: 0;
 }
 
-/* 📱 Ajustes móviles */
+/* Ajuste en móviles para mantener equilibrio vertical */
 @media (max-width: 768px) {
+  .contact-section {
+    padding: 3em 0.5em 3.5em 0.5em;
+  }
+
   .contact-grid {
-    flex-direction: row;
-    justify-content: space-evenly;
-    align-items: flex-start;
+    gap: 1em;
   }
 
   .divider {
-    display: block;
-  }
-
-  .contact-item {
-    text-align: center;
-    flex: 1 1 45%;
+    height: 80px;
   }
 }
