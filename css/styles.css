@@ -643,3 +643,75 @@ html {
     height: 240px;
   }
 }
+
+/* ===== AJUSTES DE LA SECCIÓN ¿Qué es la RA? PARA ESCRITORIO ===== -------------------------------------------------------------------------*/
+@media (min-width: 769px) {
+  .ra-section {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    margin: 0 auto;
+    padding: 4em 0;
+  }
+
+  .ra-section h2 {
+    margin-bottom: 0.5em;
+    font-size: 2em;
+    letter-spacing: 1px;
+  }
+
+  .ra-section .description {
+    max-width: 700px;
+    margin: 0 auto 2em auto;
+    font-size: 1.1em;
+    line-height: 1.6;
+    color: #e6e6e6;
+  }
+
+  /* Carrusel Swiper ocupa el ancho total */
+  .ra-swiper {
+    width: 90%;
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+
+  /* Mostrar imágenes más grandes y parte de las adyacentes */
+  .ra-swiper .swiper-slide {
+    transform: scale(0.9);
+    transition: transform 0.4s ease;
+  }
+
+  .ra-swiper .swiper-slide-active {
+    transform: scale(1);
+  }
+
+  .ra-swiper img {
+    height: 420px;
+    border-radius: 12px;
+  }
+
+  /* Mostrar parcialmente imágenes vecinas */
+  .ra-swiper .swiper-wrapper {
+    padding: 20px 0;
+  }
+
+  .ra-swiper .swiper-slide {
+    width: 60%;
+  }
+
+  /* Flechas grandes y más visibles */
+  .swiper-button-next,
+  .swiper-button-prev {
+    color: #249da6;
+    width: 45px;
+    height: 45px;
+  }
+
+  .swiper-button-next:hover,
+  .swiper-button-prev:hover {
+    color: white;
+    transform: scale(1.15);
+  }
+}
+
