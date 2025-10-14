@@ -162,4 +162,29 @@ document.addEventListener("DOMContentLoaded", function () {
   }
 
   /* -------------------------------------------- FIN DE SEGUNDA PAGINA */
+
+/* === Inicialización del carrusel Swiper === */
+if (document.querySelector(".ra-swiper")) {
+  new Swiper(".ra-swiper", {
+    loop: true,
+    autoplay: {
+      delay: 3500,
+      disableOnInteraction: false,
+    },
+    pagination: {
+      el: ".swiper-pagination",
+      clickable: true,
+    },
+    navigation: {
+      nextEl: ".swiper-button-next",
+      prevEl: ".swiper-button-prev",
+    },
+    slidesPerView: 1,
+    spaceBetween: 20,
+    centeredSlides: true,
+    grabCursor: true,
+  });
+}
+
+  
 });
