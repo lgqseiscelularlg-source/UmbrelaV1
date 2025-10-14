@@ -164,13 +164,13 @@ document.addEventListener("DOMContentLoaded", function () {
   /* -------------------------------------------- FIN DE SEGUNDA PAGINA */
 
 /* === Inicialización del carrusel Swiper === */
-/* === Carrusel Swiper optimizado === */
+/* === Carrusel Swiper mejorado con profundidad y loop real === */
 if (document.querySelector(".ra-swiper")) {
   new Swiper(".ra-swiper", {
-    loop: true,                // Repetición infinita
-    speed: 1200,               // Transición suave
+    loop: true, // carrusel infinito real (sin espacios en blanco)
+    speed: 1000,
     autoplay: {
-      delay: 2500,             // Tiempo entre cambios
+      delay: 3000,
       disableOnInteraction: false,
     },
     pagination: {
@@ -185,16 +185,15 @@ if (document.querySelector(".ra-swiper")) {
     grabCursor: true,
     slidesPerView: 1,
     spaceBetween: 20,
-    effect: "slide",
-
     breakpoints: {
       769: {
-        slidesPerView: 2.8,     // Se ve la central y parte de las laterales
+        slidesPerView: 3, // tres imágenes visibles (una central, dos laterales)
         spaceBetween: 40,
       },
     },
   });
 }
+
 
 
   
