@@ -671,68 +671,88 @@ html {
   }
 
   /* --- Carrusel tipo “Wix Showcase” --- */
-/* ===== EFECTO CARRUSEL 3D ESTILO WIX ===== */
-@media (min-width: 769px) {
-  .ra-swiper {
-    width: 100%;
-    max-width: 1500px;
-    margin: 0 auto;
-    padding: 3em 0 4em 0;
-  }
+/* =========================
+   SECCIÓN ¿QUÉ ES LA RA?
+   ========================= */
+.ra-section {
+  text-align: center;
+  color: white;
+  padding: 80px 0;
+}
 
+.ra-text {
+  max-width: 900px;
+  margin: 0 auto 50px;
+  font-size: 1.1rem;
+  line-height: 1.6;
+  color: #ddd;
+}
+
+/* ==== Swiper ==== */
+.ra-swiper {
+  width: 100%;
+  max-width: 1600px;
+  margin: 0 auto;
+  overflow: visible;
+  position: relative;
+}
+
+/* Slides base */
+.ra-swiper .swiper-slide {
+  width: 420px;
+  height: 500px;
+  opacity: 0.5;
+  transform: scale(0.85);
+  transition: transform 0.6s ease, opacity 0.6s ease, filter 0.6s ease;
+  filter: blur(2px);
+}
+
+/* Imagen central */
+.ra-swiper .swiper-slide-active {
+  transform: scale(1.15);
+  opacity: 1;
+  filter: blur(0);
+  z-index: 3;
+  box-shadow: 0 15px 50px rgba(0, 0, 0, 0.6);
+  border-radius: 15px;
+}
+
+/* Laterales */
+.ra-swiper .swiper-slide-next,
+.ra-swiper .swiper-slide-prev {
+  transform: scale(0.95);
+  opacity: 0.8;
+  filter: blur(1.5px);
+}
+
+/* Imágenes */
+.ra-swiper img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 15px;
+}
+
+/* Navegación */
+.swiper-button-next,
+.swiper-button-prev {
+  color: #24b1ba;
+  transition: transform 0.3s ease, color 0.3s ease;
+}
+
+.swiper-button-next:hover,
+.swiper-button-prev:hover {
+  color: white;
+  transform: scale(1.2);
+}
+
+/* ==== Responsivo ==== */
+@media (max-width: 768px) {
   .ra-swiper .swiper-slide {
-    width: 420px; /* ancho individual */
-    height: 500px;
-    transition: transform 0.6s ease, filter 0.6s ease, opacity 0.6s ease;
-    opacity: 0.6;
-    transform: scale(0.8);
-    filter: blur(2px);
-  }
-
-  /* Imagen central destacada */
-  .ra-swiper .swiper-slide-active {
-    transform: scale(1.15);
+    width: 90%;
+    height: 380px;
+    filter: none;
     opacity: 1;
-    filter: blur(0);
-    z-index: 3;
-    box-shadow: 0 12px 45px rgba(0, 0, 0, 0.6);
-    border-radius: 14px;
-  }
-
-  /* Laterales */
-  .ra-swiper .swiper-slide-next,
-  .ra-swiper .swiper-slide-prev {
-    transform: scale(0.9);
-    opacity: 0.8;
-    filter: blur(1.5px);
-  }
-
-  .ra-swiper img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    border-radius: 14px;
-  }
-
-  /* Flechas */
-  .swiper-button-next,
-  .swiper-button-prev {
-    color: #249da6;
-    width: 50px;
-    height: 50px;
-    top: 50%;
-    transform: translateY(-50%);
-    transition: transform 0.3s ease, color 0.3s ease;
-  }
-
-  .swiper-button-next:hover,
-  .swiper-button-prev:hover {
-    color: white;
-    transform: translateY(-50%) scale(1.2);
-  }
-
-  /* Puntos de paginación */
-  .swiper-pagination {
-    bottom: 15px;
+    transform: scale(1);
   }
 }
