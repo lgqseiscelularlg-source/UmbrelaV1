@@ -167,6 +167,7 @@ document.addEventListener("DOMContentLoaded", function () {
 if (document.querySelector(".ra-swiper")) {
   new Swiper(".ra-swiper", {
     loop: true,
+    loopedSlides: 5, // asegura clones suficientes
     centeredSlides: true,
     slidesPerView: "auto",
     spaceBetween: 80,
@@ -188,6 +189,13 @@ if (document.querySelector(".ra-swiper")) {
       depth: 300,
       modifier: 1.5,
       slideShadows: false,
+    },
+    // evita el espacio negro durante el loop
+    on: {
+      beforeLoopFix(swiper) {
+        swiper.loopDestroy();
+        swiper.loopCreate();
+      },
     },
   });
 }
