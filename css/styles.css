@@ -486,15 +486,14 @@ html {
 
 .contact-grid {
   display: flex;
-  justify-content: space-between;
+  justify-content: center;
   align-items: flex-start;
-  gap: 3em;
-  flex-wrap: wrap;
+  flex-wrap: nowrap; /* 🔹 No permite que se apilen */
+  gap: 2em;
 }
 
 .contact-item {
-  flex: 1;
-  min-width: 250px;
+  flex: 1 1 45%;
   text-align: center;
 }
 
@@ -507,7 +506,7 @@ html {
 .contact-item p {
   margin: 0.3em 0;
   font-size: 0.95em;
-  text-decoration: none; /* ✅ elimina subrayado */
+  text-decoration: none; /* ✅ sin subrayado */
 }
 
 .contact-link {
@@ -523,24 +522,28 @@ html {
 }
 
 .divider {
-  width: 2px;
+  width: 1.5px;
   background-color: white;
   opacity: 0.5;
   height: auto;
 }
 
-/* Móvil */
+/* 🔹 En móviles: forzamos que también se mantengan lado a lado */
 @media (max-width: 768px) {
   .contact-grid {
-    flex-direction: column;
-    align-items: center;
+    flex-direction: row;
+    justify-content: space-evenly;
+    align-items: flex-start;
+    gap: 1em;
   }
 
   .divider {
-    display: none;
+    display: block;
+    height: auto;
   }
 
   .contact-item {
     text-align: center;
+    flex: 1 1 45%;
   }
 }
