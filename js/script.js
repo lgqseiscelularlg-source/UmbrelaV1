@@ -166,28 +166,39 @@ document.addEventListener("DOMContentLoaded", function () {
 if (document.querySelector(".ra-swiper")) {
   const swiper = new Swiper(".ra-swiper", {
     loop: true,
-    loopAdditionalSlides: 10,
     centeredSlides: true,
     slidesPerView: 3,
-    spaceBetween: 50,
+    spaceBetween: 60,
     speed: 2000,
     autoplay: {
-      delay: 0,
+      delay: 2500, // movimiento constante y fluido
       disableOnInteraction: false,
     },
-    freeMode: true,
-    freeModeMomentum: false,
     grabCursor: true,
     navigation: {
       nextEl: ".swiper-button-next",
       prevEl: ".swiper-button-prev",
     },
+    breakpoints: {
+      0: {
+        slidesPerView: 1,
+        spaceBetween: 20,
+        centeredSlides: true,
+      },
+      768: {
+        slidesPerView: 3,
+        spaceBetween: 60,
+      },
+      1200: {
+        slidesPerView: 3,
+        spaceBetween: 80,
+      },
+    },
   });
 
-  // 🔄 Inicia autoplay estable
+  // Forzamos que el autoplay se mantenga activo en bucle
   swiper.autoplay.start();
 }
-
 
 
   
