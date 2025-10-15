@@ -167,16 +167,15 @@ document.addEventListener("DOMContentLoaded", function () {
 if (document.querySelector(".ra-swiper")) {
   new Swiper(".ra-swiper", {
     loop: true,
+    loopAdditionalSlides: 10, // fuerza clones extra a ambos lados
     centeredSlides: true,
-    slidesPerView: 3, // forzamos 3 visibles
+    slidesPerView: "auto",
     spaceBetween: 50,
-    speed: 2500,
+    speed: 1200,
     autoplay: {
-      delay: 0, // movimiento continuo
+      delay: 2500,
       disableOnInteraction: false,
     },
-    freeMode: true, // movimiento libre
-    freeModeMomentum: false,
     grabCursor: true,
     effect: "coverflow",
     coverflowEffect: {
@@ -190,8 +189,17 @@ if (document.querySelector(".ra-swiper")) {
       nextEl: ".swiper-button-next",
       prevEl: ".swiper-button-prev",
     },
+    on: {
+      afterInit(swiper) {
+        swiper.update();
+      },
+      resize(swiper) {
+        swiper.update();
+      },
+    },
   });
 }
+
 
 
 
