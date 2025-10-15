@@ -1,15 +1,4 @@
 document.addEventListener("DOMContentLoaded", function () {
-  let currentImageIndex = 0;
-  const images = document.querySelectorAll(".slider-image");
-  const totalImages = images.length;
-
-  function showNextImage() {
-    images[currentImageIndex].classList.remove("active");
-    currentImageIndex = (currentImageIndex + 1) % totalImages;
-    images[currentImageIndex].classList.add("active");
-  }
-
-  setInterval(showNextImage, 3000); // Cambia de imagen cada 3 segundos
 
   // Funcionalidad del menú hamburguesa
   const navLinks = document.querySelectorAll(".nav-links a"); // Selecciona todos los enlaces del menú
