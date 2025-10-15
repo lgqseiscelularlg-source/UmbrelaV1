@@ -167,13 +167,12 @@ document.addEventListener("DOMContentLoaded", function () {
 if (document.querySelector(".ra-swiper")) {
   new Swiper(".ra-swiper", {
     loop: true,
-    loopedSlides: 5, // asegura clones suficientes
     centeredSlides: true,
     slidesPerView: "auto",
     spaceBetween: 80,
-    speed: 2500,
+    speed: 1500,
     autoplay: {
-      delay: 0,
+      delay: 2000,
       disableOnInteraction: false,
     },
     navigation: {
@@ -190,15 +189,14 @@ if (document.querySelector(".ra-swiper")) {
       modifier: 1.5,
       slideShadows: false,
     },
-    // evita el espacio negro durante el loop
     on: {
-      beforeLoopFix(swiper) {
-        swiper.loopDestroy();
-        swiper.loopCreate();
+      slideChangeTransitionEnd(swiper) {
+        swiper.updateSlidesClasses();
       },
     },
   });
 }
+
 
 
   
