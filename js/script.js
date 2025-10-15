@@ -168,18 +168,15 @@ if (document.querySelector(".ra-swiper")) {
   new Swiper(".ra-swiper", {
     loop: true,
     centeredSlides: true,
-    slidesPerView: "auto",
-    spaceBetween: 80,
-    speed: 1500,
+    slidesPerView: 3, // forzamos 3 visibles
+    spaceBetween: 50,
+    speed: 2500,
     autoplay: {
-      delay: 2000,
+      delay: 0, // movimiento continuo
       disableOnInteraction: false,
     },
-    navigation: {
-      nextEl: ".swiper-button-next",
-      prevEl: ".swiper-button-prev",
-    },
-    allowTouchMove: true,
+    freeMode: true, // movimiento libre
+    freeModeMomentum: false,
     grabCursor: true,
     effect: "coverflow",
     coverflowEffect: {
@@ -189,13 +186,13 @@ if (document.querySelector(".ra-swiper")) {
       modifier: 1.5,
       slideShadows: false,
     },
-    on: {
-      slideChangeTransitionEnd(swiper) {
-        swiper.updateSlidesClasses();
-      },
+    navigation: {
+      nextEl: ".swiper-button-next",
+      prevEl: ".swiper-button-prev",
     },
   });
 }
+
 
 
 
