@@ -5,26 +5,41 @@ body {
   color: white; /* Texto en blanco  */
 }
 
+/* ====== CABECERA ====== */
 header {
-  background: transparent;
-  transition: background 0.5s ease, top 0.5s ease; /*Añade transición al fondo y al posicionamiento*/
-  /*transition: transform 0.4s ease, background 0.5s ease;*/
-  width: 100%;
   position: fixed;
   top: 0;
+  left: 0;
+  width: 100%;
   z-index: 1000;
-  padding: 1em 0;
+  background: transparent; /* Fondo transparente al inicio */
   color: white;
+  transition: transform 0.4s ease, background 0.5s ease;
+  box-sizing: border-box;
 }
 
-nav {
+/* ====== CONTENEDOR INTERNO ====== */
+header nav {
   display: flex;
   justify-content: space-between;
   align-items: center;
   max-width: 1200px;
   margin: 0 auto;
-  padding: 0 1em;
+  padding: 1em 1em; /* 🔹 Mantiene el espaciado visual original del logo y hamburguesa */
+  background: inherit; /* 🔹 Hereda el color del header (para evitar dobles fondos) */
+  box-sizing: border-box;
 }
+
+/* ====== AJUSTE VISUAL OPCIONAL ====== */
+header.scrolled {
+  background: #111112; /* Fondo oscuro al hacer scroll */
+}
+
+/* ====== EFECTO DE SOMBRA SUAVE OPCIONAL ====== */
+header.dark-shadow {
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+}
+
 
 html {
   scroll-behavior: smooth;
