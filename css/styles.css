@@ -7,24 +7,28 @@ body {
 
 /* ====== CABECERA ====== */
 header {
-  background: transparent;
-  transition: background 0.5s ease, top 0.5s ease; /*Añade transición al fondo y al posicionamiento*/
-  width: 100%;
   position: fixed;
   top: 0;
+  left: 0;
+  width: 100%;
   z-index: 1000;
-  padding: 1em 0;
+  background: transparent;
   color: white;
+  transition: transform 0.4s ease, background 0.5s ease;
+  padding: 0; /* Eliminamos padding para que el fondo llegue al borde superior */
 }
 
-nav {
+/* Ajustamos el nav interno para restaurar el espacio visual del contenido */
+header nav {
   display: flex;
   justify-content: space-between;
   align-items: center;
   max-width: 1200px;
   margin: 0 auto;
-  padding: 0 1em;
+  padding: 0.8em 1em; /* Le damos el espacio interno aquí, no en header */
+  box-sizing: border-box;
 }
+
 
 html {
   scroll-behavior: smooth;
