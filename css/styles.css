@@ -790,3 +790,16 @@ html {
   z-index: 1;
 }
 
+/* --- Ajuste para versión ESCRITORIO: sección "Nuestro Servicio" --- */
+@media (min-width: 1025px) {
+  .service-slider {
+    max-width: 1100px; /* antes 800px */
+    height: 550px; /* antes 400px */
+  }
+
+  .service-slider .slide {
+    border-radius: 15px;
+  }
+}
+
+
