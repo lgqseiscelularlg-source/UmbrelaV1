@@ -162,8 +162,8 @@ document.addEventListener("DOMContentLoaded", function () {
   }
 
   /* -------------------------------------------- FIN DE SEGUNDA PAGINA */
-/* ==== Carrusel Swiper ¿Qué es la RA? ==== */
-/* ==== Carrusel Swiper ¿Qué es la RA? ==== */
+  
+/* ==== Carrusel Swiper ¿Qué es la RA? ==== ------------------------------------------------------------------*/
 if (document.querySelector(".ra-swiper")) {
   const swiper = new Swiper(".ra-swiper", {
     loop: true,
@@ -207,6 +207,17 @@ if (document.querySelector(".ra-swiper")) {
   swiper.autoplay.start();
 }
 
+/* ==== Slider suave en "Nuestro Servicio" ==== --------------------------------------------------------*/
+const slides = document.querySelectorAll(".service-slider .slide");
+let currentSlide = 0;
+
+if (slides.length > 0) {
+  setInterval(() => {
+    slides[currentSlide].classList.remove("active");
+    currentSlide = (currentSlide + 1) % slides.length;
+    slides[currentSlide].classList.add("active");
+  }, 4000); // cambia cada 4 segundos
+}
 
 
   
