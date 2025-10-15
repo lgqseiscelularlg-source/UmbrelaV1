@@ -6,46 +6,25 @@ body {
 }
 
 /* ====== CABECERA ====== */
-/* ====== CABECERA PRINCIPAL ====== */
 header {
+  background: transparent;
+  transition: background 0.5s ease, top 0.5s ease; /*Añade transición al fondo y al posicionamiento*/
+  width: 100%;
   position: fixed;
   top: 0;
-  left: 0;
-  width: 100%;
   z-index: 1000;
-  background: transparent; /* Transparente solo al inicio */
+  padding: 1em 0;
   color: white;
-  transition: transform 0.4s ease, background-color 0.5s ease;
-  margin: 0;
-  padding: 0;
-  border: none;
-  box-sizing: border-box;
 }
 
-/* ====== CONTENEDOR DE NAVEGACIÓN ====== */
-header nav {
+nav {
   display: flex;
   justify-content: space-between;
   align-items: center;
   max-width: 1200px;
   margin: 0 auto;
-  padding: 1em 1em;
-  box-sizing: border-box;
-  width: 100%;
-  background: inherit; /* hereda del header */
+  padding: 0 1em;
 }
-
-/* ====== ESTILO DEL FONDO OSCURO AL HACER SCROLL ====== */
-header.scrolled {
-  background-color: #111112; /* Negro sólido sin transparencia */
-}
-
-
-/* ====== EFECTO DE SOMBRA SUAVE OPCIONAL ====== */
-header.dark-shadow {
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
-}
-
 
 html {
   scroll-behavior: smooth;
