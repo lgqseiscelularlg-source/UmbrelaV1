@@ -165,9 +165,9 @@ document.addEventListener("DOMContentLoaded", function () {
 
 /* ==== Carrusel Swiper ¿Qué es la RA? ==== */
 if (document.querySelector(".ra-swiper")) {
-  new Swiper(".ra-swiper", {
+  const swiper = new Swiper(".ra-swiper", {
     loop: true,
-    loopAdditionalSlides: 10, // fuerza clones extra a ambos lados
+    loopAdditionalSlides: 5,
     centeredSlides: true,
     slidesPerView: "auto",
     spaceBetween: 50,
@@ -175,6 +175,7 @@ if (document.querySelector(".ra-swiper")) {
     autoplay: {
       delay: 2500,
       disableOnInteraction: false,
+      pauseOnMouseEnter: false,
     },
     grabCursor: true,
     effect: "coverflow",
@@ -189,19 +190,21 @@ if (document.querySelector(".ra-swiper")) {
       nextEl: ".swiper-button-next",
       prevEl: ".swiper-button-prev",
     },
-    on: {
-      afterInit(swiper) {
-        swiper.update();
-      },
-      resize(swiper) {
-        swiper.update();
-      },
-    },
   });
+
+  // 🔄 Reinicia autoplay correctamente al cargar
+  swiper.on("init", () => {
+    swiper.autoplay.start();
+  });
+
+  // 🔁 Evita que se congele al final del loop
+  swiper.on("reachEnd", () => {
+    swiper.slideToLoop(0, 0, false);
+  });
+
+  // 🔧 Inicializa Swiper después de crear los clones
+  swiper.init();
 }
-
-
-
 
 
   
