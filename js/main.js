@@ -16,31 +16,34 @@ document.addEventListener("DOMContentLoaded", function () {
     });
   });
 
-  // Funcionalidad de ocultar y mostrar menu hamburguesa e icono
-  let lastScrollTop = 0; // Variable para guardar la última posición del scroll
-  const nav = document.querySelector("header"); // Selecciona el header que contiene el menú
+  // ============================ NAVBAR OCULTA / MUESTRA EN SCROLL ============================
+let lastScrollTop = 0;
+const header = document.querySelector("header");
+const nav = document.querySelector("nav"); // El contenedor interno del menú
 
-  window.addEventListener("scroll", function () {
-    let scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+window.addEventListener("scroll", function () {
+  let scrollTop = window.pageYOffset || document.documentElement.scrollTop;
 
-    if (scrollTop > lastScrollTop) {
-      // Desplazamiento hacia abajo
-      nav.style.top = "-100px"; // Ajusta este valor según la altura de tu barra de navegación
-      nav.style.background = "transparent"; // Fondo transparente al deslizar hacia abajo
-    } else {
-      // Desplazamiento hacia arriba
-      nav.style.top = "0px";
-      nav.style.background = "#111112"; // Fondo oscuro al deslizar hacia arriba
-    }
+  // Cuando el usuario baja, ocultamos la barra (sin ocultar logo ni menú)
+  if (scrollTop > lastScrollTop && scrollTop > 100) {
+    header.style.transform = "translateY(-100%)";
+  } 
+  // Cuando el usuario sube, mostramos la barra
+  else {
+    header.style.transform = "translateY(0)";
+  }
 
-    // Hacer la barra transparente en la parte superior de la página
-    if (scrollTop <= 100) {
-      // Ajusta este valor según sea necesario
-      nav.style.background = "transparent";
-    }
+  // En la parte superior: fondo transparente, pero logo e ícono visibles
+  if (scrollTop <= 100) {
+    nav.style.background = "transparent";  
+    nav.style.transition = "background 0.5s ease"; 
+  } else {
+    nav.style.background = "#111112";
+  }
 
-    lastScrollTop = scrollTop; // Guarda la nueva posición del scroll
-  });
+  lastScrollTop = scrollTop;
+});
+
 
   // Comportamiento del contenido al deslizar por primera vez hacia abajo
 
