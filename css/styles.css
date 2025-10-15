@@ -644,7 +644,7 @@ html {
   }
 }
 
-  /* --- Carrusel tipo “Wix Showcase” ------------------------------------------------------------------------- */
+  /* --- Carrusel tipo “Wix Showcase” ------------------------------------------------------------------------- ----*/
 /* =============================
    SECCIÓN ¿Qué es la RA? FINAL
    ============================= */
@@ -730,7 +730,7 @@ html {
   }
 }
 
-/* ==== Animación visual tipo Coverflow estable ==== */
+/* ==== Animación visual tipo Coverflow estable ====*/
 .ra-swiper .swiper-slide {
   width: 420px;
   height: 500px;
@@ -762,4 +762,33 @@ html {
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
 }
 
+/* === SLIDER SUAVE "NUESTRO SERVICIO" === -------------------------------------------------------------*/
+.service-slider {
+  position: relative;
+  width: 100%;
+  max-width: 800px;
+  height: auto;
+  overflow: hidden;
+  border-radius: 10px;
+}
+
+.service-slider .slide {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  opacity: 0;
+  transition: opacity 1.5s ease-in-out;
+}
+
+.service-slider .slide.active {
+  opacity: 1;
+  z-index: 1;
+}
+
+.service-description {
+  margin-top: 1.5em;
+  font-size: 1.1em;
+  line-height: 1.5;
+}
 
