@@ -6,6 +6,7 @@ body {
 }
 
 /* ====== CABECERA ====== */
+/* ====== CABECERA GLOBAL ====== */
 header {
   position: fixed;
   top: 0;
@@ -14,19 +15,28 @@ header {
   z-index: 1000;
   background: transparent;
   color: white;
-  transition: transform 0.4s ease, background 0.5s ease;
-  padding: 0; /* Eliminamos padding para que el fondo llegue al borde superior */
+  transition: transform 0.4s ease, background-color 0.5s ease;
+  margin: 0;
+  padding: 0;
+  border: none;
+  box-sizing: border-box;
 }
 
-/* Ajustamos el nav interno para restaurar el espacio visual del contenido */
+/* ====== CONTENEDOR DE NAVEGACIÓN ====== */
 header nav {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 0.8em 1em; /* Le damos el espacio interno aquí, no en header */
+  width: 100%; /* 🔹 antes max-width: 1200px */
+  margin: 0;
+  padding: 0.8em 1em;
   box-sizing: border-box;
+  background: inherit; /* 🔹 hereda del header */
+}
+
+/* ====== FONDO OSCURO EN SCROLL ====== */
+header.scrolled {
+  background-color: #111112;
 }
 
 
@@ -324,17 +334,6 @@ html {
 
 
 @media (max-width: 768px) {
-  
-  header {
-    background: transparent; /* Hacer la barra de navegación transparente */
-    color: white; /* Asegurar que el texto sea visible sobre la imagen */
-    padding: 1em 0;
-    position: fixed;
-    width: 100%;
-    top: 0;
-    z-index: 1000;
-  }
-  
 
   .main-section {
     height: 100vh;
