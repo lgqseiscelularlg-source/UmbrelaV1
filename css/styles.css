@@ -16,6 +16,8 @@ header {
   color: white;
   transition: transform 0.4s ease, background 0.5s ease;
   box-sizing: border-box;
+  backdrop-filter: blur(8px);
+  background-color: rgba(17, 17, 18, 0.85);
 }
 
 /* ====== CONTENEDOR INTERNO ====== */
