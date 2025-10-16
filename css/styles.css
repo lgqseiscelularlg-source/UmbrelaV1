@@ -295,6 +295,9 @@ html {
   width: 100%;
   height: 100%;
   object-fit: cover;
+  -webkit-user-select: none;
+  user-select: none;
+  pointer-events: none; /* 🔹 Evita mostrar iconos de play/pause en móviles */
 }
 
 #switch-camera-btn {
