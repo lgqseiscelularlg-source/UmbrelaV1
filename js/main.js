@@ -20,20 +20,26 @@ document.addEventListener("DOMContentLoaded", function () {
 let lastScrollTop = 0;
 const header = document.querySelector("header");
 const body = document.body;
-
-// Detectar si estamos en la página RealityTour
 const isRealityTourPage = body.classList.contains("realitytour-page");
 
 window.addEventListener("scroll", function () {
   const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
-  const windowWidth = window.innerWidth;
+  const scrollHeight = document.documentElement.scrollHeight;
+  const windowHeight = window.innerHeight;
+  const isMobile = windowWidth <= 768;
+  const nearBottom = scrollTop + windowHeight >= scrollHeight - 10; // 🔹 casi al final
 
-  // === UMBRAL DE SCROLL PERSONALIZADO ===
-  let scrollThreshold = 100; // valor por defecto para escritorio
+  // Umbral por defecto
+  let scrollThreshold = 100;
 
-  // Si es versión móvil y estamos en la página RealityTour
-  if (isRealityTourPage && windowWidth <= 768) {
-    scrollThreshold = 30; // 🔹 Oculta más rápido el header
+  // Solo en móvil + realitytour.html => ocultar más rápido
+  if (isRealityTourPage && isMobile) {
+    scrollThreshold = 30;
+  }
+
+  // 🔹 Evitar rebote al final de la página
+  if (isRealityTourPage && nearBottom) {
+    return; // No hacemos nada si está en el final (evita mostrar header)
   }
 
   // Ocultar al bajar
@@ -41,7 +47,7 @@ window.addEventListener("scroll", function () {
     header.style.transform = "translateY(-100%)";
   }
   // Mostrar al subir
-  else {
+  else if (scrollTop < lastScrollTop - 10 && !nearBottom) {
     header.style.transform = "translateY(0)";
   }
 
@@ -54,6 +60,7 @@ window.addEventListener("scroll", function () {
 
   lastScrollTop = scrollTop;
 });
+
 
 
 
