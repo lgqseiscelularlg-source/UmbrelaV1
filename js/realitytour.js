@@ -1,14 +1,10 @@
- /* -------------------------------------------- SEGUNDA PAGINA */
+/* -------------------------------------------- SEGUNDA PAGINA */
 
-// Esperar a que el DOM esté completamente cargado
 document.addEventListener("DOMContentLoaded", () => {
-  // Verificar si estamos en la página realitytour.html
   if (!window.location.pathname.includes("realitytour.html")) return;
 
-  console.log("Cargando configuración de cámara...");
-
   let currentStream = null;
-  let useFrontCamera = false; // Inicia con la cámara trasera
+  let useFrontCamera = false;
 
   const video = document.getElementById("camera-stream");
   const fullscreenBtn = document.getElementById("fullscreen-btn");
@@ -16,92 +12,72 @@ document.addEventListener("DOMContentLoaded", () => {
   const exitFullscreenBtn = document.getElementById("exit-fullscreen-btn");
   const cameraContainer = document.querySelector(".camera-container");
 
-  // --- Si algún elemento no existe, no continuar ---
-  if (!video || !fullscreenBtn || !switchCameraBtn || !cameraContainer) {
-    console.warn("No se encontraron los elementos de cámara.");
-    return;
-  }
+  if (!video || !cameraContainer) return;
 
-  // --- Detener la cámara actual ---
+  // Detener stream actual
   function stopCameraStream() {
     if (currentStream) {
-      currentStream.getTracks().forEach((track) => track.stop());
+      currentStream.getTracks().forEach((t) => t.stop());
       currentStream = null;
     }
   }
 
-  // --- Iniciar la cámara ---
+  // Iniciar cámara
   function startCamera() {
-    const constraints = {
-      video: {
-        facingMode: useFrontCamera ? "user" : "environment",
-      },
-    };
+    const constraints = { video: { facingMode: useFrontCamera ? "user" : "environment" } };
 
     stopCameraStream();
 
-    navigator.mediaDevices
-      .getUserMedia(constraints)
+    navigator.mediaDevices.getUserMedia(constraints)
       .then((stream) => {
         currentStream = stream;
         video.srcObject = stream;
-
-        // Configuración adicional para evitar íconos de control en iOS
         video.removeAttribute("controls");
         video.setAttribute("playsinline", "true");
-        video.setAttribute("autoplay", "true");
         video.muted = true;
       })
-      .catch((error) => {
-        console.error("Error al acceder a la cámara:", error);
-      });
+      .catch((err) => console.error("Error al acceder a la cámara:", err));
   }
 
-  // Iniciar cámara trasera al cargar la página
   startCamera();
 
-  // --- Alternar cámara frontal / trasera ---
+  // Cambiar cámara
   switchCameraBtn.addEventListener("click", () => {
     useFrontCamera = !useFrontCamera;
     startCamera();
   });
 
-  // --- Pantalla completa (versión estable y compatible) ---
-  if (fullscreenBtn && exitFullscreenBtn) {
-    fullscreenBtn.addEventListener("click", () => {
-      const elem = cameraContainer;
+  // Pantalla completa (modo estable)
+  fullscreenBtn.addEventListener("click", () => {
+    const elem = cameraContainer;
+    if (elem.requestFullscreen) elem.requestFullscreen();
+    else if (elem.webkitRequestFullscreen) elem.webkitRequestFullscreen();
 
-      if (elem.requestFullscreen) {
-        elem.requestFullscreen();
-      } else if (elem.webkitRequestFullscreen) {
-        elem.webkitRequestFullscreen(); // Safari
-      } else if (elem.msRequestFullscreen) {
-        elem.msRequestFullscreen(); // IE/Edge
-      }
+    cameraContainer.classList.add("fullscreen-mode");
+    fullscreenBtn.classList.add("hidden");
+    exitFullscreenBtn.classList.remove("hidden");
+  });
 
-      fullscreenBtn.classList.add("hidden");
-      exitFullscreenBtn.classList.remove("hidden");
-    });
+  // Salir de pantalla completa
+  exitFullscreenBtn.addEventListener("click", () => {
+    if (document.exitFullscreen) document.exitFullscreen();
+    else if (document.webkitExitFullscreen) document.webkitExitFullscreen();
 
-    exitFullscreenBtn.addEventListener("click", () => {
-      if (document.exitFullscreen) {
-        document.exitFullscreen();
-      } else if (document.webkitExitFullscreen) {
-        document.webkitExitFullscreen();
-      } else if (document.msExitFullscreen) {
-        document.msExitFullscreen();
-      }
+    cameraContainer.classList.remove("fullscreen-mode");
+    fullscreenBtn.classList.remove("hidden");
+    exitFullscreenBtn.classList.add("hidden");
+  });
 
+  // Al salir de fullscreen con gestos o sistema
+  document.addEventListener("fullscreenchange", () => {
+    if (!document.fullscreenElement) {
+      cameraContainer.classList.remove("fullscreen-mode");
       fullscreenBtn.classList.remove("hidden");
       exitFullscreenBtn.classList.add("hidden");
-    });
-  }
+    }
+  });
 
-  // --- Detener cámara al salir de la página ---
   window.addEventListener("beforeunload", stopCameraStream);
-
-  console.log("Configuración de cámara lista.");
 });
 
 /* -------------------------------------------- FIN DE SEGUNDA PAGINA */
-
