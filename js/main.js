@@ -19,30 +19,42 @@ document.addEventListener("DOMContentLoaded", function () {
   // ============================ NAVBAR OCULTA / MUESTRA EN SCROLL ============================
 let lastScrollTop = 0;
 const header = document.querySelector("header");
-const nav = document.querySelector("nav"); // El contenedor interno del menú
+const body = document.body;
+
+// Detectar si estamos en la página RealityTour
+const isRealityTourPage = body.classList.contains("realitytour-page");
 
 window.addEventListener("scroll", function () {
-  let scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+  const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+  const windowWidth = window.innerWidth;
 
-  // Cuando el usuario baja, ocultamos la barra (sin ocultar logo ni menú)
-  if (scrollTop > lastScrollTop && scrollTop > 100) {
+  // === UMBRAL DE SCROLL PERSONALIZADO ===
+  let scrollThreshold = 100; // valor por defecto para escritorio
+
+  // Si es versión móvil y estamos en la página RealityTour
+  if (isRealityTourPage && windowWidth <= 768) {
+    scrollThreshold = 30; // 🔹 Oculta más rápido el header
+  }
+
+  // Ocultar al bajar
+  if (scrollTop > lastScrollTop && scrollTop > scrollThreshold) {
     header.style.transform = "translateY(-100%)";
-  } 
-  // Cuando el usuario sube, mostramos la barra
+  }
+  // Mostrar al subir
   else {
     header.style.transform = "translateY(0)";
   }
 
-  // En la parte superior: fondo transparente, pero logo e ícono visibles
+  // Fondo transparente al inicio
   if (scrollTop <= 100) {
-    nav.style.background = "transparent";  
-    nav.style.transition = "background 0.5s ease"; 
+    header.style.backgroundColor = "transparent";
   } else {
-    nav.style.background = "#111112";
+    header.style.backgroundColor = "#111112";
   }
 
   lastScrollTop = scrollTop;
 });
+
 
 
   // Comportamiento del contenido al deslizar por primera vez hacia abajo
