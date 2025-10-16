@@ -50,31 +50,23 @@
   });
 
 // Función para activar y desactivar pantalla completa en dispositivos móviles
-  fullscreenBtn.addEventListener('click', function () {
-    if (!document.fullscreenElement && !document.webkitFullscreenElement) {
-      // Activar pantalla completa en el video
-      if (video.requestFullscreen) {
-        video.requestFullscreen();
-      } else if (video.webkitRequestFullscreen) { // Para Safari
-        video.webkitRequestFullscreen();
-      } else if (video.msRequestFullscreen) { // Para IE/Edge
-        video.msRequestFullscreen();
-      } else if (video.mozRequestFullScreen) { // Para Firefox
-        video.mozRequestFullScreen();
-      }
-    } else {
-      // Salir de pantalla completa
-      if (document.exitFullscreen) {
-        document.exitFullscreen();
-      } else if (document.webkitExitFullscreen) { // Para Safari
-        document.webkitExitFullscreen();
-      } else if (document.msExitFullscreen) { // Para IE/Edge
-        document.msExitFullscreen();
-      } else if (document.mozCancelFullScreen) { // Para Firefox
-        document.mozCancelFullScreen();
-      }
-    }
-  });
+// === MODO PANTALLA COMPLETA COMPATIBLE CON MÓVILES ===
+fullscreenBtn.addEventListener('click', function () {
+  cameraContainer.classList.toggle('fullscreen-mode');
+
+  if (cameraContainer.classList.contains('fullscreen-mode')) {
+    // 🔹 Modo “pantalla completa” simulado
+    document.body.style.overflow = 'hidden'; // Evita desplazamiento
+    document.querySelector('header').style.display = 'none'; // Oculta la barra de navegación
+    fullscreenBtn.textContent = "Salir de Pantalla Completa";
+  } else {
+    // 🔹 Volver al modo normal
+    document.body.style.overflow = 'auto';
+    document.querySelector('header').style.display = 'block';
+    fullscreenBtn.textContent = "Pantalla Completa";
+  }
+});
+
     
       // Detener la cámara cuando se cambia de página
   window.addEventListener("beforeunload", stopCameraStream);
