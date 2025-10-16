@@ -924,3 +924,16 @@ html {
     transform: none !important;
   }
 }
+
+/* ESTILO DE TEXTO PARA LA SECCION ¿QUE ES LA RA?*/
+.ra-text {
+  max-width: 800px;
+  margin: 0 auto 2.5em;
+  font-size: 1.05rem;
+  line-height: 1.8;
+  color: #d8d8d8;
+  text-align: center;
+  letter-spacing: 0.4px;
+  font-family: "Poppins", "Segoe UI", sans-serif;
+}
+
