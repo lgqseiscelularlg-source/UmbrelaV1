@@ -945,14 +945,13 @@ html {
   color: #eaeaea;     /* Color ligeramente suave para evitar contraste duro */
 }
 
-/* === Estilo mejorado para el texto de "Nuestro Servicios" === */
 /* === Estilo refinado para el texto de "Nuestro Servicios" SIN fondo === */
 .elegant-text {
-  padding: 1.8em 2em 0 2em; /* espacio superior más limpio */
-  text-align: center;
+  padding: 1.8em 2em 0 2em;
+  text-align: left; /* 🔹 Alineado natural en escritorio */
   line-height: 1.8;
   color: #eaeaea;
-  font-size: 1.1em;
+  font-size: 1.05em; /* 🔹 Tamaño equilibrado */
   letter-spacing: 0.3px;
   max-width: 850px;
   margin: 1.5em auto 0 auto;
@@ -969,14 +968,14 @@ html {
   font-weight: 600;
 }
 
-/*VERSION MOVIL - Estilo mejorado para el texto de "Nuestro Servicios*/
-
+/* === Versión móvil optimizada === */
 @media (max-width: 768px) {
   .elegant-text {
-    padding: 1em;
-    font-size: 1em;
-    line-height: 1.6;
+    padding: 0.8em 1em 0 1em; /* 🔹 Menos espacio superior e inferior */
+    font-size: 0.9em; /* 🔹 Ligera reducción de tamaño de fuente */
+    line-height: 1.5; /* 🔹 Más compacto pero legible */
     text-align: justify;
-    margin-top: 1em;
+    margin-top: 0.5em; /* 🔹 Menor margen para no separar del slider */
   }
 }
+
