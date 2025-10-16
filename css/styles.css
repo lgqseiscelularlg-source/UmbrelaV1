@@ -269,7 +269,7 @@ html {
   display: block;
 }
 
-                                /* SEGUNDA PAGINA */
+/* ---------------------------------------------------------------------------- SEGUNDA PAGINA ---------------------------------------------------------------------------------- */
 #camera-section {
   display: flex;
   justify-content: center;
@@ -295,9 +295,11 @@ html {
   width: 100%;
   height: 100%;
   object-fit: cover;
+  background: black;
+  pointer-events: none;       /* Evita clics y muestra de íconos */
   -webkit-user-select: none;
   user-select: none;
-  pointer-events: none; /* 🔹 Evita mostrar iconos de play/pause en móviles */
+  -webkit-playsinline: true;  /* Compatibilidad iOS */
 }
 
 #switch-camera-btn {
