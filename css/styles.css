@@ -947,20 +947,20 @@ html {
 
 /* === Estilo refinado para el texto de "Nuestro Servicios" SIN fondo === */
 .elegant-text {
-  padding: 1.8em 2em 0 2em;
-  text-align: left; /* 🔹 Alineado natural en escritorio */
-  line-height: 1.8;
+  padding: 1.2em 0 0 0;        /* 🔹 Quitamos rellenos laterales innecesarios */
+  text-align: left;            /* 🔹 Alineado a la izquierda real */
+  line-height: 1.75;           /* 🔹 Fluidez cómoda */
   color: #eaeaea;
-  font-size: 1.05em; /* 🔹 Tamaño equilibrado */
+  font-size: 1.05em;           /* 🔹 Tamaño ideal para escritorio */
   letter-spacing: 0.3px;
-  max-width: 850px;
-  margin: 1.5em auto 0 auto;
+  max-width: 800px;
+  margin: 1.5em auto 0 auto;   /* 🔹 Centrado del bloque, pero texto a la izquierda */
   transition: transform 0.3s ease, text-shadow 0.3s ease;
 }
 
 .elegant-text:hover {
   transform: scale(1.01);
-  text-shadow: 0 0 8px rgba(36, 157, 166, 0.5);
+  text-shadow: 0 0 8px rgba(36, 157, 166, 0.4);
 }
 
 .elegant-text strong {
@@ -971,11 +971,11 @@ html {
 /* === Versión móvil optimizada === */
 @media (max-width: 768px) {
   .elegant-text {
-    padding: 0.8em 1em 0 1em; /* 🔹 Menos espacio superior e inferior */
-    font-size: 0.9em; /* 🔹 Ligera reducción de tamaño de fuente */
-    line-height: 1.5; /* 🔹 Más compacto pero legible */
-    text-align: justify;
-    margin-top: 0.5em; /* 🔹 Menor margen para no separar del slider */
+    padding: 0.5em 0.5em 0 0.5em; /* 🔹 Menos espacio arriba y costados */
+    font-size: 0.85em;            /* 🔹 Un poco más pequeña la letra */
+    line-height: 1.45;            /* 🔹 Más compacto, pero legible */
+    text-align: justify;          /* 🔹 Mantiene la excelente fluidez actual */
+    margin-top: 0.3em;            /* 🔹 Reducimos separación con el slider */
   }
 }
 
