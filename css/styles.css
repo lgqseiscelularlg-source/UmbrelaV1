@@ -330,7 +330,7 @@ html {
 
 
 
-                            /* FIN DE SEGUNDA PAGINA */
+/* ----------------------------------------------------FIN DE SEGUNDA PAGINA ------------------------------------------------------*/
 
 
 @media (max-width: 768px) {
@@ -348,18 +348,22 @@ html {
   top: 0;
   left: 0;
   width: 100%;
-  height: 100vh; /* 🔹 Cubre toda la pantalla */
+  height: 100vh;
   background-color: rgba(0, 0, 0, 0.95);
   display: flex;
   flex-direction: column;
-  justify-content: center; /* 🔹 Centra verticalmente */
-  align-items: center;
-  gap: 1.8em; /* 🔹 Espaciado entre enlaces */
+  justify-content: center;       /* 🔹 Centrado vertical */
+  align-items: center;           /* 🔹 Centrado horizontal */
+  gap: 1.8em;
+  padding: 0;                    /* 🔹 Quitamos padding extra */
+  margin: 0;                     /* 🔹 Sin márgenes */
   transform: translateY(-100%);
   opacity: 0;
   transition: transform 0.5s ease, opacity 0.5s ease;
-  z-index: 999;
+  z-index: 9999;                 /* 🔹 Más alto para asegurarse de ir sobre todo */
 }
+
+
 
 .nav-links.active {
   transform: translateY(0);
