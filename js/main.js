@@ -26,10 +26,11 @@ window.addEventListener("scroll", function () {
   const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
   const scrollHeight = document.documentElement.scrollHeight;
   const windowHeight = window.innerHeight;
+  const windowWidth = window.innerWidth; // ✅ CORRECTO
   const isMobile = windowWidth <= 768;
-  const nearBottom = scrollTop + windowHeight >= scrollHeight - 10; // 🔹 casi al final
+  const nearBottom = scrollTop + windowHeight >= scrollHeight - 10; // casi al final
 
-  // Umbral por defecto
+  // Umbral de desplazamiento
   let scrollThreshold = 100;
 
   // Solo en móvil + realitytour.html => ocultar más rápido
@@ -37,9 +38,9 @@ window.addEventListener("scroll", function () {
     scrollThreshold = 30;
   }
 
-  // 🔹 Evitar rebote al final de la página
+  // Evitar rebote al final de la página
   if (isRealityTourPage && nearBottom) {
-    return; // No hacemos nada si está en el final (evita mostrar header)
+    return; // No hacemos nada si está al final
   }
 
   // Ocultar al bajar
