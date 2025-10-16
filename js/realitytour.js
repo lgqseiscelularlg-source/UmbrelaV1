@@ -54,26 +54,34 @@
   });
 
 // Función para activar y desactivar pantalla completa en dispositivos móviles
-// === MODO PANTALLA COMPLETA COMPATIBLE CON MÓVILES ===
-fullscreenBtn.addEventListener('click', function () {
-  if (video.requestFullscreen) {
-    video.requestFullscreen();
-  } else if (video.webkitRequestFullscreen) {
-    video.webkitRequestFullscreen();
-  }
-  fullscreenBtn.classList.add('hidden');
-  document.getElementById('exit-fullscreen-btn').classList.remove('hidden');
-});
 
-document.getElementById('exit-fullscreen-btn').addEventListener('click', function () {
-  if (document.exitFullscreen) {
-    document.exitFullscreen();
-  } else if (document.webkitExitFullscreen) {
-    document.webkitExitFullscreen();
-  }
-  fullscreenBtn.classList.remove('hidden');
-  this.classList.add('hidden');
-});
+// === MODO PANTALLA COMPLETA COMPATIBLE CON MÓVILES ===
+const exitFullscreenBtn = document.getElementById('exit-fullscreen-btn');
+
+if (fullscreenBtn && exitFullscreenBtn && cameraContainer) {
+  fullscreenBtn.addEventListener('click', function () {
+    if (cameraContainer.requestFullscreen) {
+      cameraContainer.requestFullscreen();
+    } else if (cameraContainer.webkitRequestFullscreen) {
+      cameraContainer.webkitRequestFullscreen();
+    }
+
+    fullscreenBtn.classList.add('hidden');
+    exitFullscreenBtn.classList.remove('hidden');
+  });
+
+  exitFullscreenBtn.addEventListener('click', function () {
+    if (document.exitFullscreen) {
+      document.exitFullscreen();
+    } else if (document.webkitExitFullscreen) {
+      document.webkitExitFullscreen();
+    }
+
+    fullscreenBtn.classList.remove('hidden');
+    exitFullscreenBtn.classList.add('hidden');
+  });
+}
+
 
 
     
