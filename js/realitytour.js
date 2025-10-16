@@ -56,20 +56,25 @@
 // Función para activar y desactivar pantalla completa en dispositivos móviles
 // === MODO PANTALLA COMPLETA COMPATIBLE CON MÓVILES ===
 fullscreenBtn.addEventListener('click', function () {
-  cameraContainer.classList.toggle('fullscreen-mode');
-
-  if (cameraContainer.classList.contains('fullscreen-mode')) {
-    // 🔹 Modo “pantalla completa” simulado
-    document.body.style.overflow = 'hidden'; // Evita desplazamiento
-    document.querySelector('header').style.display = 'none'; // Oculta la barra de navegación
-    fullscreenBtn.textContent = "Salir de Pantalla Completa";
-  } else {
-    // 🔹 Volver al modo normal
-    document.body.style.overflow = 'auto';
-    document.querySelector('header').style.display = 'block';
-    fullscreenBtn.textContent = "Pantalla Completa";
+  if (video.requestFullscreen) {
+    video.requestFullscreen();
+  } else if (video.webkitRequestFullscreen) {
+    video.webkitRequestFullscreen();
   }
+  fullscreenBtn.classList.add('hidden');
+  document.getElementById('exit-fullscreen-btn').classList.remove('hidden');
 });
+
+document.getElementById('exit-fullscreen-btn').addEventListener('click', function () {
+  if (document.exitFullscreen) {
+    document.exitFullscreen();
+  } else if (document.webkitExitFullscreen) {
+    document.webkitExitFullscreen();
+  }
+  fullscreenBtn.classList.remove('hidden');
+  this.classList.add('hidden');
+});
+
 
     
       // Detener la cámara cuando se cambia de página
