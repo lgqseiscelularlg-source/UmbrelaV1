@@ -937,3 +937,11 @@ html {
   font-family: "Poppins", "Segoe UI", sans-serif;
 }
 
+/* ESTILO DE TEXTO PARA LA SECCION NUESTRO SERVICIO*/
+.service-description p {
+  margin-bottom: 1em; /* Espaciado entre párrafos */
+  font-size: 1.1em;   /* Tamaño de texto equilibrado */
+  line-height: 1.6;   /* Altura de línea agradable para lectura */
+  color: #eaeaea;     /* Color ligeramente suave para evitar contraste duro */
+}
+
