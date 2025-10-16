@@ -145,7 +145,27 @@ if (slides.length > 0) {
     slides[currentSlide].classList.add("active");
   }, 4000); // cambia cada 4 segundos
 }
+/* evita que en el movil el video no inicie hasta que el usuario muestra actividad ----------------------*/
+document.addEventListener('DOMContentLoaded', () => {
+  const video = document.querySelector('.mobile-video-bg');
+  if (video) {
+    video.muted = true; // 🔹 seguridad extra
+    const playPromise = video.play();
 
+    if (playPromise !== undefined) {
+      playPromise
+        .then(() => {
+          // ✅ Se inició correctamente
+        })
+        .catch(() => {
+          // 🚫 Si falla (por política del navegador), se intentará de nuevo al primer toque
+          window.addEventListener('touchstart', () => {
+            video.play();
+          }, { once: true });
+        });
+    }
+  }
+});
 
   
 });
