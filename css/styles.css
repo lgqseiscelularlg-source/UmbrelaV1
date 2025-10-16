@@ -827,4 +827,42 @@ html {
   }
 }
 
+/* === SECCIÓN ¿QUIÉNES SOMOS? – ESTILO SUAVE Y MODERNO === */
+.biography-section {
+  font-family: "Poppins", "Segoe UI", "Helvetica Neue", Arial, sans-serif; /* 🔹 Fuente más moderna y fluida */
+  color: #f0f0f0;
+  background-color: #111112; /* Asegura coherencia con el resto del sitio */
+  padding: 4em 1em;
+}
+
+.bio {
+  max-width: 45%;
+  text-align: left;
+  line-height: 1.7; /* 🔹 Mejora legibilidad */
+}
+
+.bio h3 {
+  font-size: 1.1em;
+  font-weight: 600;
+  color: #ffffff;
+  margin-bottom: 0.6em;
+  letter-spacing: 0.5px;
+}
+
+.bio p {
+  font-size: 1em;
+  color: #d4d4d4; /* 🔹 Gris suave */
+  line-height: 1.8;
+  letter-spacing: 0.3px;
+  text-align: justify;
+  text-shadow: 0 0 6px rgba(0, 0, 0, 0.3); /* 🔹 Suaviza sobre fondo oscuro */
+  transition: color 0.3s ease, transform 0.3s ease;
+}
+
+/* Efecto visual al pasar el cursor sobre cada bio */
+.bio:hover p {
+  color: #e9f9fa;
+  transform: scale(1.01);
+}
+
 
