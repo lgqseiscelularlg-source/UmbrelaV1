@@ -946,24 +946,22 @@ html {
 }
 
 /* === Estilo mejorado para el texto de "Nuestro Servicios" === */
+/* === Estilo refinado para el texto de "Nuestro Servicios" SIN fondo === */
 .elegant-text {
-  background: rgba(3, 1, 6, 0.7); /* sutil fondo translúcido que unifica con el tema */
-  padding: 1.8em 2em;
-  border-radius: 12px;
-  max-width: 850px;
-  margin: 2em auto 0 auto;
-  text-align: left;
+  padding: 1.8em 2em 0 2em; /* espacio superior más limpio */
+  text-align: center;
   line-height: 1.8;
   color: #eaeaea;
-  font-size: 1.05em;
+  font-size: 1.1em;
   letter-spacing: 0.3px;
-  box-shadow: 0 0 20px rgba(0, 0, 0, 0.4);
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  max-width: 850px;
+  margin: 1.5em auto 0 auto;
+  transition: transform 0.3s ease, text-shadow 0.3s ease;
 }
 
 .elegant-text:hover {
   transform: scale(1.01);
-  box-shadow: 0 0 25px rgba(36, 157, 166, 0.4);
+  text-shadow: 0 0 8px rgba(36, 157, 166, 0.5);
 }
 
 .elegant-text strong {
@@ -971,13 +969,14 @@ html {
   font-weight: 600;
 }
 
+/*VERSION MOVIL - Estilo mejorado para el texto de "Nuestro Servicios*/
+
 @media (max-width: 768px) {
   .elegant-text {
-    padding: 1.2em 1em;
-    font-size: 0.95em;
+    padding: 1em;
+    font-size: 1em;
+    line-height: 1.6;
     text-align: justify;
-    margin-top: 1.2em;
+    margin-top: 1em;
   }
 }
-
-
