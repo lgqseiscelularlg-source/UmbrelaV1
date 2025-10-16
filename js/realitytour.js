@@ -34,6 +34,10 @@
       .then(function (stream) {
         currentStream = stream;
         video.srcObject = stream;
+        video.removeAttribute('controls'); // 🔹 Elimina controles residuales
+        video.setAttribute('playsinline', 'true'); // 🔹 Asegura inline playback
+        video.muted = true; // 🔹 Refuerzo silencioso (evita bloqueos)
+
       })
       .catch(function (error) {
         console.error("Error al acceder a la cámara: ", error);
