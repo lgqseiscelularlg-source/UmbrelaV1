@@ -1053,4 +1053,22 @@ html {
   display: none !important;
 }
 
+/* === Ajuste visual del ícono de pantalla completa === -------------------------------------------*/
+#fullscreen-btn svg {
+  display: block;
+  width: 24px;
+  height: 24px;
+  margin: auto;
+  transform: translateY(1px); /* 🔹 Centra ligeramente el ícono verticalmente */
+}
+
+#fullscreen-btn {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 10px; /* 🔹 Mantiene el mismo tamaño pero centra el ícono dentro */
+  border-radius: 8px; /* 🔹 Cuadrado con bordes suaves */
+  background-color: rgba(0, 0, 0, 0.7);
+  backdrop-filter: blur(3px);
+}
 
