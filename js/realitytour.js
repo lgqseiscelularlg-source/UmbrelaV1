@@ -51,21 +51,56 @@
 
 // Función para activar y desactivar pantalla completa en dispositivos móviles
 // === MODO PANTALLA COMPLETA COMPATIBLE CON MÓVILES ===
-fullscreenBtn.addEventListener('click', function () {
-  cameraContainer.classList.toggle('fullscreen-mode');
+// --- Pantalla completa (versión estable y compatible) ---
+if (fullscreenBtn && exitFullscreenBtn) {
+  fullscreenBtn.addEventListener("click", () => {
+    const elem = cameraContainer;
 
-  if (cameraContainer.classList.contains('fullscreen-mode')) {
-    // 🔹 Modo “pantalla completa” simulado
-    document.body.style.overflow = 'hidden'; // Evita desplazamiento
-    document.querySelector('header').style.display = 'none'; // Oculta la barra de navegación
-    fullscreenBtn.textContent = "Salir de Pantalla Completa";
-  } else {
-    // 🔹 Volver al modo normal
-    document.body.style.overflow = 'auto';
-    document.querySelector('header').style.display = 'block';
-    fullscreenBtn.textContent = "Pantalla Completa";
-  }
-});
+    // Entrar en pantalla completa
+    if (elem.requestFullscreen) {
+      elem.requestFullscreen();
+    } else if (elem.webkitRequestFullscreen) {
+      elem.webkitRequestFullscreen(); // Safari
+    } else if (elem.msRequestFullscreen) {
+      elem.msRequestFullscreen(); // IE/Edge
+    }
+
+    // Oculta botón fullscreen y muestra la X
+    fullscreenBtn.classList.add("hidden");
+    exitFullscreenBtn.classList.remove("hidden");
+  });
+
+  exitFullscreenBtn.addEventListener("click", () => {
+    // Salir de pantalla completa
+    if (document.exitFullscreen) {
+      document.exitFullscreen();
+    } else if (document.webkitExitFullscreen) {
+      document.webkitExitFullscreen();
+    } else if (document.msExitFullscreen) {
+      document.msExitFullscreen();
+    }
+
+    // Muestra botón fullscreen y oculta la X
+    fullscreenBtn.classList.remove("hidden");
+    exitFullscreenBtn.classList.add("hidden");
+  });
+
+  // Detectar si el usuario sale de fullscreen manualmente (Android / iOS)
+  document.addEventListener("fullscreenchange", () => {
+    if (!document.fullscreenElement) {
+      fullscreenBtn.classList.remove("hidden");
+      exitFullscreenBtn.classList.add("hidden");
+    }
+  });
+
+  document.addEventListener("webkitfullscreenchange", () => {
+    if (!document.webkitFullscreenElement) {
+      fullscreenBtn.classList.remove("hidden");
+      exitFullscreenBtn.classList.add("hidden");
+    }
+  });
+}
+
 
     
       // Detener la cámara cuando se cambia de página
