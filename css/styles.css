@@ -1054,33 +1054,33 @@ html {
 }
 
 /* === Ajuste visual del ícono de pantalla completa === -------------------------------------------*/
-/* === Ajuste de alineación del ícono de pantalla completa === */
+/* === Alineación fina del ícono de pantalla completa === */
 #fullscreen-btn {
   display: flex;
   justify-content: center;
   align-items: center;
-  padding: 10px;                     /* mismo tamaño */
-  border-radius: 10px;               /* bordes suaves */
-  background: rgba(0, 0, 0, 0.2);    /* fondo transparente y sutil */
-  backdrop-filter: blur(3px);        /* difuminado ligero */
+  padding: 10px;
+  border-radius: 10px;
+  background: rgba(0, 0, 0, 0.2);
+  backdrop-filter: blur(3px);
   border: none;
   cursor: pointer;
   transition: background 0.3s ease, transform 0.2s ease;
 }
 
 #fullscreen-btn svg {
-  width: 22px;                       /* tamaño del ícono equilibrado */
+  width: 22px;
   height: 22px;
   display: block;
-  margin: auto;
-  transform: translate(0.5px, 0.5px); /* 🔹 centrado óptico sutil */
-  stroke-width: 2;                   /* mantiene la nitidez de las líneas */
+  transform: translate(0.5px, 1px); /* 🔹 corrige la desalineación vertical y horizontal */
+  stroke-width: 2;
 }
 
 #fullscreen-btn:hover {
   background: rgba(255, 255, 255, 0.25);
   transform: scale(1.05);
 }
+
 
 
 
