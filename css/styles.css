@@ -1005,4 +1005,52 @@ html {
   background-color: rgba(0, 0, 0, 0.6);
 }
 
+/* ==== Botones de cámara refinados === ---------------------------------------------------------*/
+.camera-btn {
+  position: absolute;
+  background: rgba(255, 255, 255, 0.25);
+  border: none;
+  border-radius: 50%;
+  padding: 12px;
+  cursor: pointer;
+  backdrop-filter: blur(6px);
+  transition: background 0.3s ease, transform 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10;
+}
+
+.camera-btn svg {
+  width: 24px;
+  height: 24px;
+  display: block;
+}
+
+.camera-btn:hover {
+  background: rgba(255, 255, 255, 0.4);
+  transform: scale(1.1);
+}
+
+/* Posiciones individuales */
+#switch-camera-btn {
+  top: 15px;
+  right: 15px;
+}
+
+#fullscreen-btn {
+  bottom: 15px;
+  right: 15px;
+}
+
+#exit-fullscreen-btn {
+  top: 15px;
+  left: 15px; /* esquina superior izquierda */
+}
+
+/* Ocultar el botón de salida hasta que esté en fullscreen */
+#exit-fullscreen-btn.hidden {
+  display: none !important;
+}
+
 
