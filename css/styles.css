@@ -968,7 +968,7 @@ html {
   font-weight: 600;
 }
 
-/* === Versión móvil optimizada === */
+/* === Versión móvil optimizada "Nuestro Servicios" === */
 @media (max-width: 768px) {
   .elegant-text {
     padding: 0.5em 0.5em 0 0.5em; /* 🔹 Menos espacio arriba y costados */
@@ -978,4 +978,31 @@ html {
     margin-top: 0.3em;            /* 🔹 Reducimos separación con el slider */
   }
 }
+
+/* === Modo pantalla completa simulado ----------------------------------------------------=== */
+.camera-container.fullscreen-mode {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  max-width: none;
+  border: none;
+  z-index: 9999;
+  background: black;
+}
+
+.camera-container.fullscreen-mode video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.camera-container.fullscreen-mode #switch-camera-btn,
+.camera-container.fullscreen-mode #fullscreen-btn {
+  font-size: 0.9em;
+  padding: 10px 14px;
+  background-color: rgba(0, 0, 0, 0.6);
+}
+
 
