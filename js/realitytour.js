@@ -52,54 +52,74 @@
 // Función para activar y desactivar pantalla completa en dispositivos móviles
 // === MODO PANTALLA COMPLETA COMPATIBLE CON MÓVILES ===
 // --- Pantalla completa (versión estable y compatible) ---
-if (fullscreenBtn && exitFullscreenBtn) {
+// --- Pantalla completa (versión estable y compatible y robusta) ---
+(function setupFullscreen() {
+  if (!fullscreenBtn) return; // si no hay botón, no hacemos nada
+
+  // Detecta iOS (incluye iPadOS en modo desktop)
+  const isIOS =
+    /iPad|iPhone|iPod/.test(navigator.userAgent) ||
+    (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
+
+  // 1) Entrar a fullscreen al hacer click en el botón
   fullscreenBtn.addEventListener("click", () => {
-    const elem = cameraContainer;
+    // En iOS Safari suele funcionar mejor pedir fullscreen al <video>
+    const target = isIOS ? video : cameraContainer;
 
-    // Entrar en pantalla completa
-    if (elem.requestFullscreen) {
-      elem.requestFullscreen();
-    } else if (elem.webkitRequestFullscreen) {
-      elem.webkitRequestFullscreen(); // Safari
-    } else if (elem.msRequestFullscreen) {
-      elem.msRequestFullscreen(); // IE/Edge
+    try {
+      if (target.requestFullscreen) {
+        target.requestFullscreen();
+      } else if (target.webkitRequestFullscreen) {
+        target.webkitRequestFullscreen(); // Safari
+      } else if (video && video.webkitEnterFullScreen) {
+        // fallback exclusivo de iOS para <video>
+        video.webkitEnterFullScreen();
+      }
+    } catch (err) {
+      console.warn("No se pudo entrar a pantalla completa:", err);
     }
 
-    // Oculta botón fullscreen y muestra la X
+    // Mostrar/ocultar botones (si existen)
     fullscreenBtn.classList.add("hidden");
-    exitFullscreenBtn.classList.remove("hidden");
+    if (exitFullscreenBtn) exitFullscreenBtn.classList.remove("hidden");
   });
 
-  exitFullscreenBtn.addEventListener("click", () => {
-    // Salir de pantalla completa
-    if (document.exitFullscreen) {
-      document.exitFullscreen();
-    } else if (document.webkitExitFullscreen) {
-      document.webkitExitFullscreen();
-    } else if (document.msExitFullscreen) {
-      document.msExitFullscreen();
-    }
+  // 2) Salir de fullscreen con la X (si existe)
+  if (exitFullscreenBtn) {
+    exitFullscreenBtn.addEventListener("click", () => {
+      try {
+        if (document.exitFullscreen) {
+          document.exitFullscreen();
+        } else if (document.webkitExitFullscreen) {
+          document.webkitExitFullscreen();
+        } else if (video && video.webkitExitFullScreen) {
+          video.webkitExitFullScreen();
+        }
+      } catch (err) {
+        console.warn("No se pudo salir de pantalla completa:", err);
+      }
 
-    // Muestra botón fullscreen y oculta la X
-    fullscreenBtn.classList.remove("hidden");
-    exitFullscreenBtn.classList.add("hidden");
-  });
-
-  // Detectar si el usuario sale de fullscreen manualmente (Android / iOS)
-  document.addEventListener("fullscreenchange", () => {
-    if (!document.fullscreenElement) {
       fullscreenBtn.classList.remove("hidden");
       exitFullscreenBtn.classList.add("hidden");
-    }
-  });
+    });
+  }
 
-  document.addEventListener("webkitfullscreenchange", () => {
-    if (!document.webkitFullscreenElement) {
+  // 3) Re-sincronizar UI si el usuario sale de fullscreen manualmente (Esc/gesto)
+  const syncUI = () => {
+    const inFS =
+      document.fullscreenElement || document.webkitFullscreenElement;
+    if (inFS) {
+      fullscreenBtn.classList.add("hidden");
+      if (exitFullscreenBtn) exitFullscreenBtn.classList.remove("hidden");
+    } else {
       fullscreenBtn.classList.remove("hidden");
-      exitFullscreenBtn.classList.add("hidden");
+      if (exitFullscreenBtn) exitFullscreenBtn.classList.add("hidden");
     }
-  });
-}
+  };
+
+  document.addEventListener("fullscreenchange", syncUI);
+  document.addEventListener("webkitfullscreenchange", syncUI);
+})();
 
 
     
