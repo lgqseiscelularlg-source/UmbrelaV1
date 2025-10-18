@@ -9,6 +9,7 @@
     const fullscreenBtn = document.getElementById('fullscreen-btn');
     const switchCameraBtn = document.getElementById('switch-camera-btn');
     const cameraContainer = document.querySelector('.camera-container');
+    const exitFullscreenBtn = document.getElementById('exit-fullscreen-btn'); // llama al boton X que esta creado en html
 
       // Función para detener el stream actual
     function stopCameraStream() {
@@ -52,7 +53,6 @@
 // Función para activar y desactivar pantalla completa en dispositivos móviles
 // === MODO PANTALLA COMPLETA COMPATIBLE CON MÓVILES ===
 // Función para activar y desactivar pantalla completa en dispositivos móviles
-const exitFullscreenBtn = document.getElementById('exit-fullscreen-btn'); // llama al boton X que esta creado en html
 fullscreenBtn.addEventListener('click', function () {
   cameraContainer.classList.toggle('fullscreen-mode');
 
