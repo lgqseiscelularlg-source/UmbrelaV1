@@ -1005,16 +1005,16 @@ html {
   background-color: rgba(0, 0, 0, 0.6);
 }
 
-/* === Botones de cámara unificados ===------------------------------------------------------ */
+/* === Botones de cámara unificados con diseño elegante y fondo translúcido === */
 .camera-btn {
   position: absolute;
   display: flex;
   justify-content: center;
   align-items: center;
   padding: 10px;
-  border-radius: 10px; /* 🔹 rectangular, unificado con fullscreen */
-  background: rgba(0, 0, 0, 0.2); /* 🔹 mismo tono translúcido */
-  backdrop-filter: blur(3px); /* 🔹 blur más sutil */
+  border-radius: 10px;                  /* 🔹 Bordes suaves rectangulares */
+  background: rgba(0, 0, 0, 0.2);       /* 🔹 Fondo translúcido gris suave (idéntico al original fullscreen) */
+  backdrop-filter: blur(3px);           /* 🔹 Desenfoque sutil para efecto elegante */
   border: none;
   cursor: pointer;
   transition: background 0.3s ease, transform 0.2s ease;
@@ -1029,13 +1029,13 @@ html {
   stroke-width: 2;
 }
 
-/* Hover uniforme */
+/* Hover con efecto visual suave */
 .camera-btn:hover {
   background: rgba(255, 255, 255, 0.25);
   transform: scale(1.05);
 }
 
-/* Posiciones individuales */
+/* --- Posiciones individuales --- */
 #switch-camera-btn {
   top: 15px;
   right: 15px;
@@ -1048,19 +1048,18 @@ html {
 
 #exit-fullscreen-btn {
   top: 15px;
-  left: 15px;
+  left: 15px; /* 🔹 Esquina superior izquierda */
 }
 
-/* Ocultar botón de salida cuando no corresponde */
+/* --- Ocultar el botón de salida cuando no corresponde --- */
 #exit-fullscreen-btn.hidden {
   display: none !important;
 }
 
-/* 🔹 Corrección fina exclusiva del ícono de pantalla completa */
+/* --- Ajuste óptico exclusivo del ícono de pantalla completa --- */
 #fullscreen-btn svg {
-  transform: translate(0.5px, 1px);
+  transform: translate(0.5px, 1px); /* 🔹 Corrige alineación fina */
 }
-
 
 
 
