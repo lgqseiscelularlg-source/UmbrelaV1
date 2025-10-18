@@ -1005,31 +1005,34 @@ html {
   background-color: rgba(0, 0, 0, 0.6);
 }
 
-/* ==== Botones de cámara refinados === ---------------------------------------------------------*/
+/* === Botones de cámara unificados ===------------------------------------------------------ */
 .camera-btn {
   position: absolute;
-  background: rgba(255, 255, 255, 0.25);
-  border: none;
-  border-radius: 50%;
-  padding: 12px;
-  cursor: pointer;
-  backdrop-filter: blur(6px);
-  transition: background 0.3s ease, transform 0.2s ease;
   display: flex;
-  align-items: center;
   justify-content: center;
+  align-items: center;
+  padding: 10px;
+  border-radius: 10px; /* 🔹 rectangular, unificado con fullscreen */
+  background: rgba(0, 0, 0, 0.2); /* 🔹 mismo tono translúcido */
+  backdrop-filter: blur(3px); /* 🔹 blur más sutil */
+  border: none;
+  cursor: pointer;
+  transition: background 0.3s ease, transform 0.2s ease;
   z-index: 10;
 }
 
+/* Íconos internos */
 .camera-btn svg {
-  width: 24px;
-  height: 24px;
+  width: 22px;
+  height: 22px;
   display: block;
+  stroke-width: 2;
 }
 
+/* Hover uniforme */
 .camera-btn:hover {
-  background: rgba(255, 255, 255, 0.4);
-  transform: scale(1.1);
+  background: rgba(255, 255, 255, 0.25);
+  transform: scale(1.05);
 }
 
 /* Posiciones individuales */
@@ -1045,41 +1048,19 @@ html {
 
 #exit-fullscreen-btn {
   top: 15px;
-  left: 15px; /* esquina superior izquierda */
+  left: 15px;
 }
 
-/* Ocultar el botón de salida hasta que esté en fullscreen */
+/* Ocultar botón de salida cuando no corresponde */
 #exit-fullscreen-btn.hidden {
   display: none !important;
 }
 
-/* === Ajuste visual del ícono de pantalla completa === -------------------------------------------*/
-/* === Alineación fina del ícono de pantalla completa === */
-#fullscreen-btn {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  padding: 10px;
-  border-radius: 10px;
-  background: rgba(0, 0, 0, 0.2);
-  backdrop-filter: blur(3px);
-  border: none;
-  cursor: pointer;
-  transition: background 0.3s ease, transform 0.2s ease;
-}
-
+/* 🔹 Corrección fina exclusiva del ícono de pantalla completa */
 #fullscreen-btn svg {
-  width: 22px;
-  height: 22px;
-  display: block;
-  transform: translate(0.5px, 1px); /* 🔹 corrige la desalineación vertical y horizontal */
-  stroke-width: 2;
+  transform: translate(0.5px, 1px);
 }
 
-#fullscreen-btn:hover {
-  background: rgba(255, 255, 255, 0.25);
-  transform: scale(1.05);
-}
 
 
 
