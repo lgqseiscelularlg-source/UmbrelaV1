@@ -584,7 +584,7 @@ html {
   }
 }
 
-/* === SWIPER – SECCIÓN ¿Qué es la RA? === */
+/* === SWIPER – SECCIÓN ¿Qué es la RA? ---------------------------------------------------------------------=== */
 .ra-swiper {
   width: 100%;
   max-width: 800px;
@@ -595,18 +595,27 @@ html {
   box-shadow: 0 0 15px rgba(0, 0, 0, 0.3);
 }
 
-.ra-swiper .swiper-slide {
-  display: flex;
-  justify-content: center;
-  align-items: center;
+/* --- Versión escritorio: ¿Qué es la RA? ------------------------------------------------------------------------- */
+@media (min-width: 1025px) {
+  .ra-swiper {
+    max-width: 1800px; /* un poco más amplio */
+  }
+
+  .ra-swiper .swiper-slide {
+    width: 480px;      /* un poco más ancha */
+    height: 640px;     /* 🔹 altura ajustada para fotos verticales */
+  }
+
+  .ra-swiper img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain; /* 🔹 muestra la imagen completa sin recortes */
+    border-radius: 15px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
+    background-color: #000; /* evita espacios transparentes */
+  }
 }
 
-.ra-swiper img {
-  width: 100%;
-  height: 300px; /* Mantiene proporción estable */
-  object-fit: cover;
-  border-radius: 10px;
-}
 
 /* Flechas de navegación (escritorio) */
 .swiper-button-next,
