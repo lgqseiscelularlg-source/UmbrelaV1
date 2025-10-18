@@ -958,8 +958,9 @@ html {
   max-width: none;
   border: none;
   z-index: 9999;
-  background: black;
+  background: transparent; /* ✅ Permite que el video sea el fondo */
 }
+
 
 .camera-container.fullscreen-mode video {
   width: 100%;
