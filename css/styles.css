@@ -998,12 +998,17 @@ html {
   object-fit: cover;
 }
 
+/* === Modo pantalla completa refinado === */
 .camera-container.fullscreen-mode #switch-camera-btn,
-.camera-container.fullscreen-mode #fullscreen-btn {
+.camera-container.fullscreen-mode #fullscreen-btn,
+.camera-container.fullscreen-mode #exit-fullscreen-btn {
   font-size: 0.9em;
   padding: 10px 14px;
-  background-color: rgba(0, 0, 0, 0.6);
+  background: rgba(0, 0, 0, 0.2) !important; /* 🔹 mismo fondo translúcido gris suave */
+  backdrop-filter: blur(3px);
+  border-radius: 10px;
 }
+
 
 /* === Botones de cámara unificados con diseño elegante y fondo translúcido === */
 .camera-btn {
