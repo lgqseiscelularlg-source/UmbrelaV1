@@ -1048,7 +1048,7 @@ html {
 
 #exit-fullscreen-btn {
   top: 15px;
-  left: 15px; /* 🔹 Esquina superior izquierda */
+  left: 15px; /* 🔹 Esquina superior izquierda  */
 }
 
 /* --- Ocultar el botón de salida cuando no corresponde --- */
