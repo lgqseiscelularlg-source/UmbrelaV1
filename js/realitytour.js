@@ -52,6 +52,7 @@
 // Función para activar y desactivar pantalla completa en dispositivos móviles
 // === MODO PANTALLA COMPLETA COMPATIBLE CON MÓVILES ===
 // Función para activar y desactivar pantalla completa en dispositivos móviles
+const exitFullscreenBtn = document.getElementById('exit-fullscreen-btn'); // llama al boton X que esta creado en html
 fullscreenBtn.addEventListener('click', function () {
   cameraContainer.classList.toggle('fullscreen-mode');
 
@@ -70,24 +71,6 @@ fullscreenBtn.addEventListener('click', function () {
   }
 });
 
-// 🔹 Botón X para salir del modo pantalla completa
-const exitFullscreenBtn = document.createElement('button');
-exitFullscreenBtn.innerHTML = '&times;';
-exitFullscreenBtn.id = 'exit-fullscreen-btn';
-exitFullscreenBtn.style.position = 'absolute';
-exitFullscreenBtn.style.top = '10px';
-exitFullscreenBtn.style.left = '10px';
-exitFullscreenBtn.style.padding = '10px 15px';
-exitFullscreenBtn.style.fontSize = '22px';
-exitFullscreenBtn.style.color = 'white';
-exitFullscreenBtn.style.backgroundColor = 'rgba(0,0,0,0.2)';
-exitFullscreenBtn.style.border = 'none';
-exitFullscreenBtn.style.borderRadius = '5px';
-exitFullscreenBtn.style.cursor = 'pointer';
-exitFullscreenBtn.style.display = 'none';
-exitFullscreenBtn.style.zIndex = '10';
-
-cameraContainer.appendChild(exitFullscreenBtn);
 
 // Acción del botón X (salir de pantalla completa)
 exitFullscreenBtn.addEventListener('click', () => {
