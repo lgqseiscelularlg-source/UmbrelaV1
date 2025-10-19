@@ -111,8 +111,8 @@ if (document.querySelector(".ra-swiper")) {
     coverflowEffect: {
       rotate: 0,          // no rotamos
       stretch: 0,         // sin estirar
-      depth: 0,         // profundidad del efecto 180
-      modifier: 0,        // intensidad del escalado 2
+      depth: 180,         // profundidad del efecto 180
+      modifier: 2,        // intensidad del escalado 2
       slideShadows: false // evita sombras duras
     },
     breakpoints: {
