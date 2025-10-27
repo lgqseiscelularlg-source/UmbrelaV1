@@ -1014,6 +1014,7 @@ html {
 #exit-fullscreen-btn {
   top: 15px;
   left: 15px; /* 🔹 Esquina superior izquierda  */
+  display: none; /* 🔹 Oculto por defecto al iniciar */
 }
 
 /* --- Ocultar el botón de salida cuando no corresponde --- */
