@@ -72,7 +72,7 @@ window.addEventListener("scroll", function () {
 
   // Configuración del Intersection Observer
   const observerOptions = {
-    threshold: 0.1, // Se activará cuando el 10% del elemento sea visible
+    threshold: 0, // Se activará cuando el 10% del elemento sea visible
   };
 
   const observer = new IntersectionObserver((entries, observer) => {
