@@ -1032,5 +1032,15 @@ html {
   transform: none !important;
 }
 
+/* === CORRECCIÓN SCROLL EXTRA EN SECCIÓN CONTACTO === */
+#contact .hidden {
+  transform: none !important;
+  margin-bottom: 0 !important;
+  padding-bottom: 0 !important;
+}
+
+#contact {
+  overflow: hidden; /* evita que cualquier transform o transición cree scroll */
+}
 
 
