@@ -96,3 +96,25 @@ Línea de trabajo exclusiva de interfaz y experiencia de usuario. Independiente 
 - Preexistente, fuera de alcance: `index.html` tiene scroll horizontal a 320 px de ancho.
 
 **Commit:** `883ca1b` (rama `claude/determined-hawking-1j40dk`).
+
+---
+
+## 2026-10-28 — Integración del chatbot Botpress
+
+**Objetivo:** mostrar el Webchat de Botpress como widget flotante en la página principal.
+
+**Archivo modificado:** `index.html` (únicamente).
+
+**Cambio:** al final del `<body>`, después de `js/main.js`:
+`inject.js` (Webchat v3.7, síncrono) y luego el script de configuración del bot (`defer`). El orden garantiza que el cliente de Webchat exista antes de aplicar la configuración; al estar al final, no bloquea el renderizado de la página. Sin cambios de estilos ni de configuración: la apariencia la define Botpress Studio. No se agregó a `realitytour.html` ni a `larioja.html`.
+
+**Pruebas:**
+- Sin integraciones previas de Botpress (sin duplicados); HTML bien formado; orden de carga verificado en el navegador: swiper → main.js → inject.js → configuración (defer).
+- Regresión (Playwright + Chromium, emulación iPhone y escritorio): 49/49 OK (menú en las tres páginas, navegación, cámara).
+- **No se pudo probar el widget:** el entorno bloquea `cdn.botpress.cloud` y `files.bpcontent.cloud`. Con los scripts sin cargar, la página sigue funcionando sin errores nuevos.
+
+**Pendiente:**
+- Verificar en el sitio publicado que el botón flotante aparece y abre la conversación (iPhone y escritorio).
+- Revisar que el botón no tape elementos inferiores y cómo se superpone con el menú móvil abierto (el z-index lo define Botpress).
+
+**Commit:** `f3da3e4` (rama `claude/determined-hawking-1j40dk`).
