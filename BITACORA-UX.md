@@ -54,3 +54,45 @@ Línea de trabajo exclusiva de interfaz y experiencia de usuario. Independiente 
 - El header oculto por scroll sigue usando estilos inline desde `main.js` (fuera del alcance de esta etapa).
 
 **Commit:** `70cdcc0` (rama `claude/determined-hawking-1j40dk`).
+
+---
+
+## 2026-10-28 — Etapa 2: página «Descubrí La Rioja»
+
+**Objetivo:** nueva página turística integrada a RealityTour, con contenido basado en el portal oficial de Turismo de La Rioja.
+
+**Archivos creados:** `larioja.html`, `css/larioja.css`, `assets/img/larioja/hero-720.jpg`, `assets/img/larioja/hero-1092.jpg`.
+**Archivos modificados:** `index.html`, `realitytour.html` (nueva opción de menú), `css/styles.css` (ajuste del menú entre 769 y 960 px).
+
+**Secciones:** portada · índice de secciones · introducción · 01 Historia y cultura (Paseo Cultural Castro Barros, Memorial Facundo Quiroga, Convento de Santo Domingo) · 02 Naturaleza y aventura (Área Natural Juan Caro con Cascada Abrastain y Balcón de los Originarios, El Saladillo, Reserva Takú, Dique Los Sauces, dato del Parque Acuático) · 03 Parques (Parque de la Ciudad, Parque de las Juventudes) · 04 Gastronomía y artesanías (Mercado Artesanal, sabores regionales) · Conocé más (enlace a la fuente, oficina de informes, atribución y aclaración de que no es un sitio oficial).
+
+**Decisiones técnicas:**
+- Cascada Abrastain se presenta dentro de Juan Caro, como en la fuente (el trekking a la cascada es parte del área).
+- Hoja `css/larioja.css` separada y acotada a `.larioja-page`: no altera las otras páginas. Se cargan las dos hojas; no se duplican reglas del menú.
+- Las cabeceras de sección usan `<div>`: `styles.css` aplica `position: fixed` a todo `<header>`.
+- Se reutiliza la animación `.hidden`/`.visible` de `main.js` con desplazamiento menor (40px) y se respeta `prefers-reduced-motion`.
+- Portada con `<img srcset>` (720/1092 px), `fetchpriority="high"`, `100svh` con respaldo `100vh`.
+- Menú: con 6 enlaces, entre 769 y 960 px los textos se partían en dos líneas; en ese rango se reduce `gap`, `padding-left` y tamaño de fuente (0.92em).
+- Sin dependencias nuevas; `larioja.html` no carga Swiper.
+
+**Fuente:** [La Rioja, Argentina: Un Tesoro de Historia, Aventura y Naturaleza](https://turismo.larioja.gob.ar/imperdibles/la-rioja-argentina-un-tesoro-de-historia-aventura-y-naturaleza/) (portal de Turismo de La Rioja, consultado el 2026-10-28). Textos redactados de nuevo; no se copió HTML/CSS. Datos de la oficina de informes tomados del pie de la misma página.
+
+**Multimedia:**
+- Portada: `assets/img/LaRiojaCapital.jpg` (ya publicada en el sitio, carrusel «¿Qué es la RA?»), recomprimida sin metadatos (408 KB → 197 KB / 86 KB). **Origen y licencia sin confirmar** (no tiene EXIF de autor): pendiente de confirmación del equipo.
+- No se usaron fotos del portal: su pie indica «Copyright © 2026, Turismo | La Rioja» y no hay licencia de reutilización.
+- Atractivos presentados en tarjetas sin foto (diseño tipográfico).
+
+**Pruebas automatizadas (Playwright + Chromium headless; no son pruebas en dispositivos reales):** 49/49 OK.
+- Menú de 6 enlaces en una línea a 769–1440 px en las tres páginas; header de 76 px en todas.
+- Menú móvil (iPhone 13, 375×667 y 320×568): abre, X visible y operativa, 6 enlaces dentro de la pantalla, scroll bloqueado y liberado.
+- Navegación: index → larioja en la misma pestaña (escritorio y móvil); larioja → index por logo, menú y «Volver a RealityTour».
+- larioja: imagen de portada cargada, sin scroll horizontal, 1 `h1` y 6 `h2`, todas las imágenes con `alt`, todos los bloques animados visibles, índice de secciones con compensación del header.
+- realitytour: cámara (dispositivo simulado) y pantalla completa sin cambios. Pruebas de la etapa 1: 40/40 OK.
+- Sin errores JS nuevos. Persiste `Swiper is not defined` en index: el sandbox bloquea el CDN (preexistente).
+
+**Pendiente / limitaciones:**
+- Confirmar origen/licencia de `LaRiojaCapital.jpg`. Faltan fotos con permiso para los atractivos y una foto panorámica (horizontal) de mayor resolución: en escritorio la portada vertical se recorta y se amplía.
+- No probado en iPhone/Safari real.
+- Preexistente, fuera de alcance: `index.html` tiene scroll horizontal a 320 px de ancho.
+
+**Commit:** `883ca1b` (rama `claude/determined-hawking-1j40dk`).
