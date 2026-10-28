@@ -5,15 +5,39 @@ document.addEventListener("DOMContentLoaded", function () {
   const menuToggle = document.querySelector(".menu-toggle");
   const navMenu = document.querySelector(".nav-links");
 
+  // Abre o cierra el menú y sincroniza ícono (X), atributos ARIA y bloqueo de scroll
+  function setMenuOpen(open) {
+    navMenu.classList.toggle("active", open);
+    menuToggle.classList.toggle("active", open);
+    menuToggle.setAttribute("aria-expanded", String(open));
+    menuToggle.setAttribute("aria-label", open ? "Cerrar menú" : "Abrir menú");
+    document.documentElement.classList.toggle("menu-open", open);
+  }
+
   menuToggle.addEventListener("click", function () {
-    navMenu.classList.toggle("active");
+    setMenuOpen(!navMenu.classList.contains("active"));
   });
 
   // Cierra el menú al seleccionar una opción
   navLinks.forEach((link) => {
     link.addEventListener("click", () => {
-      navMenu.classList.remove("active"); // Remueve la clase 'active' para cerrar el menú
+      setMenuOpen(false);
     });
+  });
+
+  // Cierra el menú con Escape y devuelve el foco al botón
+  document.addEventListener("keydown", (event) => {
+    if (event.key === "Escape" && navMenu.classList.contains("active")) {
+      setMenuOpen(false);
+      menuToggle.focus();
+    }
+  });
+
+  // Si se pasa a escritorio (rotación o redimensión) con el menú abierto, se cierra
+  // para no dejar el scroll bloqueado
+  const mobileQuery = window.matchMedia("(max-width: 768px)");
+  mobileQuery.addEventListener("change", (event) => {
+    if (!event.matches) setMenuOpen(false);
   });
 
   // ============================ NAVBAR OCULTA / MUESTRA EN SCROLL ============================

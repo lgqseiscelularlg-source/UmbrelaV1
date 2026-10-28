@@ -87,9 +87,27 @@ html {
 .menu-toggle {
   display: none;
   cursor: pointer;
+  /* Reset de <button>: conserva el aspecto del antiguo <div> */
+  background: none;
+  border: 0;
+  padding: 8px;
+  margin: -8px; /* amplía el área táctil sin desplazar el ícono */
+  color: inherit;
+  font: inherit;
+}
+
+.menu-toggle:focus-visible {
+  outline: 2px solid #249da6;
+  outline-offset: 2px;
+}
+
+/* Bloqueo del scroll de fondo con el menú móvil abierto (clase puesta por main.js) */
+html.menu-open {
+  overflow: hidden;
 }
 
 .hamburger {
+  display: block;
   width: 25px;
   height: 3px;
   background: white;
@@ -328,8 +346,10 @@ html {
   margin: 0;                     /* 🔹 Sin márgenes */
   transform: translateY(-100%);
   opacity: 0;
-  transition: transform 0.5s ease, opacity 0.5s ease;
-  z-index: 9999;                 /* 🔹 Más alto para asegurarse de ir sobre todo */
+  visibility: hidden;            /* 🔹 Cerrado: fuera del foco de teclado y lectores */
+  transition: transform 0.5s ease, opacity 0.5s ease, visibility 0s linear 0.5s;
+  overscroll-behavior: contain;
+  z-index: 1001;                 /* 🔹 Sobre el contenido del header, debajo del botón (1002) */
 }
 
 
@@ -337,6 +357,8 @@ html {
 .nav-links.active {
   transform: translateY(0);
   opacity: 1;
+  visibility: visible;
+  transition: transform 0.5s ease, opacity 0.5s ease, visibility 0s;
 }
 
 .nav-links li {
@@ -398,6 +420,19 @@ html {
 
   .menu-toggle.active .hamburger {
     background: #249da6; /* Cambia el color de las barras del menú hamburguesa */
+  }
+
+  /* Ícono X con el menú abierto (barras de 3px separadas 5px: 8px entre centros) */
+  .menu-toggle.active .hamburger:nth-child(1) {
+    transform: translateY(8px) rotate(45deg);
+  }
+
+  .menu-toggle.active .hamburger:nth-child(2) {
+    opacity: 0;
+  }
+
+  .menu-toggle.active .hamburger:nth-child(3) {
+    transform: translateY(-8px) rotate(-45deg);
   }
 
   .bio-container {
