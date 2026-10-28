@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="Descubrí La Rioja: historia, cultura, naturaleza, parques y sabores de la provincia de La Rioja, Argentina. Una guía de RealityTour."
+    />
+    <title>Descubrí La Rioja | RealityTour</title>
+    <link rel="stylesheet" href="css/styles.css" />
+    <link rel="stylesheet" href="css/larioja.css" />
+  </head>
+  <body class="larioja-page">
+    <header>
+      <nav aria-label="Navegación principal">
+        <a href="index.html" aria-label="RealityTour, ir al inicio">
+          <img src="assets/img/logocolor.png" alt="RealityTour" class="logo" />
+        </a>
+        <ul class="nav-links" id="nav-menu">
+          <li><a href="index.html#home">Inicio</a></li>
+          <li><a href="index.html#ra">¿Qué es la RA?</a></li>
+          <li><a href="index.html#services">Nuestro Servicio</a></li>
+          <li><a href="larioja.html" aria-current="page">Descubrí La Rioja</a></li>
+          <li><a href="index.html#about">¿Quiénes somos?</a></li>
+          <li><a href="index.html#contact">Contacto</a></li>
+        </ul>
+        <button
+          type="button"
+          class="menu-toggle"
+          aria-label="Abrir menú"
+          aria-expanded="false"
+          aria-controls="nav-menu"
+        >
+          <span class="hamburger" aria-hidden="true"></span>
+          <span class="hamburger" aria-hidden="true"></span>
+          <span class="hamburger" aria-hidden="true"></span>
+        </button>
+      </nav>
+    </header>
+
+    <main>
+      <!-- A. Portada -->
+      <section class="lr-hero" aria-labelledby="lr-title">
+        <img
+          class="lr-hero-img"
+          src="assets/img/larioja/hero-1092.jpg"
+          srcset="assets/img/larioja/hero-720.jpg 720w, assets/img/larioja/hero-1092.jpg 1092w"
+          sizes="100vw"
+          width="1092"
+          height="1365"
+          fetchpriority="high"
+          alt="Monumento ecuestre junto al cartel «La Rioja Argentina», con las sierras riojanas al atardecer"
+        />
+        <div class="lr-hero-content">
+          <p class="lr-eyebrow">RealityTour · Guía de la provincia</p>
+          <h1 id="lr-title">Descubrí La Rioja</h1>
+          <p class="lr-hero-sub">
+            Historia que se toca, aventura que se respira y paisajes de sierra en el corazón del Noroeste argentino.
+          </p>
+          <a class="lr-hero-cta" href="#intro">Empezá a explorar</a>
+        </div>
+      </section>
+
+      <!-- Índice de secciones -->
+      <nav class="lr-index" aria-label="Secciones de Descubrí La Rioja">
+        <ul>
+          <li><a href="#historia">Historia y cultura</a></li>
+          <li><a href="#naturaleza">Naturaleza y aventura</a></li>
+          <li><a href="#parques">Parques</a></li>
+          <li><a href="#sabores">Sabores y artesanías</a></li>
+          <li><a href="#conoce-mas">Conocé más</a></li>
+        </ul>
+      </nav>
+
+      <!-- B. Introducción -->
+      <section id="intro" class="lr-section lr-intro" aria-labelledby="intro-title">
+        <div class="lr-container hidden">
+          <h2 id="intro-title">Un destino para todos los ritmos</h2>
+          <p class="lr-lead">
+            En el Noroeste argentino, La Rioja combina tradiciones que se viven de cerca, paisajes que sorprenden
+            y una hospitalidad que hace sentir en casa desde el primer saludo. Su capital se recorre como un museo
+            a cielo abierto, mientras sus áreas naturales proponen senderos, cascadas y espejos de agua.
+          </p>
+          <ul class="lr-chips" aria-label="Experiencias destacadas">
+            <li>Turismo cultural</li>
+            <li>Trekking</li>
+            <li>Avistaje de aves</li>
+            <li>Kayak</li>
+            <li>Cicloturismo</li>
+            <li>Artesanías</li>
+          </ul>
+        </div>
+      </section>
+
+      <!-- C. Historia y cultura -->
+      <section id="historia" class="lr-section" aria-labelledby="historia-title">
+        <div class="lr-container">
+          <div class="lr-section-head hidden">
+            <span class="lr-number" aria-hidden="true">01</span>
+            <div>
+              <h2 id="historia-title">Historia y cultura</h2>
+              <p>Un viaje en el tiempo por los espacios más emblemáticos de la capital.</p>
+            </div>
+          </div>
+
+          <div class="lr-grid">
+            <article class="lr-card hidden">
+              <p class="lr-card-tag">Museo · Salas interactivas</p>
+              <h3>Paseo Cultural Castro Barros</h3>
+              <p>
+                Un edificio neoclásico que propone un recorrido desde la prehistoria hasta el arte moderno a través de
+                salas interactivas. Uno de sus atractivos es el viaje virtual a Talampaya.
+              </p>
+            </article>
+
+            <article class="lr-card hidden">
+              <p class="lr-card-tag">Historia · Federalismo</p>
+              <h3>Memorial Facundo Quiroga</h3>
+              <p>
+                Narra la vida del «Tigre de los Llanos» con recursos tecnológicos que sorprenden. Una visita ideal para
+                quienes se interesan por los caudillos y la historia del federalismo.
+              </p>
+            </article>
+
+            <article class="lr-card lr-card-highlight hidden">
+              <p class="lr-card-tag">Arquitectura colonial</p>
+              <h3>Convento de Santo Domingo</h3>
+              <p class="lr-stat"><strong>1623</strong> <span>Año de origen del templo</span></p>
+              <p>
+                Según el portal oficial de Turismo, es el templo más antiguo de la Argentina. Sus muros de piedra lo
+                convierten en una parada obligada para fotografiar arquitectura colonial.
+              </p>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <!-- D. Naturaleza y aventura -->
+      <section id="naturaleza" class="lr-section lr-section-alt" aria-labelledby="naturaleza-title">
+        <div class="lr-container">
+          <div class="lr-section-head hidden">
+            <span class="lr-number" aria-hidden="true">02</span>
+            <div>
+              <h2 id="naturaleza-title">Naturaleza y aventura</h2>
+              <p>Propuestas al aire libre para caminar, explorar y salir al agua.</p>
+            </div>
+          </div>
+
+          <article class="lr-feature hidden">
+            <div class="lr-feature-intro">
+              <p class="lr-card-tag">Trekking · Senderos y cascadas</p>
+              <h3>Área Natural Juan Caro</h3>
+              <p>Dos maneras de vivirla, según la experiencia y el ritmo de cada viajero.</p>
+            </div>
+            <div class="lr-feature-items">
+              <div class="lr-feature-item">
+                <h4>Cascada Abrastain</h4>
+                <p>
+                  El trekking hasta la cascada es la propuesta más destacada del área: una caminata que el portal
+                  oficial describe como una experiencia mística.
+                </p>
+              </div>
+              <div class="lr-feature-item">
+                <h4>Balcón de los Originarios</h4>
+                <p>
+                  Una alternativa de menor exigencia, ideal para ir con chicos, con algunas de las mejores vistas
+                  del lugar.
+                </p>
+              </div>
+            </div>
+          </article>
+
+          <div class="lr-grid">
+            <article class="lr-card hidden">
+              <p class="lr-card-tag">Arqueología · Senderos</p>
+              <h3>Parque Natural El Saladillo</h3>
+              <p>
+                Reúne ruinas jesuíticas y senderos que acercan al visitante al pasado arqueológico de la región.
+              </p>
+            </article>
+
+            <article class="lr-card hidden">
+              <p class="lr-card-tag">Flora nativa · Avistaje de aves</p>
+              <h3>Reserva Takú</h3>
+              <p>
+                Un refugio lejos del ruido urbano para caminar entre flora autóctona y observar aves.
+              </p>
+            </article>
+
+            <article class="lr-card hidden">
+              <p class="lr-card-tag">Kayak · Cicloturismo</p>
+              <h3>Dique Los Sauces</h3>
+              <p>
+                El lugar elegido para remar en kayak o pedalear mientras cae el sol.
+              </p>
+            </article>
+          </div>
+
+          <p class="lr-tip hidden">
+            <strong>Para los días de calor:</strong> el Parque Acuático es una opción de diversión para toda la familia.
+          </p>
+        </div>
+      </section>
+
+      <!-- E. Parques y espacios recreativos -->
+      <section id="parques" class="lr-section" aria-labelledby="parques-title">
+        <div class="lr-container">
+          <div class="lr-section-head hidden">
+            <span class="lr-number" aria-hidden="true">03</span>
+            <div>
+              <h2 id="parques-title">Parques y espacios recreativos</h2>
+              <p>Puntos de encuentro donde lo clásico y lo moderno conviven.</p>
+            </div>
+          </div>
+
+          <div class="lr-grid lr-grid-2">
+            <article class="lr-card hidden">
+              <p class="lr-card-tag">Espacio verde · Mirador</p>
+              <h3>Parque de la Ciudad</h3>
+              <p>
+                El gran pulmón verde de la ciudad. Allí se levanta el Superdomo y un mirador permite ver cómo el sol
+                se oculta detrás de las sierras.
+              </p>
+            </article>
+
+            <article class="lr-card hidden">
+              <p class="lr-card-tag">Aguas danzantes · Memorial</p>
+              <h3>Parque de las Juventudes</h3>
+              <p>
+                Con sus aguas danzantes y el Memorial a los caudillos, es el sitio ideal para compartir un mate al
+                caer la tarde.
+              </p>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <!-- F. Gastronomía y artesanías -->
+      <section id="sabores" class="lr-section lr-section-alt" aria-labelledby="sabores-title">
+        <div class="lr-container">
+          <div class="lr-section-head hidden">
+            <span class="lr-number" aria-hidden="true">04</span>
+            <div>
+              <h2 id="sabores-title">Gastronomía y artesanías</h2>
+              <p>Sabores y oficios para llevarse un recuerdo auténtico.</p>
+            </div>
+          </div>
+
+          <div class="lr-grid lr-grid-2">
+            <article class="lr-card hidden">
+              <p class="lr-card-tag">Tejidos · Cerámica</p>
+              <h3>Mercado Artesanal</h3>
+              <p>
+                Funciona en una casona del siglo XIX. Es el lugar para encontrar tejidos y cerámicas elaborados por
+                manos riojanas.
+              </p>
+            </article>
+
+            <article class="lr-card hidden">
+              <p class="lr-card-tag">Sabores regionales</p>
+              <h3>Para cerrar el día</h3>
+              <p>
+                Los food trucks de los parques y los cafés literarios son una buena excusa para probar alguna
+                especialidad regional.
+              </p>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <!-- G. Conocé más -->
+      <section id="conoce-mas" class="lr-section lr-more" aria-labelledby="mas-title">
+        <div class="lr-container hidden">
+          <h2 id="mas-title">Conocé más</h2>
+          <p>
+            Ampliá esta información en el artículo original del portal de Turismo de La Rioja.
+          </p>
+          <a
+            class="lr-source-link"
+            href="https://turismo.larioja.gob.ar/imperdibles/la-rioja-argentina-un-tesoro-de-historia-aventura-y-naturaleza/"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            Leer «La Rioja, Argentina: Un Tesoro de Historia, Aventura y Naturaleza»
+            <span class="lr-visually-hidden">(se abre en una pestaña nueva)</span>
+          </a>
+
+          <div class="lr-office">
+            <h3>Oficina de Informes Turísticos</h3>
+            <p>Av. Ortiz de Ocampo esq. Av. Félix de la Colina, La Rioja</p>
+            <p>
+              <a href="mailto:turismo@larioja.gob.ar">turismo@larioja.gob.ar</a> ·
+              <a href="tel:+543804468504">+54 380 4468504</a>
+            </p>
+          </div>
+
+          <p class="lr-attribution">
+            Información turística elaborada a partir de contenidos del portal oficial de Turismo de La Rioja, Argentina.
+            RealityTour es un proyecto universitario independiente y no es un sitio oficial del Gobierno de la
+            Provincia de La Rioja.
+          </p>
+
+          <a class="lr-back" href="index.html">← Volver a RealityTour</a>
+        </div>
+      </section>
+    </main>
+
+    <script src="js/main.js"></script>
+  </body>
+</html>
