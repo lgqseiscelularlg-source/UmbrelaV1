@@ -118,3 +118,17 @@ Línea de trabajo exclusiva de interfaz y experiencia de usuario. Independiente 
 - Revisar que el botón no tape elementos inferiores y cómo se superpone con el menú móvil abierto (el z-index lo define Botpress).
 
 **Commit:** `f3da3e4` (rama `claude/determined-hawking-1j40dk`).
+
+---
+
+## 2026-10-30 — Prioridad alta · Etapa 1: desborde horizontal en móviles
+
+**Diagnóstico:**
+- El scroll horizontal a 320 px registrado en la etapa 2 (`innerWidth` 387) **era un artefacto del sandbox**: el CDN de Swiper estaba bloqueado y sin `swiper-bundle.min.css` faltaba `.swiper { overflow: hidden }`, por lo que las diapositivas del carrusel desbordaban. Con Swiper cargado (11.2.10 desde npm, servido localmente solo para las pruebas) no hay scroll horizontal de 320 a 1440 px.
+- Problema real encontrado: en Contacto, `.contact-item` (`flex: 1 1 45%`, `min-width: auto`) no podía encoger por debajo del correo más largo. La fila excedía el contenedor y `#contact { overflow: hidden }` **recortaba** nombre, correo y teléfono del segundo contacto entre 320 y 390 px.
+
+**Cambio (`css/styles.css`):** `.contact-item` con `min-width: 0` y `overflow-wrap: anywhere`. En pantallas angostas el correo se parte en dos líneas; sin cambios a partir de 414 px.
+
+**Pruebas (Playwright + Chromium; no es Safari):** 61/61 OK. Sin texto recortado en Contacto de 320 a 1440 px; sin scroll horizontal en las tres páginas (320, 390, 1366 px); carrusel RA inicializado y avanzando; slider de Servicio avanzando; menú, navegación y cámara sin cambios; sin errores JS con Swiper cargado.
+
+**Commit:** `59ccb0c`.
