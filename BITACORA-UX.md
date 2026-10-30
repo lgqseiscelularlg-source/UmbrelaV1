@@ -132,3 +132,38 @@ Línea de trabajo exclusiva de interfaz y experiencia de usuario. Independiente 
 **Pruebas (Playwright + Chromium; no es Safari):** 61/61 OK. Sin texto recortado en Contacto de 320 a 1440 px; sin scroll horizontal en las tres páginas (320, 390, 1366 px); carrusel RA inicializado y avanzando; slider de Servicio avanzando; menú, navegación y cámara sin cambios; sin errores JS con Swiper cargado.
 
 **Commit:** `59ccb0c`.
+
+---
+
+## 2026-10-30 — Prioridad alta · Etapa 2: compatibilidad iPhone / Safari
+
+**Auditoría `100vh`:**
+| Regla | Uso | Decisión |
+|---|---|---|
+| `.main-section` (hero index, 3 definiciones; rige la última) | alto de portada | `100svh` con respaldo `100vh`: en Safari `100vh` es el alto con barras ocultas y el botón quedaba bajo el centro visible. `svh` evita saltos al ocultarse las barras. |
+| `.nav-links` móvil (overlay fijo) | alto del menú | `100dvh` con respaldo `100vh`: un overlay fijo debe medir el área visible actual. |
+| `#camera-section` (`80vh` + `margin-top: 10vh`), `.fullscreen-mode` (`100vh`) | cámara | **Sin cambios** (cámara fuera de alcance). Ver pendientes. |
+| `.lr-hero` (larioja) | portada | Ya usaba `100svh` con respaldo. |
+
+**Problema encontrado en el menú:** con `justify-content: center` y sin desplazamiento, en pantallas bajas (iPhone SE horizontal 667×375, o 320×460 con barras) «Inicio» y «Contacto» quedaban fuera de la pantalla sin forma de alcanzarlos y otro enlace quedaba debajo de la X.
+
+**Cambios (`css/styles.css`):**
+- Menú: `box-sizing: border-box`, `padding: 80px 0` (franja del logo y la X), `overflow-y: auto`, centrado con `margin-top/bottom: auto` en el primer/último `li` (centra si entra; si no, se desplaza sin recortar). Posiciones en vertical idénticas a las anteriores (verificado).
+- `.menu-toggle:hover` dentro de `@media (hover: hover)`: en iOS el `:hover` queda fijo tras tocar y las barras seguían en turquesa.
+- Hero: `height: 100svh` tras el respaldo `100vh`.
+
+**Áreas seguras:** no hay `viewport-fit=cover`, por lo que Safari mantiene el contenido fuera del notch y la barra de inicio; no se requiere `env(safe-area-inset-*)`. El `env(safe-area-inset-bottom)` de `larioja.css` no tiene efecto (inocuo). No se cambió.
+
+**Scroll del menú:** bloqueo con `html.menu-open { overflow: hidden }` (etapa 1) verificado: el fondo no se mueve, la posición se conserva al cerrar y el menú se desplaza internamente sin arrastrar el fondo (`overscroll-behavior: contain`). En Safari, `overflow: hidden` bloquea el arrastre táctil desde iOS 16; en versiones anteriores puede no bloquearlo.
+
+**Pruebas (Playwright + Chromium con emulación; WebKit no está instalado en el entorno → no hay prueba de Safari):**
+- Nuevas: 17/17 OK (menú en horizontal en las tres páginas, enlace final alcanzable y navegable, fondo bloqueado, posición conservada, barras tras cerrar). Contra la versión anterior, las de menú fallan (prueba sensible).
+- El `:hover` fijo de iOS **no se reproduce en Chromium**: la corrección se basa en el comportamiento conocido de Safari y queda por verificar en iPhone.
+- `svh`/`dvh` en Chromium equivalen a `vh` (no simula barras de Safari): solo se verificó que las reglas se aplican.
+- Regresión completa: 61/61 OK (menú, navegación, carruseles, cámara, sin desborde, sin errores JS).
+
+**Pendientes / oportunidades detectadas:**
+- (Media) Cámara en iPhone: `#camera-section` con `80vh` + `margin-top: 10vh` y contenedor 9:16 puede exceder el alto visible con barras; el botón de pantalla completa podría requerir desplazamiento. `.fullscreen-mode` con `100vh` puede dejar la parte inferior del video bajo la barra de Safari. Requiere autorización (cámara).
+- (Baja) El `env(safe-area-inset-bottom)` de `larioja.css` es inefectivo sin `viewport-fit=cover`.
+
+**Commit:** `5f76dc7`.
