@@ -167,3 +167,42 @@ Línea de trabajo exclusiva de interfaz y experiencia de usuario. Independiente 
 - (Baja) El `env(safe-area-inset-bottom)` de `larioja.css` es inefectivo sin `viewport-fit=cover`.
 
 **Commit:** `5f76dc7`.
+
+---
+
+## 2026-10-30 — Prioridad alta · Etapa 3: multimedia y rendimiento
+
+**Análisis inicial (`index.html`):** video 23,2 MB (H.264 High 1080×1920, 30 fps, 36,2 s, 5,1 Mbit/s, sin audio, índice `moov` al final) + 7,36 MB de imágenes/HTML/CSS/JS. Tres fotos en PNG de 1–1,5 MB y logo de 1886×1296 mostrado a 50 px. `realitytour.html` solo carga el logo; `larioja.html`, logo y portada (ya optimizada).
+
+**Video (`assets/video/hero-mobile.mp4`, mismo nombre):** recodificado con libx264 conservando códec, perfil, resolución, fps, formato de píxel, cuadros (1086) y duración; CRF 29, `-movflags +faststart`. 23,2 MB → 12,8 MB (−45 %), SSIM 0,984 (CRF 24: 20,9 MB / 0,992; CRF 27: 15,6 MB / 0,987). Sin diferencias visibles al comparar cuadros a resolución nativa. No se redujo la resolución (en iPhone se muestra a ~1170 px de ancho). El original sigue disponible en el historial de git (p. ej. `git show 5715724:assets/video/hero-mobile.mp4`).
+
+**Imágenes (`assets/img/web/`, originales conservados):**
+| Original | Optimizada | Tamaño | SSIM |
+|---|---|---|---|
+| imggob.png (carrusel) | imggob-carrusel.jpg | 1,05 MB → 41 KB | 0,994 |
+| paseo.png | paseo.jpg | 1,44 MB → 186 KB | 0,977 |
+| capturacorregido.png (alfa sin uso visible, aplanado sobre #111112) | capturacorregido.jpg | 1,42 MB → 152 KB | 0,978 |
+| relgaCuadrada.png (slider) | relgaCuadrada.jpg | 1,47 MB → 62 KB | 0,996 |
+| IAale.jpg / IAjuan.jpg (q86) | IAale.jpg / IAjuan.jpg | 201/293 KB → 145/120 KB | 0,972 / 0,973 |
+| logocolor.png (3 páginas) | logocolor.png 218×150 | 105 KB → 16 KB | — |
+
+Se mantuvieron dimensiones (no superan el tamaño mostrado a 3×). Sin cambios: `plaza.jpg`, `catedral.jpg`, `imggob.jpg`, `LaRiojaCapital.jpg` (ahorro < 25 % a costa de calidad).
+
+**Carga diferida:** `loading="lazy"` en el slider de Servicio y en las biografías. El carrusel RA queda con carga normal: dentro del contenedor recortado, las diapositivas diferidas solo se pedirían al entrar en vista y podrían aparecer vacías durante la transición.
+
+**Resultado:** imágenes/HTML/CSS/JS de `index.html`: 7,36 MB → 2,35 MB (−68 %); video 23,2 → 12,8 MB. Total aproximado 30,5 → 15,2 MB.
+
+**Pruebas (Chromium + emulación; Swiper servido localmente):**
+- Video: se reproduce (`readyState` 4, tiempo avanzando, sin error).
+- Con 4G simulado, las imágenes diferidas no se piden hasta acercarse; tras recorrer, todas cargan. (Sin red simulada, Chromium usa ~3000 px de margen y las carga de inmediato.)
+- Regresión 61/61 y pruebas iOS de la etapa 2 17/17; sin scroll horizontal (320/390/1366); revisión visual de portada, carrusel y slider.
+
+**Pendientes / oportunidades:**
+- (Media) La primera diapositiva del carrusel «¿Qué es la RA?» (`imggob.png`) es un gráfico de regla, no una fotografía: parece una imagen de prueba. Confirmar con el equipo.
+- (Media) Swiper se carga desde CDN con versión flotante `swiper@11`: una actualización menor podría cambiar el comportamiento. Recomendado fijar versión exacta (p. ej. 11.2.10, la probada).
+- (Baja) Video: `poster` (primer cuadro liviano) mejoraría la percepción de carga; requiere generar una imagen nueva.
+- (Baja) Imágenes del carrusel y del slider sin `width`/`height` ni `alt` descriptivos («Imagen 1…»).
+- (Baja) 9 archivos sin uso en `assets/img` (~7 MB) más los originales reemplazados por `web/`: limpieza pendiente de aprobación.
+- (Baja) `#contact { overflow: hidden }` y otros `!important` ocultan desbordes en lugar de evitarlos (ya detectado como M2).
+
+**Commit:** `5745f60`.
