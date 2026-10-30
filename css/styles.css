@@ -542,6 +542,8 @@ html.menu-open {
 /* Elementos individuales */
 .contact-item {
   flex: 1 1 45%;
+  min-width: 0; /* permite encoger bajo el ancho del correo más largo */
+  overflow-wrap: anywhere; /* en pantallas angostas el correo se parte en vez de recortarse */
   text-align: center;
 }
 
