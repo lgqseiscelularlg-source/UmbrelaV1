@@ -349,14 +349,17 @@ html.menu-open {
   left: 0;
   width: 100%;
   height: 100vh;
+  height: 100dvh;                /* 🔹 Alto visible real en iOS (barras de Safari); 100vh como respaldo */
+  box-sizing: border-box;
   background-color: rgba(0, 0, 0, 0.95);
   display: flex;
   flex-direction: column;
-  justify-content: center;       /* 🔹 Centrado vertical */
+  justify-content: flex-start;   /* 🔹 El centrado vertical lo dan los márgenes auto de los extremos */
   align-items: center;           /* 🔹 Centrado horizontal */
   gap: 1.8em;
-  padding: 0;                    /* 🔹 Quitamos padding extra */
+  padding: 80px 0;               /* 🔹 Deja libre la franja del logo y la X */
   margin: 0;                     /* 🔹 Sin márgenes */
+  overflow-y: auto;              /* 🔹 Pantallas bajas / horizontal: el menú se desplaza en vez de recortarse */
   transform: translateY(-100%);
   opacity: 0;
   visibility: hidden;            /* 🔹 Cerrado: fuera del foco de teclado y lectores */
@@ -394,6 +397,15 @@ html.menu-open {
     margin: 1em 0; /* Espaciado entre las opciones del menú */
   }
 
+  /* Centrado vertical que no recorta: los márgenes auto se anulan si el contenido no entra */
+  .nav-links li:first-child {
+    margin-top: auto;
+  }
+
+  .nav-links li:last-child {
+    margin-bottom: auto;
+  }
+
   .nav-links li a {
     color: white;
     font-size: 1.5em;
@@ -426,9 +438,11 @@ html.menu-open {
     transition: all 0.3s ease;
   }
 
-  /* Efecto hover en el menú hamburguesa */
-  .menu-toggle:hover .hamburger {
-    background: #249da6; /* Cambia el color de las barras del menú hamburguesa */
+  /* Efecto hover en el menú hamburguesa (solo con puntero: en iOS el :hover queda fijo tras tocar) */
+  @media (hover: hover) {
+    .menu-toggle:hover .hamburger {
+      background: #249da6; /* Cambia el color de las barras del menú hamburguesa */
+    }
   }
 
   .menu-toggle.active .hamburger {
@@ -471,6 +485,7 @@ html.menu-open {
 .main-section {
   position: relative;
   height: 100vh;
+  height: 100svh; /* iOS: alto visible con barras de Safari; 100vh como respaldo */
   overflow: hidden;
   background: none !important;
 }
