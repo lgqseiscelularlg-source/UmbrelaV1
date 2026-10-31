@@ -303,3 +303,20 @@ Se mantuvieron dimensiones (no superan el tamaño mostrado a 3×). Sin cambios: 
 - (Media) Con movimiento reducido, pausar el autoplay del carrusel RA y del slider de Servicio (cambia comportamiento JS).
 - (Baja) Eliminar los selectores sin uso listados.
 - (Baja) Renombrar `.hidden` (p. ej. `.reveal`) para evitar confusión con «oculto».
+
+---
+
+## 2026-10-31 — Prioridad media · Etapa 4: revisión de contenido visual (sin cambios)
+
+**Imagen:** `assets/img/imggob.png` (1024×1024), subida el 2025-10-19 (`ab70537`, «Add files via upload») y referenciada desde ese día (`80ef26a`). Desde el 30/10 se sirve optimizada como `assets/img/web/imggob-carrusel.jpg` (`index.html`, primera diapositiva del carrusel «¿Qué es la RA?», `alt="Imagen 1"`). No se usa en otras páginas.
+
+**Por qué parece contenido de prueba:**
+- Es un gráfico gris con dos reglas graduadas cruzadas (números 0–1000 y 40–400, con secuencias no ordenadas: 120, 230, 900, 400…), sin fotografía ni elementos de RealityTour.
+- Las otras diapositivas son fotos o maquetas de RA (225.000–257.000 colores); esta tiene 9.239 colores (fondo casi plano).
+- Su nombre coincide con `imggob.jpg` (Casa de Gobierno con interfaz de RA, usada en el slider de Servicio): probablemente se esperaba una versión cuadrada de esa imagen y se subió por error una lámina de guías o reglas de un editor.
+
+**Impacto:** con `realIndex` 0 y `centeredSlides`, es la **diapositiva central y destacada** al llegar a la sección (verificado en escritorio 1366 px y en iPhone 13): lo primero que se ve del carrusel no comunica qué es la RA.
+
+**Acción:** ninguna (no se reemplaza ni elimina sin aprobación). Opciones para decidir: reemplazarla por la imagen correcta del equipo, o quitar la diapositiva (quedan 4).
+
+**Nuevo hallazgo (Media, requiere aprobación):** las flechas del carrusel se ven **azules** (`rgb(0, 122, 255)`, color por defecto de Swiper) en lugar del turquesa de la marca (`#24b1ba`). Causa: `styles.css` se carga antes que `swiper-bundle.min.css` y, a igual especificidad, Swiper gana. Por la misma razón no rigen `.ra-swiper { overflow: visible }` ni otras reglas de Swiper en `styles.css`. Solución propuesta: definir `--swiper-navigation-color: #24b1ba` en `.ra-swiper` (variable prevista por Swiper). Cambia un color visible, por eso no se aplicó.
