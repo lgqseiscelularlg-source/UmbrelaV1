@@ -226,3 +226,13 @@ Se mantuvieron dimensiones (no superan el tamaño mostrado a 3×). Sin cambios: 
 **Pendiente:** abrir `index.html?diagvideo` en el iPhone afectado, sin tocar la pantalla durante 4 s, y enviar captura del panel (también con Modo de bajo consumo desactivado). Con ese dato se aplica la corrección y se elimina la herramienta.
 
 **Commit:** `99262c5`.
+
+---
+
+## 2026-10-31 — Prioridad media · Etapa 0: cierre del diagnóstico del video
+
+**Conclusión (pruebas reales del equipo en iPhone, Safari y Chrome):** el video de portada se reproduce automáticamente con el **Modo de bajo consumo desactivado**. Con el modo activado, iOS bloquea la reproducción automática (incluso de videos silenciados) y el primer `play()` se rechaza; el script existente de `index.html` lo inicia con el primer toque (por eso arrancaba al hacer scroll). Es una restricción del sistema, no un defecto del sitio.
+
+**Cambios:** eliminado `js/diag-video.js` y su `<script>` en `index.html` (sin otras dependencias). `index.html` queda idéntico al estado previo al diagnóstico (`ba368ac`). Sin `poster` ni mecanismos para forzar la reproducción, según lo indicado.
+
+**Pruebas (Chromium):** video reproduce (`readyState` 4, tiempo avanzando, sin error); regresión 61/61.
