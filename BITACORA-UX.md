@@ -320,3 +320,29 @@ Se mantuvieron dimensiones (no superan el tamaño mostrado a 3×). Sin cambios: 
 **Acción:** ninguna (no se reemplaza ni elimina sin aprobación). Opciones para decidir: reemplazarla por la imagen correcta del equipo, o quitar la diapositiva (quedan 4).
 
 **Nuevo hallazgo (Media, requiere aprobación):** las flechas del carrusel se ven **azules** (`rgb(0, 122, 255)`, color por defecto de Swiper) en lugar del turquesa de la marca (`#24b1ba`). Causa: `styles.css` se carga antes que `swiper-bundle.min.css` y, a igual especificidad, Swiper gana. Por la misma razón no rigen `.ra-swiper { overflow: visible }` ni otras reglas de Swiper en `styles.css`. Solución propuesta: definir `--swiper-navigation-color: #24b1ba` en `.ra-swiper` (variable prevista por Swiper). Cambia un color visible, por eso no se aplicó.
+
+---
+
+## 2026-10-31 — Confirmaciones del equipo
+
+- **Cámara validada en iPhone real con Safari:** controles, visualización y pantalla completa funcionan correctamente (cambios del 31/10, etapa 1 de prioridad media).
+- **Primera diapositiva del carrusel «¿Qué es la RA?»:** es una imagen de prueba colocada intencionalmente. Se conserva sin cambios.
+- **Video de portada:** restricción de iOS con Modo de bajo consumo; no requiere cambios.
+
+---
+
+## 2026-10-31 — Mantenimiento · Etapa 1: consolidación de CSS duplicado
+
+**Método de verificación (nuevo):** comparador de estilos computados entre el commit anterior (servido aparte) y la copia de trabajo: **todas** las propiedades CSS de **todos** los elementos (incluidos `::before`/`::after`), en las 3 páginas × 10 anchos (320, 390, 768, 769, 960, 961, 1024, 1025, 1366, 1920: ambos lados de cada media query), en los estados carga, todo revelado, header oculto con fondo, menú móvil abierto, pantalla completa de la cámara y `:hover`/`:active`/`:focus-visible`/`:focus-within` forzados (390, 769, 1366 px); más 69 capturas comparadas por píxel. Movimiento automático congelado solo en la prueba. Determinismo: dos corridas sobre el mismo código → 0 diferencias. Sensibilidad: un error intencional (dejar `.overlay` en 0,5) se detecta en estilos y píxeles.
+
+**Consolidado (se conserva el valor efectivo en la posición de la última regla):** `.main-section`, `.overlay`, `.cta-button` (segunda definición era un subconjunto), bloques `@media (max-width: 768px)` de Contacto (dos consecutivos → uno), menú móvil (`.nav-links li`, `li a`, `li a:hover`, dos juegos dentro del mismo `@media`), carrusel RA (`.ra-swiper`, `.swiper-slide`, `-active`, `-next/-prev`, `img`, flechas y su `:hover`: dos versiones completas → una).
+
+**Eliminado por estar completamente anulado:** primera `.ra-text`; primera `.bio`; `.ra-section` dentro del grupo de secciones; `.menu-toggle` dentro del grupo con `.logo` (móvil); en móvil, `.main-section` (alto pisado; `margin-top: 0` = valor inicial), `.bio` y `.bio-container`.
+
+**No consolidado (no es seguro / cumple otra función):**
+- Grupo `.biography-section, .services-section` (padding + text-align) y sus reglas propias: aportan propiedades distintas.
+- Carrusel en móvil: `.ra-swiper img { height: 240px }` y `.ra-swiper .swiper-slide { width: 90%; height: 380px; filter: none; opacity: 1; transform: scale(1) }`. **Hoy no tienen efecto** (las reglas generales posteriores, de igual especificidad, las anulan: en móvil las diapositivas laterales siguen con desenfoque). Se conservan, antes de las generales y con un comentario, porque recuperarlas cambiaría la apariencia.
+
+**Resultado:** `styles.css` 1135 → 987 líneas; de 25 selectores duplicados quedan los 2 intencionales. **Comparador: 220 estados, 0 diferencias; 69 capturas, 0 píxeles distintos.** Regresión funcional 61/61.
+
+**Nuevo hallazgo (Baja):** el diseño móvil previsto del carrusel (sin desenfoque, diapositiva al 90 %) nunca se aplicó por el orden de las reglas. Decidir si recuperarlo (cambio visual).

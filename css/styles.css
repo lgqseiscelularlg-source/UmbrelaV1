@@ -133,25 +133,6 @@ html.menu-open {
   margin: 5px 0;
 }
 
-.main-section {
-  height: 100vh;
-  /*background: url("../assets/img/CatedralNoche.jpg") no-repeat center center/cover;*/
-  position: relative;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  color: white;
-}
-
-.overlay {
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: rgba(0, 0, 0, 0.5);
-}
-
 .cta-button {
   background: #249da6;
   border: none;
@@ -220,8 +201,7 @@ html.menu-open {
 }
 
 .biography-section,
-.services-section,
-.ra-section {
+.services-section {
   padding: 4em 1em;
   text-align: center;
 }
@@ -236,11 +216,6 @@ html.menu-open {
   display: flex;
   justify-content: space-around;
   flex-wrap: wrap;
-}
-
-.bio {
-  max-width: 45%;
-  text-align: left;
 }
 
 .bio img {
@@ -358,12 +333,6 @@ html.menu-open {
 
 @media (max-width: 768px) {
 
-  .main-section {
-    height: 100vh;
-    /*background: url("../assets/img/CatedralNoche.jpg") no-repeat center center/cover;*/
-    margin-top: 0; /* Eliminar cualquier margen superior */
-  }
-
   /* Menu responsive */
   /* ====== MENÚ HAMBURGUESA (versión móvil) ====== */
 .nav-links {
@@ -400,23 +369,8 @@ html.menu-open {
   transition: transform 0.5s ease, opacity 0.5s ease, visibility 0s;
 }
 
-.nav-links li {
-  list-style: none;
-}
-
-.nav-links li a {
-  color: white;
-  font-size: 1.6em;
-  text-decoration: none;
-  transition: color 0.3s ease;
-}
-
-.nav-links li a:hover {
-  color: #249da6;
-}
-
-
   .nav-links li {
+    list-style: none;
     margin: 1em 0; /* Espaciado entre las opciones del menú */
   }
 
@@ -440,8 +394,7 @@ html.menu-open {
    color: #249da6; /* Color al pasar el ratón */
   }
 
-  .logo,
-  .menu-toggle {
+  .logo {
     position: relative; /* Mantener el logo y el menú por encima de la imagen */
     z-index: 1001;
   }
@@ -485,15 +438,6 @@ html.menu-open {
     transform: translateY(-8px) rotate(-45deg);
   }
 
-  .bio-container {
-    flex-direction: column;
-  }
-
-  .bio {
-    max-width: 100%;
-    margin-bottom: 2em;
-  }
-
   .ra-content {
     flex-direction: column;
   }
@@ -504,12 +448,16 @@ html.menu-open {
   }
 }
 
-/* ===== VIDEO DE FONDO SOLO EN SECCIÓN INICIO ===== */
+/* ===== SECCIÓN INICIO (video de fondo) ===== */
 .main-section {
   position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
   height: 100vh;
   height: 100svh; /* iOS: alto visible con barras de Safari; 100vh como respaldo */
   overflow: hidden;
+  color: white;
   background: none !important;
 }
 
@@ -525,17 +473,11 @@ html.menu-open {
   background-color: black;
 }
 
-/* Overlay y botón siguen igual */
 .overlay {
   position: absolute;
   inset: 0;
   background: rgba(0, 0, 0, 0.4);
   z-index: 0;
-}
-
-.cta-button {
-  position: relative;
-  z-index: 1;
 }
 
 /* === SECCIÓN CONTACTO AJUSTADA FINAL === --------------------------------------------------------*/
@@ -628,7 +570,7 @@ html.menu-open {
 /* 📱 Ajustes móviles específicos */
 @media (max-width: 768px) {
   .contact-section {
-    padding: 2.5em 0.8em 2em 0.8em;
+    padding: 3em 0.5em 3.5em 0.5em; /* equilibrio vertical en móvil */
   }
 
   .contact-grid {
@@ -656,118 +598,60 @@ html.menu-open {
   }
 }
 
-
-/* Ajuste en móviles para mantener equilibrio vertical --------------------------------------------------*/
-@media (max-width: 768px) {
-  .contact-section {
-    padding: 3em 0.5em 3.5em 0.5em;
-  }
-
-  .contact-grid {
-    gap: 1em;
-  }
-
-  .divider {
-    height: 80px;
-  }
-}
-
-/* === SWIPER – SECCIÓN ¿Qué es la RA? ---------------------------------------------------------------------=== */
-.ra-swiper {
-  width: 100%;
-  max-width: 800px;
-  margin: 2em auto;
-  position: relative;
-  overflow: hidden;
-  border-radius: 12px;
-  box-shadow: 0 0 15px rgba(0, 0, 0, 0.3);
-}
-
-.ra-swiper .swiper-slide {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-
-.ra-swiper img {
-  width: 100%;
-  height: 300px; /* Mantiene proporción estable */
-  object-fit: cover;
-  border-radius: 10px;
-}
-
-
-/* Flechas de navegación (escritorio) */
-.swiper-button-next,
-.swiper-button-prev {
-  color: #249da6;
-  transition: color 0.3s ease, transform 0.3s ease;
-}
-
-.swiper-button-next:hover,
-.swiper-button-prev:hover {
-  color: white;
-  transform: scale(1.1);
-}
-
-/* Paginación (móvil) */
-.swiper-pagination-bullet {
-  background: #249da6;
-  opacity: 0.6;
-}
-
-.swiper-pagination-bullet-active {
-  opacity: 1;
-}
-
-/* Ajuste responsive */
-@media (max-width: 768px) {
-  .ra-swiper img {
-    height: 240px;
-  }
-}
-
-  /* --- Carrusel tipo “Wix Showcase” ------------------------------------------------------------------------- ----*/
-/* =============================
-   SECCIÓN ¿Qué es la RA? FINAL
-   ============================= */
+/* === SWIPER – SECCIÓN ¿Qué es la RA? ============================================== */
 .ra-section {
   text-align: center;
   color: white;
   padding: 80px 0;
 }
 
-.ra-text {
-  max-width: 900px;
-  margin: 0 auto 60px;
-  font-size: 1.1rem;
-  line-height: 1.6;
-  color: #ddd;
-}
-
-/* === Carrusel Swiper === */
+/* Contenedor. Nota: swiper-bundle.min.css se carga después y su .swiper { overflow: hidden }
+   prevalece sobre el overflow: visible de esta regla (misma especificidad). */
 .ra-swiper {
   width: 100%;
   max-width: 1600px;
   margin: 0 auto;
   position: relative;
   overflow: visible;
+  border-radius: 12px;
+  box-shadow: 0 0 15px rgba(0, 0, 0, 0.3);
 }
 
-/* Slides base */
+/* Ajustes móviles previstos originalmente. HOY NO TIENEN EFECTO: las reglas generales
+   .ra-swiper .swiper-slide y .ra-swiper img de abajo, posteriores y de igual especificidad,
+   los anulan. Se conservan sin cambios para decidir si recuperarlos (cambiaría la apariencia). */
+@media (max-width: 768px) {
+  .ra-swiper img {
+    height: 240px;
+  }
+
+  .ra-swiper .swiper-slide {
+    width: 90%;
+    height: 380px;
+    filter: none;
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* Diapositivas (coverflow): Swiper aplica además ancho y transform en línea */
 .ra-swiper .swiper-slide {
+  display: flex;
+  justify-content: center;
+  align-items: center;
   width: 420px;
   height: 500px;
-  opacity: 0.5;
   transition: transform 0.8s ease, opacity 0.8s ease, filter 0.8s ease;
   filter: blur(3px);
+  opacity: 0.5;
+  transform: scale(0.9);
 }
 
 /* Imagen central protagonista */
 .ra-swiper .swiper-slide-active {
   transform: scale(1.25);
-  opacity: 1;
   filter: blur(0);
+  opacity: 1;
   z-index: 3;
   box-shadow: 0 15px 60px rgba(0, 0, 0, 0.7);
   border-radius: 15px;
@@ -776,9 +660,9 @@ html.menu-open {
 /* Laterales */
 .ra-swiper .swiper-slide-next,
 .ra-swiper .swiper-slide-prev {
-  transform: scale(0.9);
-  opacity: 0.7;
+  transform: scale(1);
   filter: blur(2px);
+  opacity: 0.8;
 }
 
 /* Imágenes */
@@ -787,6 +671,7 @@ html.menu-open {
   height: 100%;
   object-fit: cover;
   border-radius: 15px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
 }
 
 /* Flechas */
@@ -802,47 +687,14 @@ html.menu-open {
   transform: scale(1.2);
 }
 
-/* ==== RESPONSIVE ==== */
-@media (max-width: 768px) {
-  .ra-swiper .swiper-slide {
-    width: 90%;
-    height: 380px;
-    filter: none;
-    opacity: 1;
-    transform: scale(1);
-  }
+/* Paginación (móvil) */
+.swiper-pagination-bullet {
+  background: #249da6;
+  opacity: 0.6;
 }
 
-/* ==== Animación visual tipo Coverflow estable ====*/
-.ra-swiper .swiper-slide {
-  width: 420px;
-  height: 500px;
-  transition: transform 0.8s ease, opacity 0.8s ease, filter 0.8s ease;
-  filter: blur(3px);
-  opacity: 0.5;
-  transform: scale(0.9);
-}
-
-.ra-swiper .swiper-slide-active {
-  transform: scale(1.25);
-  filter: blur(0);
+.swiper-pagination-bullet-active {
   opacity: 1;
-  z-index: 3;
-}
-
-.ra-swiper .swiper-slide-next,
-.ra-swiper .swiper-slide-prev {
-  transform: scale(1);
-  filter: blur(2px);
-  opacity: 0.8;
-}
-
-.ra-swiper img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  border-radius: 15px;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
 }
 
 /* === SLIDER SUAVE "NUESTRO SERVICIO" === -------------------------------------------------------------*/
