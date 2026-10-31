@@ -236,3 +236,26 @@ Se mantuvieron dimensiones (no superan el tamaño mostrado a 3×). Sin cambios: 
 **Cambios:** eliminado `js/diag-video.js` y su `<script>` en `index.html` (sin otras dependencias). `index.html` queda idéntico al estado previo al diagnóstico (`ba368ac`). Sin `poster` ni mecanismos para forzar la reproducción, según lo indicado.
 
 **Pruebas (Chromium):** video reproduce (`readyState` 4, tiempo avanzando, sin error); regresión 61/61.
+
+---
+
+## 2026-10-31 — Prioridad media · Etapa 1: cámara en Safari iOS
+
+**Método:** Chromium no reproduce las barras dinámicas de Safari. Se emuló maquetando con el alto grande (en Safari, `vh` = barras ocultas) y midiendo qué queda fuera del alto chico visible al cargar. Valores aproximados: iPhone 13 745/664, iPhone SE 627/548, iPhone 15 Pro Max 832/740.
+
+**Problemas encontrados (antes):**
+- Botón de pantalla completa fuera del área visible al cargar en iPhone 13, SE y 15 Pro Max.
+- iPhone SE: la caja empieza en y=37 y el botón de cambiar cámara queda tapado por el header fijo (76px).
+- Pantalla completa (`100vh`): 79–92px del video quedan bajo la barra de Safari.
+- Causa: `#camera-section` con `80vh` + `margin-top: 10vh` + `padding: 20px` no considera el header ni la diferencia entre alto grande y visible; la caja 9:16 se dimensiona solo por ancho.
+
+**Cambios (`css/styles.css`, sin tocar `js/realitytour.js`):**
+- `#camera-section`: `box-sizing: border-box`, `height: 100svh` (respaldo `100vh`), `padding: 86px 20px 20px` (header + aire); se quita `margin-top: 10vh`.
+- `.camera-container`: `width: min(100%, 400px, calc((100svh - 110px) * 9 / 16))` (respaldo con `vh`): el ancho se limita también por el alto disponible; `aspect-ratio: 9/16` se conserva.
+- `.camera-container.fullscreen-mode`: `height: 100dvh` tras el respaldo `100vh`.
+
+**Resultado (emulado con `svh`):** en los cuatro casos ambos botones visibles y sin quedar bajo el header; relación 1,766–1,771 (9:16 + borde); pantalla completa sin partes ocultas. **Compromiso visual:** la caja es más chica en teléfonos para entrar completa (iPhone 13: 350→316px de ancho; SE: 335→250; 15 Pro Max: 390→358; escritorio: 404→392).
+
+**Pruebas:** regresión 61/61 (cámara con dispositivo simulado, pantalla completa, menú, navegación, carruseles) y pruebas iOS 17/17. **Sin prueba en Safari real:** verificar en iPhone que la caja y ambos botones se vean al cargar, con barras visibles y ocultas, y que la pantalla completa ocupe todo el alto visible.
+
+**Pendiente:** en Safari < 15.4 (sin `svh`/`dvh`) rige el respaldo `vh` (comportamiento similar al anterior, sin recorte bajo el header).

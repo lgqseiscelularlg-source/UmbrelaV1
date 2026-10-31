@@ -301,20 +301,24 @@ html.menu-open {
 }
 
                                 /* SEGUNDA PAGINA */
+/* La sección ocupa el alto visible (svh: con las barras de Safari visibles; vh como respaldo)
+   y reserva arriba el alto del header fijo (76px) + 10px de aire. */
 #camera-section {
   display: flex;
   justify-content: center;
   align-items: center;
-  height: 80vh;
-  padding: 20px;
-  margin-top: 10vh;
- /* margin-top: 80px; /* Ajusta este valor según el espacio que necesites */
+  box-sizing: border-box;
+  height: 100vh;
+  height: 100svh;
+  padding: 86px 20px 20px;
 }
 
 .camera-container {
   position: relative;
-  width: 100%;
-  max-width: 400px;
+  /* Ancho limitado también por el alto disponible para que la caja 9:16 entre completa:
+     alto disponible = 100svh - 106px (padding de la sección) - 4px (borde) */
+  width: min(100%, 400px, calc((100vh - 110px) * 9 / 16));
+  width: min(100%, 400px, calc((100svh - 110px) * 9 / 16));
   aspect-ratio: 9/16;
   background-color: #000000;
   border: 2px solid #333333;
@@ -1021,6 +1025,7 @@ html.menu-open {
   left: 0;
   width: 100vw;
   height: 100vh;
+  height: 100dvh; /* iOS: alto visible actual, sin quedar bajo la barra de Safari */
   max-width: none;
   border: none;
   z-index: 9999;
