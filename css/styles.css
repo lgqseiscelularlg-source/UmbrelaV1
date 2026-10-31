@@ -176,13 +176,15 @@ html.menu-open {
   transform: scale(0.9);
 }
 
-.hidden {
+/* Revelado al desplazarse. :where() no suma especificidad: la cascada es la misma que con .hidden.
+   La clase js-reveal la pone <head> solo si el revelado puede funcionar (ver index.html). */
+:where(.js-reveal) .hidden {
   opacity: 0;
   transform: translateY(150px) scale(0.95); /* Desplazamiento y reducción de tamaño */
   transition: opacity 1.2s ease-out, transform 1.2s cubic-bezier(0.25, 1, 0.5, 1); /* Efecto suavizado */
 }
 
-.visible {
+:where(.js-reveal) .visible {
   opacity: 1;
   transform: translateY(0) scale(1); /* Escala y posición final */
 }
@@ -828,10 +830,11 @@ html.menu-open {
     letter-spacing: 0.3px;
   }
 
-  /* Suaviza transición al hacer scroll sin ocultar ningún bloque */
+  /* La biografía (contenedor) se muestra sin animación en móvil; sus hijos sí se animan.
+     .bio.hidden (0,2,0) ya supera a .hidden y .visible (0,1,0): no requiere !important */
   .bio.hidden {
-    opacity: 1 !important;
-    transform: none !important;
+    opacity: 1;
+    transform: none;
   }
 }
 
@@ -958,30 +961,18 @@ html.menu-open {
   display: none; /* 🔹 Oculto por defecto al iniciar */
 }
 
-/* --- Ocultar el botón de salida cuando no corresponde --- */
-#exit-fullscreen-btn.hidden {
-  display: none !important;
-}
-
 /* --- Ajuste óptico exclusivo del ícono de pantalla completa --- */
 #fullscreen-btn svg {
   transform: translate(0.5px, 1px); /* 🔹 Corrige alineación fina */
 }
 
-/* Evitar desplazamiento fantasma en la última sección (Contacto) ---------------------------------------------------------------------------------------------------------------------- */
-.contact-section.hidden {
-  transform: none !important;
-}
-
-/* === CORRECCIÓN SCROLL EXTRA EN SECCIÓN CONTACTO === */
+/* Contacto es la última sección: sus elementos solo aparecen con opacidad. Un translateY
+   extendería el alto desplazable de la página más allá del final mientras están ocultos.
+   #contact .hidden (1,1,0) supera a .hidden/.visible sin !important. */
 #contact .hidden {
-  transform: none !important;
-  margin-bottom: 0 !important;
-  padding-bottom: 0 !important;
-}
-
-#contact {
-  overflow: hidden; /* evita que cualquier transform o transición cree scroll */
+  transform: none;
+  margin-bottom: 0;
+  padding-bottom: 0;
 }
 
 

@@ -109,6 +109,8 @@ window.addEventListener("scroll", function () {
   elements.forEach((el) => {
     observer.observe(el);
   });
+  // Revelado listo: <head> ya no necesita mostrar todo como respaldo (ver index.html)
+  document.documentElement.classList.add("reveal-ready");
   
 /* ==== Carrusel Swiper ¿Qué es la RA? ==== ------------------------------------------------------------------*/
 if (document.querySelector(".ra-swiper")) {

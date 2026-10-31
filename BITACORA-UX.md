@@ -346,3 +346,25 @@ Se mantuvieron dimensiones (no superan el tamaño mostrado a 3×). Sin cambios: 
 **Resultado:** `styles.css` 1135 → 987 líneas; de 25 selectores duplicados quedan los 2 intencionales. **Comparador: 220 estados, 0 diferencias; 69 capturas, 0 píxeles distintos.** Regresión funcional 61/61.
 
 **Nuevo hallazgo (Baja):** el diseño móvil previsto del carrusel (sin desenfoque, diapositiva al 90 %) nunca se aplicó por el orden de las reglas. Decidir si recuperarlo (cambio visual).
+
+---
+
+## 2026-10-31 — Mantenimiento · Etapa 2: animaciones `.hidden` y visibilidad del contenido
+
+**Diagnóstico:**
+- `.hidden` (opacidad 0 + `translateY(150px)` + escala) se aplicaba por CSS siempre; solo `main.js` (`IntersectionObserver`) agregaba `.visible`. **Sin JavaScript, si `main.js` no cargaba, si faltaba `IntersectionObserver` o si fallaba su inicialización, 16 bloques de index y 18 de larioja quedaban invisibles** (verificado en la versión anterior).
+- Contacto es la última sección: un `translateY` positivo en sus elementos ocultos extiende el alto desplazable más allá del final (el «scroll fantasma» original). Se había compensado con `#contact .hidden { transform: none !important; … }`, `.contact-section.hidden { transform: none !important }` (no aplica a ningún elemento) y `#contact { overflow: hidden }`, que además ocultaba desbordes reales (el recorte del segundo contacto corregido el 30/10).
+- `.bio.hidden { … !important }` (móvil) y `#exit-fullscreen-btn.hidden { display: none !important }` (no aplica: `realitytour.js` usa `style.display`): los `!important` no eran necesarios por especificidad.
+
+**Cambios:**
+- `index.html` y `larioja.html` (`<head>`): script en línea que agrega `js-reveal` a `<html>` solo si existe `IntersectionObserver`. En `load`, si `main.js` no marcó `reveal-ready`, quita `js-reveal` y todo queda visible (no hay temporizadores ni reintentos).
+- `js/main.js`: agrega `reveal-ready` después de observar los elementos.
+- `css/styles.css`: `.hidden`/`.visible` → `:where(.js-reveal) .hidden/.visible` (`:where()` no suma especificidad: cascada idéntica). `.bio.hidden` y `#contact .hidden` sin `!important` (ya ganan por especificidad; se conservan sus valores, p. ej. Contacto solo con fundido). Eliminados `.contact-section.hidden`, `#exit-fullscreen-btn.hidden` y `#contact { overflow: hidden }`.
+- `css/larioja.css`: `.larioja-page .hidden` → `:where(.js-reveal) .larioja-page .hidden` (misma especificidad).
+
+**Pruebas (Chromium):**
+- Nuevas 13/13: con todo funcionando la animación sigue activa; sin JS, con `main.js` bloqueado, sin `IntersectionObserver` o con error al observar → 0 bloques invisibles (antes: 16–18). Contacto al final (320/390/1366): alto desplazable igual antes y después de revelarse, la sección termina exactamente en el borde de la pantalla, sin desbordes.
+- Comparador de estilos (220 estados) + revalidación de pseudoclases con identificación corregida (144 estados): **única diferencia `#contact` overflow `hidden → visible`**, prevista; **0 píxeles distintos** en todas las capturas.
+- Regresión 61/61; header 29/29.
+
+**`!important` restantes (no relacionados con la animación, sin cambios):** `.main-section { background: none !important }` y `.contact-link` (color y subrayado). Pendiente evaluar si son necesarios.

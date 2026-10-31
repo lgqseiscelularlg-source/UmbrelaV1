@@ -10,6 +10,17 @@
 
     <title>Realidad Aumentada</title>
     <link rel="stylesheet" href="css/styles.css" />
+    <!-- Revelado al desplazarse (main.js): los elementos .hidden solo se ocultan si el navegador
+         puede revelarlos. Si main.js no carga o falla antes de inicializarlo, se muestra todo. -->
+    <script>
+      (function (root) {
+        if (!("IntersectionObserver" in window)) return;
+        root.classList.add("js-reveal");
+        window.addEventListener("load", function () {
+          if (!root.classList.contains("reveal-ready")) root.classList.remove("js-reveal");
+        });
+      })(document.documentElement);
+    </script>
         <!-- Swiper CSS -->
     <link
       rel="stylesheet"

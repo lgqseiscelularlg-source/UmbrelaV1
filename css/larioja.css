@@ -20,7 +20,7 @@
 
 /* Revelado al hacer scroll: se reutiliza .hidden de main.js con un
    desplazamiento más corto, adecuado para tarjetas */
-.larioja-page .hidden {
+:where(.js-reveal) .larioja-page .hidden {
   transform: translateY(40px);
 }
 
