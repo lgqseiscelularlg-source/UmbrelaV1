@@ -112,6 +112,10 @@ window.addEventListener("scroll", function () {
   // Revelado listo: <head> ya no necesita mostrar todo como respaldo (ver index.html)
   document.documentElement.classList.add("reveal-ready");
   
+// Movimiento reducido: sin avance automático en el carrusel ni en el slider (la navegación manual se mantiene).
+// Se reevalúa si el usuario cambia la preferencia con la página abierta.
+const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
+
 /* ==== Carrusel Swiper ¿Qué es la RA? ==== ------------------------------------------------------------------*/
 if (document.querySelector(".ra-swiper")) {
   const swiper = new Swiper(".ra-swiper", {
@@ -153,19 +157,36 @@ if (document.querySelector(".ra-swiper")) {
     },
   });
 
-  swiper.autoplay.start();
+  const syncSwiperAutoplay = () => {
+    if (reducedMotion.matches) swiper.autoplay.stop();
+    else swiper.autoplay.start();
+  };
+  syncSwiperAutoplay();
+  reducedMotion.addEventListener("change", syncSwiperAutoplay);
 }
 
 /* ==== Slider suave en "Nuestro Servicio" ==== --------------------------------------------------------*/
 const slides = document.querySelectorAll(".service-slider .slide");
 let currentSlide = 0;
 
+let serviceTimer = null;
+
+function syncServiceSlider() {
+  if (reducedMotion.matches) {
+    clearInterval(serviceTimer);
+    serviceTimer = null;
+  } else if (!serviceTimer) {
+    serviceTimer = setInterval(() => {
+      slides[currentSlide].classList.remove("active");
+      currentSlide = (currentSlide + 1) % slides.length;
+      slides[currentSlide].classList.add("active");
+    }, 4000); // cambia cada 4 segundos
+  }
+}
+
 if (slides.length > 0) {
-  setInterval(() => {
-    slides[currentSlide].classList.remove("active");
-    currentSlide = (currentSlide + 1) % slides.length;
-    slides[currentSlide].classList.add("active");
-  }, 4000); // cambia cada 4 segundos
+  syncServiceSlider();
+  reducedMotion.addEventListener("change", syncServiceSlider);
 }
 
 

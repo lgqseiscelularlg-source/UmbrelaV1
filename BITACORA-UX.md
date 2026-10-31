@@ -368,3 +368,19 @@ Se mantuvieron dimensiones (no superan el tamaño mostrado a 3×). Sin cambios: 
 - Regresión 61/61; header 29/29.
 
 **`!important` restantes (no relacionados con la animación, sin cambios):** `.main-section { background: none !important }` y `.contact-link` (color y subrayado). Pendiente evaluar si son necesarios.
+
+---
+
+## 2026-10-31 — Accesibilidad · Etapa 3: movimiento reducido en carrusel y slider
+
+**Diagnóstico:** con `prefers-reduced-motion: reduce`, el revelado `.hidden` ya se desactivaba (31/10), pero el carrusel RA (autoplay de Swiper cada 2,5 s, coverflow de 1,2 s) y el slider de Servicio (`setInterval` de 4 s con fundido) seguían avanzando solos (verificado en la versión anterior).
+
+**Cambios (`js/main.js`, sin tocar la configuración de Swiper):**
+- `matchMedia("(prefers-reduced-motion: reduce)")` compartido.
+- Carrusel: `autoplay.stop()` si la preferencia está activa; `autoplay.start()` si no (comportamiento previo). Se reevalúa al cambiar la preferencia con la página abierta.
+- Slider de Servicio: el intervalo solo se crea sin la preferencia; se detiene o reanuda si cambia.
+- Navegación manual del carrusel (flechas y deslizamiento) sin cambios.
+
+**Pruebas (Chromium, móvil y escritorio):** 11/11. Sin preferencia: carrusel y slider avanzan como antes. Con `reduce`: 5 s sin avance (autoplay detenido, una sola imagen visible en el slider); flechas y deslizamiento funcionan; al desactivar la preferencia se reanudan y al reactivarla se detienen. Contra la versión anterior las pruebas de `reduce` fallan. Regresión 61/61; header y movimiento reducido 29/29. Sin errores JS.
+
+**Consideraciones:** con `reduce`, el slider de Servicio muestra solo la primera imagen (no tiene controles manuales). Las transiciones al navegar manualmente el carrusel (1,2 s) se mantienen por ser iniciadas por el usuario. Video de portada fuera de alcance.
