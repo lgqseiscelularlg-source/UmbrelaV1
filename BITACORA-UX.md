@@ -206,3 +206,23 @@ Se mantuvieron dimensiones (no superan el tamaño mostrado a 3×). Sin cambios: 
 - (Baja) `#contact { overflow: hidden }` y otros `!important` ocultan desbordes en lugar de evitarlos (ya detectado como M2).
 
 **Commit:** `5745f60`.
+
+---
+
+## 2026-10-31 — Video de portada no arranca en iPhone hasta el primer scroll (investigación)
+
+**Síntoma (prueba real, iPhone/WebKit):** al cargar, el video queda quieto; arranca con un pequeño scroll; luego sigue normal. En escritorio funciona.
+
+**Investigación del código:**
+- `<video autoplay muted loop playsinline preload="auto">` con atributos correctos para Safari iOS. Sin pista de audio (verificado con ffprobe). La optimización del 30/10 conservó códec, perfil, resolución y cuadros; agregó `faststart` (favorece el arranque). El problema es previo (el script de respaldo existe desde 2025-10-16).
+- `js/main.js` no tiene ninguna lógica de reproducción ni reacciona al scroll para el video.
+- Único código que inicia el video: script en línea de `index.html` → en `DOMContentLoaded` llama `play()`; **solo si la promesa se rechaza** registra `touchstart`/`click` en `window` que vuelven a llamar `play()`. En iPhone, un scroll empieza con `touchstart`.
+- Conclusión verificada: el síntoma coincide exactamente con la rama de **rechazo del primer `play()`**. Reproducido en Chromium simulando el rechazo (NotAllowedError o AbortError): video quieto en 0 s hasta el primer toque; sin rechazo, reproduce desde la carga. El `catch` descarta el motivo del error.
+
+**Causa raíz no confirmada:** falta saber *por qué* WebKit rechaza ese `play()`. Hipótesis: (1) Modo de bajo consumo de iOS (bloquea toda reproducción automática; `NotAllowedError`); (2) política de WebKit de reproducción automática solo para videos que considera visibles (el video usa `z-index: -1`); (3) otra política de WebKit. No hay WebKit/Safari en el entorno ni acceso a webkit.org: no se aplicó ninguna corrección especulativa.
+
+**Cambio:** `js/diag-video.js` (cargado en `<head>` de `index.html`), **inactivo salvo con `?diagvideo`** en la URL. Muestra un panel con el resultado y motivo de cada `play()`, eventos del video, estado (`readyState`, `muted`, `autoplay`, `playsInline`, tamaño, visibilidad) y gestos. Probado en Chromium: sin el parámetro no aparece ni cambia nada (regresión 61/61); con rechazo simulado registra el motivo.
+
+**Pendiente:** abrir `index.html?diagvideo` en el iPhone afectado, sin tocar la pantalla durante 4 s, y enviar captura del panel (también con Modo de bajo consumo desactivado). Con ese dato se aplica la corrección y se elimina la herramienta.
+
+**Commit:** `99262c5`.
