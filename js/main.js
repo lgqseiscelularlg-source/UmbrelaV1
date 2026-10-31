@@ -67,21 +67,17 @@ window.addEventListener("scroll", function () {
     return; // No hacemos nada si está al final
   }
 
-  // Ocultar al bajar
+  // Ocultar al bajar (clase en lugar de estilo inline; ver header.header-oculto en styles.css)
   if (scrollTop > lastScrollTop && scrollTop > scrollThreshold) {
-    header.style.transform = "translateY(-100%)";
+    header.classList.add("header-oculto");
   }
   // Mostrar al subir
   else if (scrollTop < lastScrollTop - 10 && !nearBottom) {
-    header.style.transform = "translateY(0)";
+    header.classList.remove("header-oculto");
   }
 
-  // Fondo transparente al inicio
-  if (scrollTop <= 100) {
-    header.style.backgroundColor = "transparent";
-  } else {
-    header.style.backgroundColor = "#111112";
-  }
+  // Fondo transparente al inicio, oscuro al desplazarse (header.scrolled)
+  header.classList.toggle("scrolled", scrollTop > 100);
 
   lastScrollTop = scrollTop;
 });

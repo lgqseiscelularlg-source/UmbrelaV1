@@ -39,6 +39,12 @@ header.scrolled {
   background-color: #111112;
 }
 
+/* ====== OCULTO AL BAJAR (clase puesta por main.js) ======
+   Visible mientras un enlace interno tiene el foco del teclado */
+header.header-oculto:not(:focus-within) {
+  transform: translateY(-100%);
+}
+
 
 html {
   scroll-behavior: smooth;
@@ -198,6 +204,19 @@ html.menu-open {
 .visible {
   opacity: 1;
   transform: translateY(0) scale(1); /* Escala y posición final */
+}
+
+/* Movimiento reducido: contenido visible sin desplazamientos ni scroll suave */
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  .hidden {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
 }
 
 .biography-section,

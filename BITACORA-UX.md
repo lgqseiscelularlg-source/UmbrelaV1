@@ -275,3 +275,31 @@ Se mantuvieron dimensiones (no superan el tamaño mostrado a 3×). Sin cambios: 
 **Pruebas (Chromium; Swiper 11.2.10 de npm servido solo en la URL exacta):** la página pide exactamente las dos URLs fijadas; `Swiper` disponible, efecto `coverflow`, 5 diapositivas, CSS de Swiper aplicado (`overflow: hidden`); carrusel avanzando y slider de Servicio avanzando a 320/390/1366 px; regresión 61/61. El CDN real está bloqueado en el entorno: verificar en el sitio publicado.
 
 **Opcional (no aplicado):** agregar `integrity` (SRI) a ambos recursos.
+
+---
+
+## 2026-10-31 — Prioridad media · Etapa 3: auditoría de CSS y animaciones
+
+**Hallazgos (inventario automático de `styles.css` + verificación en las tres páginas):**
+- **Duplicados:** 25 selectores definidos 2–3 veces en el mismo contexto; el resultado depende del orden. Contradicciones relevantes: `.ra-text` (5 propiedades pisadas), `.ra-swiper` (`overflow: hidden` → `visible`, `max-width` 800 → 1600), `.ra-swiper img` (alto 300px → 100%), flechas de Swiper (color y escala), `.overlay` (opacidad 0,5 → 0,4), `.ra-section` (padding), `.contact-section`/`.bio`/`.nav-links li a` en móvil.
+- **Sin uso (ningún elemento en ninguna página, incluso con menú abierto y pantalla completa):** `.description`, `.image-slider`, `.ra-content`, `.service-image(:hover)`, `.slider-image(.active)`, `.swiper-pagination-bullet(-active)`, `.contact-section.hidden`, `#exit-fullscreen-btn.hidden`, y `header.scrolled` (ahora usado, ver cambios).
+- **`!important` (11):** casi todos parchean la animación `.hidden`: `.bio.hidden` (móvil), `#contact .hidden` (transform/margin/padding), `.contact-section.hidden` y `#exit-fullscreen-btn.hidden` (estos dos no aplican a nada). Otros: `.main-section { background: none }`, `.contact-link` (color/decoración).
+- **`overflow: hidden`:** legítimos en carrusel, slider, cámara, botón CTA, hero y bloqueo del menú. **`#contact { overflow: hidden }`** oculta desbordes en vez de evitarlos (ya ocultaba el recorte del segundo contacto corregido el 30/10); se agregó por el «scroll fantasma» que produce `translateY(150px)` de `.hidden` al final de la página.
+- **Carrusel RA:** las reglas CSS de `transform`/`scale` en `.swiper-slide`, `-active`, `-next`, `-prev` son pisadas por los estilos en línea del efecto coverflow de Swiper (no tienen efecto visual sobre la transformación).
+- **Encabezado (`main.js`):** ocultaba y cambiaba el fondo con estilos en línea (`style.transform`, `style.backgroundColor`) en cada evento de scroll; `header.scrolled` existía sin uso; el `transform` en línea quedaba siempre aplicado (aun `translateY(0)`); con el header oculto, un enlace enfocado con teclado quedaba fuera de vista.
+- **`.hidden` / `.visible`:** revelado único por `IntersectionObserver` (umbral 0) con 1,2 s de opacidad + desplazamiento 150px + escala. Hay `.hidden` anidados (contenedor e hijos), lo que suma desplazamientos. Sin JS o sin `IntersectionObserver`, el contenido quedaría invisible.
+- **`prefers-reduced-motion`:** `index.html` no lo respetaba (revelados de 1,2 s y scroll suave); `larioja.html` sí. El autoplay del carrusel (coverflow) y el fundido del slider de Servicio siguen activos con movimiento reducido (es configuración JS).
+
+**Cambios (pequeños, sin cambio visual con la configuración por defecto):**
+- `js/main.js`: el header usa clases — `header-oculto` al bajar y `scrolled` (regla existente) para el fondo — en lugar de estilos en línea.
+- `css/styles.css`: `header.header-oculto:not(:focus-within) { transform: translateY(-100%) }` (mismo desplazamiento y transición; visible si un enlace interno tiene el foco del teclado).
+- `css/styles.css`: `@media (prefers-reduced-motion: reduce)` → `.hidden` visible sin transformación ni transición y `scroll-behavior: auto`.
+
+**Pruebas (Chromium):** nuevas 29/29 (header: visible y transparente al cargar, se oculta al bajar, reaparece oscuro al subir, transparente arriba, sin estilos en línea, foco de teclado; movimiento reducido en index y larioja). Regresión 61/61, iOS 17/17, cámara (4 dispositivos) OK.
+
+**Requiere aprobación (no aplicado):**
+- (Media) Consolidar los 25 selectores duplicados conservando el valor efectivo (sin cambio visual, pero toca muchas reglas).
+- (Media) Rediseñar el revelado `.hidden` para no depender de `translateY` en el final de página y eliminar los `!important` de `#contact`/`.bio` y `#contact { overflow: hidden }`.
+- (Media) Con movimiento reducido, pausar el autoplay del carrusel RA y del slider de Servicio (cambia comportamiento JS).
+- (Baja) Eliminar los selectores sin uso listados.
+- (Baja) Renombrar `.hidden` (p. ej. `.reveal`) para evitar confusión con «oculto».
