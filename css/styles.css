@@ -617,6 +617,9 @@ html.menu-open {
   overflow: visible;
   border-radius: 12px;
   box-shadow: 0 0 15px rgba(0, 0, 0, 0.3);
+  /* Color de las flechas: Swiper lo toma de esta variable (su hoja se carga después y
+     reemplazaba el color de .swiper-button-next/-prev por su azul por defecto) */
+  --swiper-navigation-color: #24b1ba;
 }
 
 /* Ajustes móviles previstos originalmente. HOY NO TIENEN EFECTO: las reglas generales
