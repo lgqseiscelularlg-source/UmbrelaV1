@@ -51,6 +51,7 @@ html {
 }
 
 .logo {
+  width: auto; /* el ancho sale de la proporción (los atributos width/height solo reservan espacio) */
   height: 50px;
 }
 
@@ -244,19 +245,6 @@ html.menu-open {
   margin-bottom: 1em;
 }
 
-.service-image {
-  width: 100%;
-  height: auto;
-  border-radius: 10px;
-  margin-bottom: 1em;
-  opacity: 0.8;
-  transition: opacity 0.3s ease;
-}
-
-.service-image:hover {
-  opacity: 1;
-}
-
 .service-description {
   font-size: 1.2em;
   line-height: 1.5;
@@ -264,36 +252,6 @@ html.menu-open {
 
 .services-section .overlay {
   background: #111112;
-}
-
-.ra-content {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  flex-wrap: wrap;
-}
-
-.description {
-  flex: 1;
-  margin-right: 1em;
-}
-
-.image-slider {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  position: relative;
-  overflow: hidden;
-}
-
-.slider-image {
-  max-width: 100%;
-  display: none;
-}
-
-.slider-image.active {
-  display: block;
 }
 
                                 /* SEGUNDA PAGINA */
@@ -438,15 +396,6 @@ html.menu-open {
 
   .menu-toggle.active .hamburger:nth-child(3) {
     transform: translateY(-8px) rotate(-45deg);
-  }
-
-  .ra-content {
-    flex-direction: column;
-  }
-
-  .description {
-    margin-right: 0;
-    margin-bottom: 1em;
   }
 }
 
@@ -690,16 +639,6 @@ html.menu-open {
 .swiper-button-prev:hover {
   color: white;
   transform: scale(1.2);
-}
-
-/* Paginación (móvil) */
-.swiper-pagination-bullet {
-  background: #249da6;
-  opacity: 0.6;
-}
-
-.swiper-pagination-bullet-active {
-  opacity: 1;
 }
 
 /* === SLIDER SUAVE "NUESTRO SERVICIO" === -------------------------------------------------------------*/

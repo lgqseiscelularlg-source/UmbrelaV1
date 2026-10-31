@@ -394,3 +394,40 @@ Se mantuvieron dimensiones (no superan el tamaño mostrado a 3×). Sin cambios: 
 **Cambio (`css/styles.css`):** `--swiper-navigation-color: #24b1ba` en `.ra-swiper` (variable oficial de Swiper; la heredan las flechas). Sin otros cambios.
 
 **Verificación (Chromium, 1366 px y iPhone 13):** color `rgb(0, 122, 255)` → `rgb(36, 177, 186)` en flechas e ícono (`::after`). Sin cambios en tamaño (44px), posición, `transition` (`transform 0.3s, color 0.3s`), `:hover` (blanco y escala 1,2) ni navegación. Comparador: las únicas diferencias son el color de las flechas (y propiedades derivadas de `currentColor`) y la variable heredada; 504 píxeles distintos, todos en las flechas. Imágenes y cantidad de diapositivas sin cambios. Regresión 61/61.
+
+---
+
+## 2026-10-31 — Mantenimiento · Etapa 5: limpieza de código y recursos
+
+**Selectores eliminados (`css/styles.css`; sin elementos en ninguna página, incluidos estados dinámicos):** `.service-image(:hover)`, `.ra-content`, `.description`, `.image-slider`, `.slider-image(.active)` (y las versiones móviles de `.ra-content`/`.description`), `.swiper-pagination-bullet(-active)` (Swiper solo genera viñetas con la opción `pagination`, no configurada). Se descartaron falsos positivos: `.visible`, `header.scrolled`, `header.header-oculto` (los agrega `main.js` al desplazarse) y `::-webkit-scrollbar`. `styles.css`: 987 → 920 líneas.
+
+**Textos alternativos:** `alt` genéricos («Imagen 1…5», «Imagen 1…4», «Logo») reemplazados por descripciones del contenido (simulaciones de RA sobre la Catedral, la Casa de Gobierno y un paseo peatonal; monumento con el cartel «La Rioja Argentina»; «RealityTour» en el logo). Las dos imágenes de prueba quedan descritas como «Imagen de prueba: reglas de medición».
+
+**Dimensiones:** `width`/`height` con el tamaño real del archivo servido en las 15 imágenes de las tres páginas (reservan espacio antes de cargar). El comparador detectó que en el logo (CSS solo fija `height: 50px`) el atributo `width` lo estiraba de 73 a 218px; se agregó `width: auto` a `.logo`. Resultado: única diferencia de estilos el `aspect-ratio` computado (igual a la proporción natural de cada archivo); **0 píxeles distintos** en 69 capturas.
+
+**Pruebas:** comparador 220 estados; regresión 61/61; header 29/29; revelado 13/13; movimiento reducido 11/11; iOS 17/17.
+
+**Nuevo hallazgo (para confirmar):** la cuarta imagen del slider «Nuestro Servicio» (`relgaCuadrada`) también es un gráfico de reglas, como la primera del carrusel RA. Por su nombre parece intencional; no se modificó.
+
+**Archivos multimedia candidatos a eliminación (sin referencias en HTML, CSS ni JS; no se eliminaron):**
+
+| Archivo | Tamaño | Alta | Motivo |
+|---|---|---|---|
+| assets/img/manopaseo.png | 4155 KB | 2025-10-16 | sin uso |
+| assets/img/relgaCuadrada.png | 1432 KB | 2025-10-19 | original reemplazado por `web/relgaCuadrada.jpg` |
+| assets/img/paseo.png | 1410 KB | 2025-10-16 | original reemplazado por `web/paseo.jpg` |
+| assets/img/capturacorregido.png | 1384 KB | 2025-10-16 | original reemplazado por `web/capturacorregido.jpg` |
+| assets/img/imggob.png | 1028 KB | 2025-10-19 | original reemplazado por `web/imggob-carrusel.jpg` |
+| assets/img/Juan.jpg | 873 KB | 2025-10-16 | sin uso (la bio usa la versión IA) |
+| assets/img/CatedralNoche.jpg | 832 KB | 2025-10-16 | sin uso (antes solo en un comentario CSS) |
+| assets/img/CatedralSinIconos.jfif | 619 KB | 2025-10-16 | sin uso |
+| assets/img/grafica1.jpg | 336 KB | 2025-10-16 | sin uso |
+| assets/img/IAjuan.jpg | 286 KB | 2025-10-16 | original reemplazado por `web/IAjuan.jpg` |
+| assets/img/CatedralNoche2.jpg | 284 KB | 2025-10-16 | sin uso |
+| assets/img/IAale.jpg | 197 KB | 2025-10-16 | original reemplazado por `web/IAale.jpg` |
+| assets/img/perfil-umbrella.jpeg | 143 KB | 2025-10-16 | sin uso |
+| assets/img/logocolor.png | 102 KB | 2025-10-16 | original reemplazado por `web/logocolor.png` |
+| assets/img/Ale.jpg | 53 KB | 2025-10-16 | sin uso (la bio usa la versión IA) |
+| assets/img/menu.png | 0,2 KB | 2025-10-16 | sin uso (el menú usa barras CSS) |
+
+Total: 16 archivos, 12,8 MB. Antes de eliminarlos, confirmar que ningún otro proyecto (p. ej. `Cloude`) ni enlace externo los use por URL. Siguen recuperables desde el historial de git.
