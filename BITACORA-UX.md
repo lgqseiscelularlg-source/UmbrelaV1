@@ -259,3 +259,19 @@ Se mantuvieron dimensiones (no superan el tamaño mostrado a 3×). Sin cambios: 
 **Pruebas:** regresión 61/61 (cámara con dispositivo simulado, pantalla completa, menú, navegación, carruseles) y pruebas iOS 17/17. **Sin prueba en Safari real:** verificar en iPhone que la caja y ambos botones se vean al cargar, con barras visibles y ocultas, y que la pantalla completa ocupe todo el alto visible.
 
 **Pendiente:** en Safari < 15.4 (sin `svh`/`dvh`) rige el respaldo `vh` (comportamiento similar al anterior, sin recorte bajo el header).
+
+---
+
+## 2026-10-31 — Prioridad media · Etapa 2: Swiper con versión fija
+
+**Problema:** `index.html` cargaba Swiper desde jsDelivr con versión flotante (`swiper@11`, CSS y JS): una nueva 11.x se aplicaría sin aviso.
+
+**Verificación:** según el registro npm, la última 11.x es **11.2.10** (2025-06-28); después solo hay 12.x–14.x, que `@11` no toma. Por lo tanto `@11` resuelve hoy a 11.2.10, la misma versión usada en todas las pruebas: fijarla no cambia lo que funciona.
+
+**Referencias:** solo `index.html` (CSS en `<head>` y JS). Uso: `new Swiper(".ra-swiper")` en `js/main.js` (carrusel «¿Qué es la RA?»). El slider «Nuestro Servicio» **no usa Swiper** (intervalo propio en `main.js`).
+
+**Cambio (`index.html`):** `swiper@11` → `swiper@11.2.10` en las dos URLs. Sin cambios de configuración, diseño ni animaciones.
+
+**Pruebas (Chromium; Swiper 11.2.10 de npm servido solo en la URL exacta):** la página pide exactamente las dos URLs fijadas; `Swiper` disponible, efecto `coverflow`, 5 diapositivas, CSS de Swiper aplicado (`overflow: hidden`); carrusel avanzando y slider de Servicio avanzando a 320/390/1366 px; regresión 61/61. El CDN real está bloqueado en el entorno: verificar en el sitio publicado.
+
+**Opcional (no aplicado):** agregar `integrity` (SRI) a ambos recursos.
