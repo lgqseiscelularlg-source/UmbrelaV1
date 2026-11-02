@@ -497,3 +497,21 @@ Total: 16 archivos, 12,8 MB. Antes de eliminarlos, confirmar que ningún otro pr
 - `motion2.test.js` (slider anterior) queda reemplazado por las pruebas de movimiento reducido de ambos carruseles.
 
 **Limitaciones:** sin WebKit/Safari en el entorno. Verificar en iPhone la fluidez del fundido y del coverflow, el deslizamiento táctil, la pausa al salir de pantalla, que la cápsula no se superponga al texto del panel y la legibilidad de los tres puntos.
+
+---
+
+## 2026-11-02 — Corrección · Carruseles detenidos en iPhone (prioridad alta)
+
+**Síntoma (prueba real, iPhone, con y sin ahorro de batería):** «¿Qué es la RA?» y «Nuestro Servicio» no avanzan; los controles muestran pausa al cargar y al pulsar reproducir siguen quietos. En escritorio funcionan.
+
+**Diagnóstico (código de `initCarousel`):** el avance requiere `!userPaused && onScreen && !interacting`.
+- `interacting` se activaba con `mouseenter` y se desactivaba con `mouseleave` (también consultaba `:hover`). En pantallas táctiles el navegador emula `mouseenter` en cada toque y deja `:hover` activo; **iOS no envía `mouseleave` hasta tocar otro elemento**. Tras tocar reproducir, pausa, una flecha o la imagen, `interacting` quedaba en `true` y el avance no se reanudaba nunca.
+- Reproducido en Chromium con emulación táctil: un toque sobre el carrusel generó `mouseenter` sin `mouseleave` y la versión anterior quedó con `autoplay=false`; Chromium envía `mouseleave` en la mayoría de los toques, así que no reproduce del todo el comportamiento persistente de iOS.
+- **Pausa al cargar:** el único camino que inicia en pausa es `prefers-reduced-motion: reduce` (Ajustes → Accesibilidad → Movimiento → Reducir movimiento), independiente del ahorro de batería. Si está activada en el iPhone de prueba, el carrusel no avanza solo por diseño (aprobado).
+- `IntersectionObserver` y los temporizadores de Swiper funcionan correctamente; no se encontró evidencia de una restricción de iOS.
+
+**Corrección (`js/main.js`):** la pausa por puntero usa `pointerenter`/`pointerleave` y solo cuenta `pointerType === "mouse"`; los toques no la activan. Se elimina la consulta a `:hover`. La pausa por teclado (foco `:focus-visible` o teclas dentro) se mantiene en una variable separada.
+
+**Pruebas (Chromium):** guion táctil (iPhone 13) — tras tocar pausa y reproducir, el carrusel vuelve a avanzar (antes: detenido); con `reduce`, empieza pausado (diseño). Carrusel RA 30/30 y Servicio 27/27, incluida la pausa con mouse encima en escritorio.
+
+**Pendiente de verificar en iPhone real:** que ambos carruseles avancen solos y que sigan avanzando después de tocarlos. Confirmar si «Reducir movimiento» está activado en el equipo de prueba.

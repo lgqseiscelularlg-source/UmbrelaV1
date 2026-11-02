@@ -126,7 +126,8 @@ function initCarousel(root, { speed, onSlideChange, renderBullet, ...swiperOptio
   const pagination = root.querySelector(".rt-pagination");
   let userPaused = reducedMotion.matches;
   let onScreen = false;
-  let interacting = false;
+  let mouseOver = false;   // solo puntero de mouse real (no toques)
+  let keyboardUse = false; // foco de teclado (:focus-visible) o teclas dentro del carrusel
 
   const swiper = new Swiper(root.querySelector(".swiper"), {
     ...swiperOptions,
@@ -169,7 +170,7 @@ function initCarousel(root, { speed, onSlideChange, renderBullet, ...swiperOptio
   }
 
   function sync() {
-    const run = !userPaused && onScreen && !interacting;
+    const run = !userPaused && onScreen && !mouseOver && !keyboardUse;
     if (run && !swiper.autoplay.running) swiper.autoplay.start();
     if (!run && swiper.autoplay.running) swiper.autoplay.stop();
     if (!run) pagination.style.setProperty("--rt-progress", "0");
@@ -182,16 +183,20 @@ function initCarousel(root, { speed, onSlideChange, renderBullet, ...swiperOptio
     sync();
   });
 
-  // Puntero encima o foco de teclado dentro: se detiene mientras dure (al salir, el tiempo empieza completo).
-  // Solo el foco de teclado (:focus-visible) cuenta: un clic con el mouse también enfoca el botón y no
-  // debe dejar el carrusel detenido.
-  const keyboardFocusInside = () => !!root.querySelector(":focus-visible");
-  root.addEventListener("mouseenter", () => { interacting = true; sync(); });
-  root.addEventListener("mouseleave", () => { interacting = keyboardFocusInside(); sync(); });
-  root.addEventListener("focusin", () => { interacting = root.matches(":hover") || keyboardFocusInside(); sync(); });
-  root.addEventListener("keydown", () => { interacting = true; sync(); });
+  // Mouse encima o uso de teclado dentro: se detiene mientras dure (al salir, el tiempo empieza completo).
+  // Los toques NO cuentan: en pantallas táctiles el navegador emula mouseenter y deja :hover activo
+  // sin un mouseleave confiable, lo que dejaba el carrusel detenido para siempre en iPhone.
+  // Tampoco cuenta el foco que deja un clic con el mouse: solo el foco de teclado (:focus-visible).
+  root.addEventListener("pointerenter", (event) => {
+    if (event.pointerType === "mouse") { mouseOver = true; sync(); }
+  });
+  root.addEventListener("pointerleave", (event) => {
+    if (event.pointerType === "mouse") { mouseOver = false; sync(); }
+  });
+  root.addEventListener("focusin", () => { keyboardUse = !!root.querySelector(":focus-visible"); sync(); });
+  root.addEventListener("keydown", () => { keyboardUse = true; sync(); });
   root.addEventListener("focusout", (event) => {
-    if (!root.contains(event.relatedTarget)) { interacting = root.matches(":hover"); sync(); }
+    if (!root.contains(event.relatedTarget)) { keyboardUse = false; sync(); }
   });
 
   // Fuera de pantalla: se detiene
