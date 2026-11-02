@@ -184,7 +184,8 @@ function initCarousel(root, { speed, onSlideChange, renderBullet, zoom, ...swipe
     loop: true,
     speed: reducedMotion.matches ? 0 : speed,
     autoplay: { delay: Number(root.dataset.delay) || 6000, disableOnInteraction: false },
-    navigation: { prevEl: root.querySelector(".rt-prev"), nextEl: root.querySelector(".rt-next") },
+    // Flechas y botón de pausa son opcionales (no todos los carruseles los muestran)
+    navigation: { prevEl: root.querySelector(".rt-prev"), nextEl: root.querySelector(".rt-next"), enabled: !!root.querySelector(".rt-next") },
     pagination: {
       el: pagination,
       clickable: true,
@@ -268,10 +269,10 @@ function initCarousel(root, { speed, onSlideChange, renderBullet, zoom, ...swipe
     if (!run && swiper.autoplay.running) swiper.autoplay.stop();
     if (!run) pagination.style.setProperty("--rt-progress", "0");
     root.classList.toggle("is-paused", userPaused);
-    pauseButton.setAttribute("aria-label", userPaused ? "Reanudar avance automático" : "Pausar avance automático");
+    if (pauseButton) pauseButton.setAttribute("aria-label", userPaused ? "Reanudar avance automático" : "Pausar avance automático");
   }
 
-  pauseButton.addEventListener("click", () => {
+  if (pauseButton) pauseButton.addEventListener("click", () => {
     userPaused = !userPaused;
     sync();
   });

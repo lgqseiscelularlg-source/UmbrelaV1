@@ -560,3 +560,28 @@ Total: 16 archivos, 12,8 MB. Antes de eliminarlos, confirmar que ningún otro pr
 - En móvil táctil, tocar un indicador lleva a esa imagen y el avance automático continúa.
 - Carrusel RA 30/30; visor 89/89.
 - Fuera de `#ra` (incluido «Nuestro Servicio»): 0 diferencias de estilo y 0 píxeles distintos. El comparador ahora ignora los `id` aleatorios que Swiper asigna al contenedor y congela ambos carruseles en el mismo estado.
+
+---
+
+## 2026-11-02 — «Nuestro Servicio»: sin controles de reproducción e imagen más grande
+
+**Cambios (`index.html`, `css/styles.css`, `js/main.js`):**
+- Se eliminan anterior, pausa/reproducir y siguiente en todos los tamaños. Quedan los indicadores: miniaturas en escritorio, segmentos sin cápsula sobre la imagen en móvil.
+- Avance automático cada 5 s, que se detiene con el mouse encima, con foco de teclado, fuera de pantalla o con el visor abierto.
+- Tocar o hacer clic en la imagen abre el visor.
+- Escritorio ≥ 1200px: showcase en 9 de 12 columnas (`max-width` 1320px), unos 22 % más ancho (813 → 988px a 1366px). El panel ocupa las columnas 9–12 (texto de unos 360px). Por debajo de 1200px se mantiene la proporción anterior para no estrechar el panel.
+- Móvil: el panel queda unido debajo de la imagen (sin la cápsula que montaba sobre el borde).
+- `initCarousel`: el botón de pausa y las flechas pasan a ser opcionales.
+
+**Pruebas (Chromium):**
+- Botones visibles por ancho: Servicio 0 en 320/390/768/769/1366; RA 0 en móvil y 3 en escritorio.
+- Indicadores ≥ 44px de alto y accesibles; en móvil táctil, tocar un indicador lleva a esa imagen y el avance continúa.
+- Visor 89/89.
+- Fuera de `#services`: 0 píxeles distintos. Las únicas diferencias de estilo son URL absolutas de `background-image` que incluyen el puerto de cada servidor de prueba (artefacto).
+- `carrusel.test.js svc` queda obsoleto (usaba los botones eliminados): sus casos de pausa y flechas ya no aplican.
+
+**Pendiente para la próxima sesión:**
+1. **Prueba en iPhone real** (Safari y Chrome): que ambos carruseles avancen solos y sigan avanzando tras tocarlos (corrección `b7e5645`). Confirmar si «Reducir movimiento» está activado en el equipo: si lo está, no avanzan por diseño.
+2. Verificar en iPhone el visor ampliado: apertura con un toque, posición de la X respecto de la isla dinámica y la barra de estado, bloqueo del scroll y desenfoque del fondo.
+3. Actualizar `carrusel.test.js` para «Nuestro Servicio» (sin botones) y repetir la regresión general completa (`regresion`, `header`, `reveal`, `ios`); en esta sesión se ejecutaron el visor, controles y comparación visual, no la suite general completa tras este último cambio.
+4. Accesibilidad: «Nuestro Servicio» ya no tiene un botón de pausa persistente (pedido del equipo); el avance se detiene con puntero, foco o movimiento reducido. Evaluar si es suficiente para el criterio WCAG 2.2.2.

@@ -1028,7 +1028,7 @@ html.rt-lightbox-open {
   pointer-events: none;
 }
 
-/* Escritorio: miniaturas a la izquierda y botones unidos en una cápsula */
+/* Escritorio: miniaturas (indicadores) sobre la imagen, abajo a la izquierda */
 .svc-controls {
   position: absolute;
   left: 22px;
@@ -1044,7 +1044,6 @@ html.rt-lightbox-open {
 
 .svc-controls .rt-pagination {
   gap: 8px;
-  margin-right: 14px;
   padding: 0;
 }
 
@@ -1084,27 +1083,6 @@ html.rt-lightbox-open {
 .svc-controls .rt-dot.is-active i {
   width: 100%;
   background: transparent;
-}
-
-.svc-controls .rt-btn {
-  width: 48px;
-  height: 52px;
-  border-radius: 0;
-  background: rgba(17, 17, 18, 0.86);
-  border-top: 1px solid rgba(255, 255, 255, 0.1);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-}
-
-.svc-controls .rt-prev {
-  padding-left: 4px;
-  border-left: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 999px 0 0 999px;
-}
-
-.svc-controls .rt-next {
-  padding-right: 4px;
-  border-right: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 0 999px 999px 0;
 }
 
 /* Panel superpuesto al borde derecho del showcase */
@@ -1174,7 +1152,22 @@ html.rt-lightbox-open {
   color: #eaeaea;
 }
 
-/* Tableta y móvil: imagen de borde a borde, cápsula sobre el borde inferior y panel debajo */
+/* Escritorio amplio: showcase más grande (9 de 12 columnas) con la misma superposición del panel */
+@media (min-width: 1200px) {
+  .svc-stage {
+    max-width: 1320px;
+  }
+
+  .svc-carousel {
+    grid-column: 1 / 10;
+  }
+
+  .svc-card {
+    grid-column: 9 / 13;
+  }
+}
+
+/* Tableta y móvil: imagen de borde a borde con los indicadores sobre ella y el panel debajo */
 @media (max-width: 900px) {
   .services-section {
     padding: 0 0 64px;
@@ -1184,11 +1177,6 @@ html.rt-lightbox-open {
     display: block;
   }
 
-  /* La cápsula monta sobre el borde entre imagen y panel: el carrusel va por encima del panel */
-  .svc-carousel {
-    z-index: 4;
-  }
-
   .svc-carousel .svc-swiper {
     border-radius: 0;
     box-shadow: none;
@@ -1196,36 +1184,12 @@ html.rt-lightbox-open {
 
   .svc-controls {
     left: 50%;
-    bottom: -26px;
-    gap: 2px;
-    padding: 4px;
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    border-radius: 999px;
-    background: rgba(17, 17, 18, 0.92);
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
+    bottom: 6px;
     transform: translateX(-50%);
-  }
-
-  /* Orden visual de la cápsula: anterior · indicadores · pausa · siguiente */
-  .svc-controls .rt-prev {
-    order: -1;
   }
 
   .svc-controls .rt-pagination {
     gap: 0;
-    margin-right: 0;
-    padding: 0 6px;
-  }
-
-  .svc-controls .rt-btn,
-  .svc-controls .rt-prev,
-  .svc-controls .rt-next {
-    width: 44px;
-    height: 44px;
-    padding: 0;
-    border: 0;
-    border-radius: 50%;
-    background: transparent;
   }
 
   /* Indicadores como segmentos (las miniaturas no alcanzan 44px de alto en el ancho disponible) */
@@ -1248,22 +1212,23 @@ html.rt-lightbox-open {
     display: none;
   }
 
+  /* Sobre la imagen (con degradado oscuro): segmentos algo más visibles */
   .svc-controls .rt-dot i {
     position: static;
     width: 16px;
     height: 3px;
     border-radius: 3px;
-    background: rgba(255, 255, 255, 0.24);
+    background: rgba(255, 255, 255, 0.5);
   }
 
   .svc-controls .rt-dot.is-active i {
     width: 36px;
-    background: rgba(36, 177, 186, 0.22);
+    background: rgba(36, 177, 186, 0.35);
   }
 
   .svc-card {
     margin: 0 12px;
-    padding: 46px 22px 24px;
+    padding: 28px 22px 24px;
     border-top-left-radius: 0;
     border-top-right-radius: 0;
   }
