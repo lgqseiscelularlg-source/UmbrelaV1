@@ -238,31 +238,18 @@ if (raCarousel) {
   });
 }
 
-// Movimiento reducido para el slider de «Nuestro Servicio» (se reemplaza en su propio rediseño)
-/* ==== Slider suave en "Nuestro Servicio" ==== --------------------------------------------------------*/
-const slides = document.querySelectorAll(".service-slider .slide");
-let currentSlide = 0;
-
-let serviceTimer = null;
-
-function syncServiceSlider() {
-  if (reducedMotion.matches) {
-    clearInterval(serviceTimer);
-    serviceTimer = null;
-  } else if (!serviceTimer) {
-    serviceTimer = setInterval(() => {
-      slides[currentSlide].classList.remove("active");
-      currentSlide = (currentSlide + 1) % slides.length;
-      slides[currentSlide].classList.add("active");
-    }, 4000); // cambia cada 4 segundos
-  }
+/* ==== Showcase «Nuestro Servicio» (fundido; miniaturas como indicadores en escritorio) ==== */
+const svcCarousel = document.querySelector(".svc-carousel");
+if (svcCarousel) {
+  const thumbs = [...svcCarousel.querySelectorAll(".swiper-slide img")].map((img) => img.getAttribute("src"));
+  initCarousel(svcCarousel, {
+    effect: "fade",
+    fadeEffect: { crossFade: true },
+    speed: 800,
+    renderBullet: (index, className) =>
+      `<button type="button" class="${className}" aria-label="Ir a la imagen ${index + 1}">` +
+      `<img src="${thumbs[index]}" alt="" loading="lazy" width="74" height="52"><i></i></button>`,
+  });
 }
 
-if (slides.length > 0) {
-  syncServiceSlider();
-  reducedMotion.addEventListener("change", syncServiceSlider);
-}
-
-
-  
 });

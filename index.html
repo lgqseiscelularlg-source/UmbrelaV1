@@ -177,21 +177,53 @@ document.addEventListener("DOMContentLoaded", () => {
 
 <!-- Nuestro Servicio -->
 <section id="services" class="services-section">
-  <div class="overlay hidden"></div>
-  <div class="services-content hidden">
-    <h2 class="hidden">Nuestro Servicios</h2>
+  <div class="svc-stage">
+    <!-- Showcase: para usar las imágenes definitivas basta con reemplazar cada <img> (la proporción
+         del marco se define en --svc-ratio, en styles.css) -->
+    <div class="rt-carousel svc-carousel hidden" role="region" aria-roledescription="carrusel"
+         aria-label="Imágenes del servicio" data-delay="5000">
+      <div class="swiper svc-swiper">
+        <div class="swiper-wrapper">
+          <div class="swiper-slide"><img src="assets/img/catedral.jpg" alt="Simulación de realidad aumentada sobre la Catedral de La Rioja, con su ficha informativa y servicios cercanos" width="1695" height="1200" loading="lazy" /></div>
+          <div class="swiper-slide"><img src="assets/img/imggob.jpg" alt="Celular mostrando RealityTour frente a la Casa de Gobierno de La Rioja" width="1698" height="1200" loading="lazy" /></div>
+          <div class="swiper-slide"><img src="assets/img/plaza.jpg" alt="Simulación de realidad aumentada frente a la Casa de Gobierno de La Rioja, con su ficha informativa" width="1697" height="1200" loading="lazy" /></div>
+          <div class="swiper-slide"><img src="assets/img/web/relgaCuadrada.jpg" alt="Imagen de prueba: reglas de medición" width="1695" height="1200" loading="lazy" /></div>
+        </div>
+      </div>
 
-    <div class="service-slider">
-      <img src="assets/img/catedral.jpg" alt="Simulación de realidad aumentada sobre la Catedral de La Rioja, con su ficha informativa y servicios cercanos" width="1695" height="1200" class="slide active" loading="lazy" />
-      <img src="assets/img/imggob.jpg" alt="Celular mostrando RealityTour frente a la Casa de Gobierno de La Rioja" width="1698" height="1200" class="slide" loading="lazy" />
-      <img src="assets/img/plaza.jpg" alt="Simulación de realidad aumentada frente a la Casa de Gobierno de La Rioja, con su ficha informativa" width="1697" height="1200" class="slide" loading="lazy" />
-      <img src="assets/img/web/relgaCuadrada.jpg" alt="Imagen de prueba: reglas de medición" width="1695" height="1200" class="slide" loading="lazy" />
+      <!-- Indicadores primero: en escritorio son miniaturas a la izquierda de los botones -->
+      <div class="rt-controls svc-controls">
+        <div class="rt-pagination"></div>
+        <button type="button" class="rt-btn rt-prev" aria-label="Imagen anterior">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 6l-6 6 6 6" /></svg>
+        </button>
+        <button type="button" class="rt-btn rt-pause" aria-label="Pausar avance automático">
+          <svg class="rt-icon-pause" viewBox="0 0 24 24" aria-hidden="true"><rect x="7" y="6" width="3" height="12" rx="1" /><rect x="14" y="6" width="3" height="12" rx="1" /></svg>
+          <svg class="rt-icon-play" viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5.5v13l11-6.5z" /></svg>
+        </button>
+        <button type="button" class="rt-btn rt-next" aria-label="Imagen siguiente">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6" /></svg>
+        </button>
+      </div>
     </div>
 
-    <div class="service-description elegant-text">
-      <p>En <strong>RealityTour</strong>, la tecnología y el turismo se fusionan para ofrecerte una nueva forma de explorar.</p>
-      <p>Con la <strong>Realidad Aumentada</strong>, cada punto del mapa cobra vida y te invita a mirar el mundo con otros ojos.</p>
-      <p>Cada sitio se transforma en una historia viva, donde pasado y presente se unen para redescubrir la esencia de cada lugar.</p>
+    <div class="svc-card hidden">
+      <p class="rt-eyebrow">Nuestro servicio</p>
+      <h2>Nuestro <span class="rt-accent">Servicio</span></h2>
+      <ol class="svc-points">
+        <li>
+          <h3>Tecnología y turismo</h3>
+          <p>En <strong>RealityTour</strong>, la tecnología y el turismo se fusionan para ofrecerte una nueva forma de explorar.</p>
+        </li>
+        <li>
+          <h3>Realidad aumentada</h3>
+          <p>Con la <strong>Realidad Aumentada</strong>, cada punto del mapa cobra vida y te invita a mirar el mundo con otros ojos.</p>
+        </li>
+        <li>
+          <h3>Historias vivas</h3>
+          <p>Cada sitio se transforma en una historia viva, donde pasado y presente se unen para redescubrir la esencia de cada lugar.</p>
+        </li>
+      </ol>
     </div>
   </div>
 </section>

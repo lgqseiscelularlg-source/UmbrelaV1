@@ -468,3 +468,32 @@ Total: 16 archivos, 12,8 MB. Antes de eliminarlos, confirmar que ningún otro pr
 - Regresión 64/64 (actualizada: el carrusel avanza en pantalla cada 6 s); header 29/29; revelado 13/13; iOS 17/17.
 
 **Limitaciones:** sin WebKit/Safari en el entorno. Verificar en iPhone la fluidez del coverflow, el deslizamiento táctil y la pausa al salir de pantalla.
+
+---
+
+## 2026-11-02 — Rediseño · Sección «Nuestro Servicio» (propuesta 2 aprobada)
+
+**Implementado (`index.html`, `css/styles.css`, `js/main.js`):**
+- Escenario en capas: showcase protagonista con proporción exacta de las 4 imágenes (`--svc-ratio`, sin recorte) y fundido (Swiper `fade`, 800 ms).
+- Panel superpuesto al borde derecho con etiqueta, título «Nuestro **Servicio»** (corrige «Nuestro Servicios») y tres puntos numerados 01–03: «Tecnología y turismo», «Realidad aumentada», «Historias vivas». Los párrafos se conservan textuales.
+- Controles con el mismo controlador `initCarousel` que la sección RA: avance cada 5 s, pausa persistente, reinicio del tiempo al navegar, pausa fuera de pantalla, con puntero o foco de teclado, y movimiento reducido.
+- Escritorio: miniaturas (indicadores con progreso) y cápsula ‹ ❚❚ › sobre la imagen.
+- Tableta/móvil (≤ 900px): imagen de borde a borde; cápsula ‹ segmentos ❚❚ › montada sobre el borde inferior; panel debajo.
+- Preparado para contenido definitivo: reemplazar cada `<img>` (y `--svc-ratio` si cambia la proporción).
+
+**Ajustes pedidos:**
+- **A (móvil):** separación entre puntos 16 → 12px, texto 0,95rem / interlineado 1,55. El panel **ya no se superpone a la imagen**: empieza debajo y la cápsula queda mitad sobre la imagen, mitad sobre el panel (cambio respecto de la maqueta, donde el panel tapaba 32px). Cobertura medida de la imagen: panel 0 % y controles 7,2 % a 390px (10,7 % a 320px; 1,9 % a 768px); en escritorio el panel cubre el 11,2 % del borde derecho, como en la propuesta.
+- **C (rendimiento):** sin `backdrop-filter`, panel y cápsula con fondo casi opaco; sin zoom en el fundido; sombras y degradado estáticos.
+
+**Problema encontrado y corregido:** en ≤ 900px el panel (`z-index` 3) quedaba encima de la cápsula; el carrusel pasa por encima del panel en ese rango.
+
+**CSS eliminado:** `.services-content`, `.service-slider` (+ escritorio), `.service-description`, `.elegant-text` (+ `:hover` y móvil), `.services-section .overlay` y `.services-section` del grupo de secciones. **JS eliminado:** el `setInterval` del slider anterior.
+
+**Pruebas (Chromium; Swiper servido localmente):**
+- Showcase 27/27: avance cada 5 s y progreso; tiempo completo tras navegar; pausa persistente; reanudar; miniaturas y etiquetas; teclado; puntero; fuera de pantalla; movimiento reducido (4/4 imágenes accesibles); deslizar en móvil; sin desborde y controles ≥ 44px, dentro de pantalla y sin superposición a 320/390/768/1366; sin errores JS.
+- Carrusel RA 30/30 (sin regresiones).
+- Resto del sitio: 0 diferencias de estilo y 0 píxeles distintos fuera de `#ra` y `#services` (30 capturas, 5 anchos, 3 páginas).
+- Regresión 64/64; header 29/29; revelado 13/13; iOS 17/17.
+- `motion2.test.js` (slider anterior) queda reemplazado por las pruebas de movimiento reducido de ambos carruseles.
+
+**Limitaciones:** sin WebKit/Safari en el entorno. Verificar en iPhone la fluidez del fundido y del coverflow, el deslizamiento táctil, la pausa al salir de pantalla, que la cápsula no se superponga al texto del panel y la legibilidad de los tres puntos.
