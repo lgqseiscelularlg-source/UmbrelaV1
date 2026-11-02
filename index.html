@@ -107,27 +107,71 @@ document.addEventListener("DOMContentLoaded", () => {
 
     <!-- ¿Qué es la RA? -->
 <section id="ra" class="ra-section">
-  <h2 class="hidden">¿Qué es la RA?</h2>
-  <p class="ra-text hidden">
-La Realidad Aumentada (RA) es una forma de conectar
-    el mundo digital con el real. A través de la cámara de 
-    tu dispositivo, podés descubrir objetos, historias y experiencias que se 
-    superponen con el entorno que te rodea.
-  </p>
+  <div class="ra-head">
+    <p class="rt-eyebrow hidden">Realidad aumentada</p>
+    <h2 class="hidden">¿Qué es la <span class="rt-accent">RA</span>?</h2>
+    <p class="ra-lead hidden">
+      La Realidad Aumentada (RA) es una forma de conectar el mundo digital con el real. A través de la cámara de
+      tu dispositivo, podés descubrir objetos, historias y experiencias que se superponen con el entorno que te rodea.
+    </p>
+  </div>
 
-  <!-- Carrusel -->
-  <div class="swiper ra-swiper hidden">
-    <div class="swiper-wrapper">
-      <div class="swiper-slide"><img src="assets/img/web/imggob-carrusel.jpg" alt="Imagen de prueba: reglas de medición" width="1024" height="1024"></div>
-      <div class="swiper-slide"><img src="assets/img/web/paseo.jpg" alt="Simulación de realidad aumentada en un paseo peatonal nocturno, con etiquetas del Paseo Cultural Castro Barros y de comida rápida" width="1024" height="1024"></div>
-      <div class="swiper-slide"><img src="assets/img/plaza.jpg" alt="Simulación de realidad aumentada frente a la Casa de Gobierno de La Rioja, con su ficha informativa" width="1697" height="1200"></div>
-      <div class="swiper-slide"><img src="assets/img/web/capturacorregido.jpg" alt="Celular mostrando RealityTour con etiquetas de realidad aumentada sobre la Catedral de La Rioja" width="1024" height="1024"></div>
-      <div class="swiper-slide"><img src="assets/img/LaRiojaCapital.jpg" alt="Monumento ecuestre junto al cartel «La Rioja Argentina», con las sierras al atardecer" width="1092" height="1365"></div>
+  <!-- Carrusel coverflow: las leyendas visibles son independientes del alt (data-caption) -->
+  <div class="rt-carousel ra-carousel hidden" role="region" aria-roledescription="carrusel"
+       aria-label="Ejemplos de realidad aumentada" data-delay="6000">
+    <div class="swiper ra-swiper">
+      <div class="swiper-wrapper">
+        <div class="swiper-slide" data-caption="Imagen de prueba del carrusel">
+          <figure class="ra-frame">
+            <img src="assets/img/web/imggob-carrusel.jpg" alt="Imagen de prueba: reglas de medición" width="1024" height="1024">
+            <span class="ra-corners" aria-hidden="true"></span>
+          </figure>
+        </div>
+        <div class="swiper-slide" data-caption="Etiquetas de realidad aumentada en un paseo peatonal">
+          <figure class="ra-frame">
+            <img src="assets/img/web/paseo.jpg" alt="Simulación de realidad aumentada en un paseo peatonal nocturno, con etiquetas del Paseo Cultural Castro Barros y de comida rápida" width="1024" height="1024">
+            <span class="ra-corners" aria-hidden="true"></span>
+          </figure>
+        </div>
+        <div class="swiper-slide" data-caption="Ficha informativa de la Casa de Gobierno">
+          <figure class="ra-frame">
+            <span class="ra-ambient" style="background-image: url('assets/img/plaza.jpg')" aria-hidden="true"></span>
+            <img src="assets/img/plaza.jpg" alt="Simulación de realidad aumentada frente a la Casa de Gobierno de La Rioja, con su ficha informativa" width="1697" height="1200">
+            <span class="ra-corners" aria-hidden="true"></span>
+          </figure>
+        </div>
+        <div class="swiper-slide" data-caption="RealityTour en el celular, frente a la Catedral">
+          <figure class="ra-frame">
+            <img src="assets/img/web/capturacorregido.jpg" alt="Celular mostrando RealityTour con etiquetas de realidad aumentada sobre la Catedral de La Rioja" width="1024" height="1024">
+            <span class="ra-corners" aria-hidden="true"></span>
+          </figure>
+        </div>
+        <div class="swiper-slide" data-caption="Monumento y cartel «La Rioja Argentina»">
+          <figure class="ra-frame">
+            <span class="ra-ambient" style="background-image: url('assets/img/LaRiojaCapital.jpg')" aria-hidden="true"></span>
+            <img src="assets/img/LaRiojaCapital.jpg" alt="Monumento ecuestre junto al cartel «La Rioja Argentina», con las sierras al atardecer" width="1092" height="1365">
+            <span class="ra-corners" aria-hidden="true"></span>
+          </figure>
+        </div>
+      </div>
     </div>
 
-    <div class="swiper-button-prev"></div>
-    <div class="swiper-button-next"></div>
+    <div class="rt-controls">
+      <button type="button" class="rt-btn rt-prev" aria-label="Imagen anterior">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 6l-6 6 6 6" /></svg>
+      </button>
+      <div class="rt-pagination"></div>
+      <button type="button" class="rt-btn rt-pause" aria-label="Pausar avance automático">
+        <svg class="rt-icon-pause" viewBox="0 0 24 24" aria-hidden="true"><rect x="7" y="6" width="3" height="12" rx="1" /><rect x="14" y="6" width="3" height="12" rx="1" /></svg>
+        <svg class="rt-icon-play" viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5.5v13l11-6.5z" /></svg>
+      </button>
+      <button type="button" class="rt-btn rt-next" aria-label="Imagen siguiente">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6" /></svg>
+      </button>
+    </div>
   </div>
+
+  <p class="ra-caption hidden"><b class="ra-caption-num">01 / 05</b><span class="ra-caption-text">Imagen de prueba del carrusel</span></p>
 </section>
 
 

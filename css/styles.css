@@ -210,8 +210,7 @@ html.menu-open {
 }
 
 .biography-section h2,
-.services-section h2,
-.ra-section h2 {
+.services-section h2 {
   margin-bottom: 1em;
 }
 
@@ -549,96 +548,336 @@ html.menu-open {
   }
 }
 
-/* === SWIPER – SECCIÓN ¿Qué es la RA? ============================================== */
+/* =====================================================================
+   CARRUSELES (¿Qué es la RA? y Nuestro Servicio): elementos compartidos
+   Lógica en js/main.js (initCarousel). Sin backdrop-filter ni animaciones
+   de filtros/sombras: en iPhone se priorizan transiciones fluidas.
+   ===================================================================== */
+.rt-eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  margin: 0 0 14px;
+  font-size: 0.74rem;
+  font-weight: 700;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: #24b1ba;
+}
+
+.rt-eyebrow::before {
+  content: "";
+  width: 28px;
+  height: 1px;
+  background: currentColor;
+  box-shadow: 0 0 8px rgba(36, 177, 186, 0.8);
+}
+
+.rt-accent {
+  color: #24b1ba;
+  text-shadow: 0 0 24px rgba(36, 177, 186, 0.45);
+}
+
+/* Cápsula de controles: anterior · indicadores · pausa · siguiente */
+.rt-controls {
+  display: inline-flex;
+  width: max-content;
+  align-items: center;
+  gap: 2px;
+  padding: 4px;
+  border-radius: 999px;
+  background: rgba(17, 17, 18, 0.86);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
+}
+
+.rt-btn {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: transparent;
+  color: #fff;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.rt-btn svg {
+  width: 18px;
+  height: 18px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.rt-pause {
+  color: #24b1ba;
+}
+
+.rt-pause svg {
+  fill: currentColor;
+}
+
+.rt-icon-play,
+.rt-carousel.is-paused .rt-icon-pause {
+  display: none;
+}
+
+.rt-carousel.is-paused .rt-icon-play {
+  display: block;
+}
+
+.rt-btn:focus-visible,
+.rt-dot:focus-visible {
+  outline: 2px solid #24b1ba;
+  outline-offset: 2px;
+}
+
+@media (hover: hover) {
+  .rt-btn:hover {
+    background: rgba(255, 255, 255, 0.08);
+  }
+}
+
+/* Indicadores: segmentos; el activo se llena según el tiempo restante (--rt-progress) */
+.rt-pagination {
+  display: flex;
+  align-items: center;
+  padding: 0 6px;
+}
+
+.rt-dot {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 24px;
+  height: 44px;
+  padding: 0;
+  border: 0;
+  background: none;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.rt-dot i {
+  display: block;
+  width: 16px;
+  height: 3px;
+  border-radius: 3px;
+  background: rgba(255, 255, 255, 0.24);
+  overflow: hidden;
+}
+
+.rt-dot.is-active {
+  width: 44px;
+}
+
+.rt-dot.is-active i {
+  width: 36px;
+  background: rgba(36, 177, 186, 0.22);
+}
+
+.rt-dot.is-active i::after {
+  content: "";
+  display: block;
+  height: 100%;
+  background: #24b1ba;
+  transform-origin: left;
+  transform: scaleX(var(--rt-progress, 1));
+}
+
+.rt-carousel.is-paused .rt-dot.is-active i::after {
+  transform: none;
+}
+
+/* =====================================================================
+   ¿QUÉ ES LA RA? — visor coverflow
+   ===================================================================== */
 .ra-section {
+  position: relative;
+  padding: 96px 0 84px;
   text-align: center;
   color: white;
-  padding: 80px 0;
+  overflow: hidden; /* recorta las diapositivas laterales 3D (respaldo) */
+  overflow: clip;   /* ídem sin crear contenedor de desplazamiento */
+  background:
+    radial-gradient(55% 45% at 50% 62%, rgba(36, 177, 186, 0.16), transparent 70%),
+    #111112;
 }
 
-/* Contenedor. Nota: swiper-bundle.min.css se carga después y su .swiper { overflow: hidden }
-   prevalece sobre el overflow: visible de esta regla (misma especificidad). */
-.ra-swiper {
-  width: 100%;
-  max-width: 1600px;
-  margin: 0 auto;
+/* Retícula tenue tipo «escaneo RA», desvanecida hacia los bordes (estática) */
+.ra-section::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background-image:
+    linear-gradient(rgba(255, 255, 255, 0.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.04) 1px, transparent 1px);
+  background-size: 56px 56px;
+  -webkit-mask-image: radial-gradient(60% 55% at 50% 60%, #000 30%, transparent 75%);
+  mask-image: radial-gradient(60% 55% at 50% 60%, #000 30%, transparent 75%);
+}
+
+.ra-head {
   position: relative;
-  overflow: visible;
-  border-radius: 12px;
-  box-shadow: 0 0 15px rgba(0, 0, 0, 0.3);
-  /* Color de las flechas: Swiper lo toma de esta variable (su hoja se carga después y
-     reemplazaba el color de .swiper-button-next/-prev por su azul por defecto) */
-  --swiper-navigation-color: #24b1ba;
+  max-width: 760px;
+  margin: 0 auto 44px;
+  padding: 0 20px;
 }
 
-/* Ajustes móviles previstos originalmente. HOY NO TIENEN EFECTO: las reglas generales
-   .ra-swiper .swiper-slide y .ra-swiper img de abajo, posteriores y de igual especificidad,
-   los anulan. Se conservan sin cambios para decidir si recuperarlos (cambiaría la apariencia). */
-@media (max-width: 768px) {
-  .ra-swiper img {
-    height: 240px;
+.ra-head h2 {
+  margin: 0 0 16px;
+  font-size: clamp(2.1rem, 6.4vw, 3.4rem);
+  line-height: 1.05;
+  letter-spacing: -0.02em;
+}
+
+.ra-lead {
+  max-width: 36rem;
+  margin: 0 auto;
+  font-size: 1.05rem;
+  line-height: 1.7;
+  color: #a9adb3;
+}
+
+.ra-carousel {
+  position: relative;
+}
+
+/* Swiper aplica .swiper { overflow: hidden }; aquí las laterales deben verse (las recorta la sección) */
+.ra-carousel .ra-swiper {
+  overflow: visible;
+  padding: 10px 0 40px;
+}
+
+.ra-swiper .swiper-slide {
+  width: 460px;
+}
+
+.ra-frame {
+  position: relative;
+  margin: 0;
+  aspect-ratio: 1;
+  border-radius: 24px;
+  overflow: hidden;
+  background: #1b1c1e;
+}
+
+/* Relleno de los marcos no cuadrados: la misma imagen ampliada y desenfocada (estático) */
+.ra-ambient {
+  position: absolute;
+  inset: -10%;
+  background-position: center;
+  background-size: cover;
+  filter: blur(22px) brightness(0.55);
+}
+
+.ra-frame img {
+  position: relative;
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+/* Laterales atenuadas con una capa de opacidad (más liviana que animar filtros) */
+.ra-frame::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: rgba(17, 17, 18, 0.58);
+  transition: opacity 0.6s ease;
+  pointer-events: none;
+}
+
+.ra-swiper .swiper-slide-active .ra-frame {
+  box-shadow:
+    0 0 0 1px rgba(36, 177, 186, 0.55),
+    0 0 46px rgba(36, 177, 186, 0.28),
+    0 30px 60px rgba(0, 0, 0, 0.6);
+}
+
+.ra-swiper .swiper-slide-active .ra-frame::after {
+  opacity: 0;
+}
+
+/* Esquinas tipo visor sobre la imagen activa */
+.ra-corners {
+  position: absolute;
+  inset: 14px;
+  z-index: 1;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.6s ease;
+  --c: #24b1ba;
+  background:
+    linear-gradient(var(--c), var(--c)) top left / 18px 2px no-repeat,
+    linear-gradient(var(--c), var(--c)) top left / 2px 18px no-repeat,
+    linear-gradient(var(--c), var(--c)) top right / 18px 2px no-repeat,
+    linear-gradient(var(--c), var(--c)) top right / 2px 18px no-repeat,
+    linear-gradient(var(--c), var(--c)) bottom left / 18px 2px no-repeat,
+    linear-gradient(var(--c), var(--c)) bottom left / 2px 18px no-repeat,
+    linear-gradient(var(--c), var(--c)) bottom right / 18px 2px no-repeat,
+    linear-gradient(var(--c), var(--c)) bottom right / 2px 18px no-repeat;
+}
+
+.ra-swiper .swiper-slide-active .ra-corners {
+  opacity: 0.9;
+}
+
+/* Controles apoyados sobre el borde inferior de la imagen activa */
+.ra-carousel .rt-controls {
+  position: absolute;
+  left: 50%;
+  bottom: 14px;
+  z-index: 5;
+  transform: translateX(-50%);
+}
+
+.ra-caption {
+  position: relative;
+  max-width: 34rem;
+  min-height: 2.9em;
+  margin: 22px auto 0;
+  padding: 0 20px;
+  font-size: 0.92rem;
+  line-height: 1.45;
+  color: #a9adb3;
+}
+
+.ra-caption-num {
+  margin-right: 10px;
+  font-size: 0.78rem;
+  letter-spacing: 0.14em;
+  color: #24b1ba;
+}
+
+@media (max-width: 700px) {
+  .ra-section {
+    padding: 72px 0 64px;
+  }
+
+  .ra-head {
+    margin-bottom: 30px;
   }
 
   .ra-swiper .swiper-slide {
-    width: 90%;
-    height: 380px;
-    filter: none;
-    opacity: 1;
-    transform: scale(1);
+    width: 82vw;
   }
 }
 
-/* Diapositivas (coverflow): Swiper aplica además ancho y transform en línea */
-.ra-swiper .swiper-slide {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  width: 420px;
-  height: 500px;
-  transition: transform 0.8s ease, opacity 0.8s ease, filter 0.8s ease;
-  filter: blur(3px);
-  opacity: 0.5;
-  transform: scale(0.9);
-}
-
-/* Imagen central protagonista */
-.ra-swiper .swiper-slide-active {
-  transform: scale(1.25);
-  filter: blur(0);
-  opacity: 1;
-  z-index: 3;
-  box-shadow: 0 15px 60px rgba(0, 0, 0, 0.7);
-  border-radius: 15px;
-}
-
-/* Laterales */
-.ra-swiper .swiper-slide-next,
-.ra-swiper .swiper-slide-prev {
-  transform: scale(1);
-  filter: blur(2px);
-  opacity: 0.8;
-}
-
-/* Imágenes */
-.ra-swiper img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  border-radius: 15px;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
-}
-
-/* Flechas */
-.swiper-button-next,
-.swiper-button-prev {
-  color: #24b1ba;
-  transition: transform 0.3s ease, color 0.3s ease;
-}
-
-.swiper-button-next:hover,
-.swiper-button-prev:hover {
-  color: white;
-  transform: scale(1.2);
+@media (prefers-reduced-motion: reduce) {
+  .ra-frame::after,
+  .ra-corners {
+    transition: none;
+  }
 }
 
 /* === SLIDER SUAVE "NUESTRO SERVICIO" === -------------------------------------------------------------*/
@@ -778,18 +1017,6 @@ html.menu-open {
     opacity: 1;
     transform: none;
   }
-}
-
-/* ESTILO DE TEXTO PARA LA SECCION ¿QUE ES LA RA?*/
-.ra-text {
-  max-width: 800px;
-  margin: 0 auto 2.5em;
-  font-size: 1.05rem;
-  line-height: 1.8;
-  color: #d8d8d8;
-  text-align: center;
-  letter-spacing: 0.4px;
-  font-family: "Poppins", "Segoe UI", sans-serif;
 }
 
 /* ESTILO DE TEXTO PARA LA SECCION NUESTRO SERVICIO------------------------------------------------------------------*/

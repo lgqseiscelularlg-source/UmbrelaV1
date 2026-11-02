@@ -431,3 +431,40 @@ Se mantuvieron dimensiones (no superan el tamaño mostrado a 3×). Sin cambios: 
 | assets/img/menu.png | 0,2 KB | 2025-10-16 | sin uso (el menú usa barras CSS) |
 
 Total: 16 archivos, 12,8 MB. Antes de eliminarlos, confirmar que ningún otro proyecto (p. ej. `Cloude`) ni enlace externo los use por URL. Siguen recuperables desde el historial de git.
+
+---
+
+## 2026-11-02 — Rediseño · Sección «¿Qué es la RA?» (propuesta 2 aprobada)
+
+**Implementado (`index.html`, `css/styles.css`, `js/main.js`):**
+- Encabezado con etiqueta «Realidad aumentada», título con «RA» en turquesa y texto original.
+- Fondo con luz turquesa y retícula tenue (estáticos).
+- Carrusel coverflow (Swiper 11.2.10: `rotate 24`, `depth 180`, sin sombras de Swiper): imagen central con borde luminoso y esquinas tipo visor; laterales atenuadas.
+- Imágenes completas (`contain`); en los 2 marcos no cuadrados, relleno con la misma imagen desenfocada.
+- Cápsula de controles sobre el borde inferior: anterior · 5 indicadores (el activo muestra el progreso) · pausa/reanudar · siguiente.
+- Leyenda «0N / 05 · texto» debajo. **Ajuste B:** las leyendas se definen en `data-caption`, independientes de los `alt`, que no cambian.
+- Se conservan las 5 imágenes (incluida la de prueba).
+
+**Comportamiento (controlador compartido `initCarousel` en `main.js`, reutilizable por «Nuestro Servicio»):**
+- Avance cada 6 s (`data-delay`).
+- Pausa persistente: solo el usuario reanuda.
+- Navegar a mano (flechas, indicadores, deslizar) reinicia el tiempo completo.
+- Se detiene fuera de pantalla (`IntersectionObserver`), con el puntero encima, con foco de teclado (`:focus-visible`) o al usar el teclado dentro.
+- Con `prefers-reduced-motion: reduce` empieza pausado, con velocidad 0; todas las imágenes quedan accesibles con los controles y el usuario puede activar el avance.
+- Indicadores con `aria-label` («Ir a la imagen N») y `aria-current`; botones con etiquetas en español; módulo a11y de Swiper.
+
+**Rendimiento (ajuste C):** sin `backdrop-filter` (cápsula con fondo casi opaco); laterales atenuadas con una capa de opacidad en lugar de filtros; brillo solo en la imagen activa, sin animar sombras; desenfoque solo en el relleno estático de 2 marcos; sin el desenfoque animado del carrusel anterior.
+
+**Problemas encontrados y corregidos durante la implementación:**
+- Un clic con el mouse dejaba el carrusel detenido (el foco del botón contaba como interacción): ahora solo cuenta el foco de teclado.
+- Cápsula con `position: absolute; left: 50%` encogía los botones a 28px: `width: max-content` y `flex: none`.
+- Un `<header>` usado como encabezado de sección heredaba `header { position: fixed; z-index: 1000 }`: se cambió por `<div>`.
+
+**CSS eliminado:** bloque del carrusel anterior (coverflow con desenfoque, flechas `.swiper-button-*`, reglas móviles que no tenían efecto) y `.ra-text`.
+
+**Pruebas (Chromium; Swiper servido localmente):**
+- Carrusel RA 30/30: avance automático y progreso; tiempo completo tras navegar; pausa persistente (también al salir y volver); reanudar; indicadores y etiquetas; teclado (foco visible, Enter, Tab); puntero encima; fuera de pantalla; movimiento reducido (5/5 imágenes accesibles); deslizar en móvil; sin desborde y controles ≥ 44px de alto, dentro de pantalla y sin superposición a 320/390/768/1366; leyendas = `data-caption` ≠ `alt`; sin errores JS.
+- Resto del sitio sin cambios: estilos computados de todos los elementos fuera de `#ra` y capturas de header, Inicio, Servicio, Quiénes somos, Contacto, `realitytour.html` y `larioja.html` a 5 anchos → 0 diferencias de estilo y 0 píxeles distintos. Para comparar por píxel se fijó el mismo alto de `#ra` en ambas versiones: sin eso, la diferencia de alto desplaza las secciones siguientes fracciones de píxel y cambia el suavizado.
+- Regresión 64/64 (actualizada: el carrusel avanza en pantalla cada 6 s); header 29/29; revelado 13/13; iOS 17/17.
+
+**Limitaciones:** sin WebKit/Safari en el entorno. Verificar en iPhone la fluidez del coverflow, el deslizamiento táctil y la pausa al salir de pantalla.

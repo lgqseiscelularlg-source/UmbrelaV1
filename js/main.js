@@ -112,59 +112,133 @@ window.addEventListener("scroll", function () {
   // Revelado listo: <head> ya no necesita mostrar todo como respaldo (ver index.html)
   document.documentElement.classList.add("reveal-ready");
   
-// Movimiento reducido: sin avance automático en el carrusel ni en el slider (la navegación manual se mantiene).
-// Se reevalúa si el usuario cambia la preferencia con la página abierta.
+// ==== Carruseles («¿Qué es la RA?» y «Nuestro Servicio») =================================
+// - Avance automático por defecto (data-delay en el contenedor .rt-carousel).
+// - El botón de pausa es persistente: solo el usuario lo reanuda.
+// - Navegar a mano reinicia el tiempo completo (sin cambios inmediatos inesperados).
+// - Se detiene mientras no está en pantalla o tiene el puntero o el foco del teclado.
+// - Con prefers-reduced-motion: reduce empieza pausado y sin animación de transición;
+//   las imágenes siguen disponibles con los controles.
 const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
 
-/* ==== Carrusel Swiper ¿Qué es la RA? ==== ------------------------------------------------------------------*/
-if (document.querySelector(".ra-swiper")) {
-  const swiper = new Swiper(".ra-swiper", {
+function initCarousel(root, { speed, onSlideChange, renderBullet, ...swiperOptions }) {
+  const pauseButton = root.querySelector(".rt-pause");
+  const pagination = root.querySelector(".rt-pagination");
+  let userPaused = reducedMotion.matches;
+  let onScreen = false;
+  let interacting = false;
+
+  const swiper = new Swiper(root.querySelector(".swiper"), {
+    ...swiperOptions,
     loop: true,
-    centeredSlides: true,
-    slidesPerView: "auto",
-    spaceBetween: 60,
-    speed: 1200,
-    grabCursor: true,
-    autoplay: {
-      delay: 2500,
-      disableOnInteraction: false,
+    speed: reducedMotion.matches ? 0 : speed,
+    autoplay: { delay: Number(root.dataset.delay) || 6000, disableOnInteraction: false },
+    navigation: { prevEl: root.querySelector(".rt-prev"), nextEl: root.querySelector(".rt-next") },
+    pagination: {
+      el: pagination,
+      clickable: true,
+      bulletClass: "rt-dot",
+      bulletActiveClass: "is-active",
+      renderBullet: renderBullet || ((index, className) =>
+        `<button type="button" class="${className}" aria-label="Ir a la imagen ${index + 1}"><i></i></button>`),
     },
-    navigation: {
-      nextEl: ".swiper-button-next",
-      prevEl: ".swiper-button-prev",
+    a11y: {
+      prevSlideMessage: "Imagen anterior",
+      nextSlideMessage: "Imagen siguiente",
+      paginationBulletMessage: "Ir a la imagen {{index}}",
+      slideLabelMessage: "Imagen {{index}} de {{slidesLength}}",
+      itemRoleDescriptionMessage: "diapositiva",
     },
-    effect: "coverflow",
-    coverflowEffect: {
-      rotate: 0,          // no rotamos
-      stretch: 0,         // sin estirar
-      depth: 180,         // profundidad del efecto 
-      modifier: 2,        // intensidad del escalado
-      slideShadows: false // evita sombras duras
-    },
-    breakpoints: {
-      0: {
-        slidesPerView: 1.1,
-        spaceBetween: 20,
+    on: {
+      // Progreso del indicador activo (solo se actualiza el contenedor de indicadores)
+      autoplayTimeLeft(s, timeLeft, progress) {
+        pagination.style.setProperty("--rt-progress", (1 - progress).toFixed(3));
       },
-      768: {
-        slidesPerView: 2.5,
-        spaceBetween: 40,
-      },
-      1200: {
-        slidesPerView: 3,
-        spaceBetween: 60,
+      slideChange(s) {
+        markCurrentBullet(s);
+        if (onSlideChange) onSlideChange(s);
       },
     },
   });
 
-  const syncSwiperAutoplay = () => {
-    if (reducedMotion.matches) swiper.autoplay.stop();
-    else swiper.autoplay.start();
-  };
-  syncSwiperAutoplay();
-  reducedMotion.addEventListener("change", syncSwiperAutoplay);
+  function markCurrentBullet(s) {
+    pagination.querySelectorAll(".rt-dot").forEach((dot, i) => {
+      if (i === s.realIndex) dot.setAttribute("aria-current", "true");
+      else dot.removeAttribute("aria-current");
+    });
+  }
+
+  function sync() {
+    const run = !userPaused && onScreen && !interacting;
+    if (run && !swiper.autoplay.running) swiper.autoplay.start();
+    if (!run && swiper.autoplay.running) swiper.autoplay.stop();
+    if (!run) pagination.style.setProperty("--rt-progress", "0");
+    root.classList.toggle("is-paused", userPaused);
+    pauseButton.setAttribute("aria-label", userPaused ? "Reanudar avance automático" : "Pausar avance automático");
+  }
+
+  pauseButton.addEventListener("click", () => {
+    userPaused = !userPaused;
+    sync();
+  });
+
+  // Puntero encima o foco de teclado dentro: se detiene mientras dure (al salir, el tiempo empieza completo).
+  // Solo el foco de teclado (:focus-visible) cuenta: un clic con el mouse también enfoca el botón y no
+  // debe dejar el carrusel detenido.
+  const keyboardFocusInside = () => !!root.querySelector(":focus-visible");
+  root.addEventListener("mouseenter", () => { interacting = true; sync(); });
+  root.addEventListener("mouseleave", () => { interacting = keyboardFocusInside(); sync(); });
+  root.addEventListener("focusin", () => { interacting = root.matches(":hover") || keyboardFocusInside(); sync(); });
+  root.addEventListener("keydown", () => { interacting = true; sync(); });
+  root.addEventListener("focusout", (event) => {
+    if (!root.contains(event.relatedTarget)) { interacting = root.matches(":hover"); sync(); }
+  });
+
+  // Fuera de pantalla: se detiene
+  if ("IntersectionObserver" in window) {
+    new IntersectionObserver((entries) => {
+      onScreen = entries[entries.length - 1].isIntersecting;
+      sync();
+    }, { threshold: 0.25 }).observe(root);
+  } else {
+    onScreen = true;
+  }
+
+  reducedMotion.addEventListener("change", (event) => {
+    swiper.params.speed = event.matches ? 0 : speed;
+    userPaused = event.matches;
+    sync();
+  });
+
+  markCurrentBullet(swiper);
+  if (onSlideChange) onSlideChange(swiper);
+  sync();
+  return swiper;
 }
 
+/* ==== Carrusel coverflow «¿Qué es la RA?» ==== */
+const raCarousel = document.querySelector(".ra-carousel");
+if (raCarousel) {
+  const captionNum = document.querySelector(".ra-caption-num");
+  const captionText = document.querySelector(".ra-caption-text");
+  initCarousel(raCarousel, {
+    effect: "coverflow",
+    centeredSlides: true,
+    slidesPerView: "auto",
+    grabCursor: true,
+    speed: 900,
+    coverflowEffect: { rotate: 24, stretch: 0, depth: 180, modifier: 1, slideShadows: false },
+    // Leyenda visible de la imagen activa (data-caption, independiente del alt)
+    onSlideChange(swiper) {
+      const slide = swiper.slides[swiper.activeIndex];
+      const total = String(swiper.slides.length).padStart(2, "0");
+      captionNum.textContent = `${String(swiper.realIndex + 1).padStart(2, "0")} / ${total}`;
+      captionText.textContent = slide ? slide.dataset.caption : "";
+    },
+  });
+}
+
+// Movimiento reducido para el slider de «Nuestro Servicio» (se reemplaza en su propio rediseño)
 /* ==== Slider suave en "Nuestro Servicio" ==== --------------------------------------------------------*/
 const slides = document.querySelectorAll(".service-slider .slide");
 let currentSlide = 0;
