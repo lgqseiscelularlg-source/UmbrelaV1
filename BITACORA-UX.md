@@ -515,3 +515,32 @@ Total: 16 archivos, 12,8 MB. Antes de eliminarlos, confirmar que ningún otro pr
 **Pruebas (Chromium):** guion táctil (iPhone 13) — tras tocar pausa y reproducir, el carrusel vuelve a avanzar (antes: detenido); con `reduce`, empieza pausado (diseño). Carrusel RA 30/30 y Servicio 27/27, incluida la pausa con mouse encima en escritorio.
 
 **Pendiente de verificar en iPhone real:** que ambos carruseles avancen solos y que sigan avanzando después de tocarlos. Confirmar si «Reducir movimiento» está activado en el equipo de prueba.
+
+---
+
+## 2026-11-02 — Visor ampliado (lightbox) compartido
+
+**Implementado (`js/main.js`, `css/styles.css`):** un único componente `lightbox` (elemento nativo `<dialog>`, sin bibliotecas) que usan ambos carruseles mediante la opción `zoom` de `initCarousel` (`.ra-frame` en RA, `img` en Servicio). El `<dialog>` se crea la primera vez que se abre; las páginas sin carruseles no lo incluyen.
+- Abre la imagen activa al tocarla o hacer clic. Con teclado: la imagen activa tiene `role="button"`, `tabindex="0"` (las demás `-1`) y abre con Enter o Espacio.
+- Imagen centrada, con el mayor tamaño posible y su proporción original (`--ar`), sin recortes; fondo oscurecido y levemente desenfocado (`::backdrop`).
+- X semitransparente de 44×44px, con el estilo de los botones de la cámara.
+- Cierra con la X, tocando fuera de la imagen o con Escape.
+- Bloquea el desplazamiento (`html.rt-lightbox-open`).
+- Detiene el carrusel mientras está abierto; al cerrar vuelve a la misma imagen, devuelve el foco a ella y restaura el comportamiento: con toque o clic se reanuda (o sigue pausado si el usuario lo había pausado); si se abrió con teclado, sigue detenido mientras el foco esté dentro.
+- iPhone: alto visible actual (`100dvh`) y márgenes con `env(safe-area-inset-*)`. Sin pinch-to-zoom.
+
+**Decisiones:**
+- Se abre con el `click` nativo y no con el evento `tap` de Swiper. Abrir en `tap` hacía que el click de compatibilidad del mismo toque cayera sobre el visor y lo cerrara (reproducido en emulación táctil).
+- Deslizar no abre el visor: Swiper cancela el click tras un arrastre y además se verifica `swiper.allowClick`, necesario con movimiento reducido (velocidad 0, sin animación).
+
+**Pruebas (Chromium, 320/390/768/1366, ambos carruseles): 89/89.**
+- Apertura con toque o clic: scroll bloqueado, carrusel detenido y foco en la X.
+- Imagen dentro de pantalla, con la proporción original (±1 %) y ocupando el máximo disponible; X de 44px, visible, accesible y sin tapar la imagen.
+- Con el visor abierto no se desplaza la página ni avanza el carrusel.
+- Cierre con la X: misma imagen, scroll restaurado, avance reanudado y foco devuelto.
+- Cierre tocando fuera; tocar la imagen ampliada no cierra; Escape cierra; Enter abre.
+- En móvil, deslizar cambia de imagen sin abrir el visor.
+- Movimiento reducido: el carrusel sigue sin avance automático al cerrar.
+- Carruseles: 30/30 y 27/27. Fuera de `#ra` y `#services`: 0 diferencias de estilo y 0 píxeles distintos.
+
+**Limitaciones:** sin Safari real. Verificar en iPhone: apertura con un toque (sin cierre inmediato), X fuera de la barra de estado y de la isla dinámica, bloqueo del scroll y desenfoque del fondo.

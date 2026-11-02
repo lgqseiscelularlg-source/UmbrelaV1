@@ -667,6 +667,114 @@ html.menu-open {
 }
 
 /* =====================================================================
+   VISOR AMPLIADO (lightbox) — js/main.js crea un único <dialog> para ambos carruseles
+   ===================================================================== */
+.swiper-slide-active [role="button"] {
+  cursor: zoom-in;
+}
+
+.swiper-slide-active [role="button"]:focus-visible {
+  outline: 2px solid #24b1ba;
+  outline-offset: 4px;
+}
+
+html.rt-lightbox-open {
+  overflow: hidden; /* bloquea el desplazamiento de la página mientras el visor está abierto */
+}
+
+.rt-lightbox {
+  /* Área segura y barras dinámicas de Safari: alto visible actual (dvh) y márgenes env() */
+  --lb-x: max(16px, env(safe-area-inset-left), env(safe-area-inset-right));
+  --lb-y: max(64px, calc(env(safe-area-inset-top) + 56px), calc(env(safe-area-inset-bottom) + 56px));
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  max-width: none;
+  height: 100vh;
+  height: 100dvh;
+  max-height: none;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  overflow: hidden;
+}
+
+.rt-lightbox[open] {
+  display: grid;
+  place-items: center;
+}
+
+.rt-lightbox::backdrop {
+  background: rgba(5, 5, 6, 0.82);
+  -webkit-backdrop-filter: blur(6px);
+  backdrop-filter: blur(6px);
+}
+
+/* La imagen ocupa el mayor tamaño posible manteniendo su proporción (--ar = ancho / alto) */
+.rt-lightbox-img {
+  display: block;
+  width: min(calc(100vw - 2 * var(--lb-x)), calc((100vh - 2 * var(--lb-y)) * var(--ar, 1)));
+  width: min(calc(100vw - 2 * var(--lb-x)), calc((100dvh - 2 * var(--lb-y)) * var(--ar, 1)));
+  height: auto;
+  aspect-ratio: var(--ar, 1);
+  border-radius: 12px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.6);
+  animation: rt-lightbox-in 0.22s ease-out;
+}
+
+@keyframes rt-lightbox-in {
+  from { opacity: 0; transform: scale(0.96); }
+  to { opacity: 1; transform: none; }
+}
+
+/* X semitransparente, como los botones de la cámara de RealityTour */
+.rt-lightbox-close {
+  position: absolute;
+  top: max(12px, env(safe-area-inset-top));
+  right: max(12px, env(safe-area-inset-right));
+  z-index: 1;
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  border-radius: 10px;
+  background: rgba(0, 0, 0, 0.35);
+  -webkit-backdrop-filter: blur(3px);
+  backdrop-filter: blur(3px);
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.rt-lightbox-close svg {
+  width: 22px;
+  height: 22px;
+  fill: none;
+  stroke: #fff;
+  stroke-width: 2;
+  stroke-linecap: round;
+}
+
+.rt-lightbox-close:focus-visible {
+  outline: 2px solid #24b1ba;
+  outline-offset: 2px;
+}
+
+@media (hover: hover) {
+  .rt-lightbox-close:hover {
+    background: rgba(255, 255, 255, 0.2);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .rt-lightbox-img {
+    animation: none;
+  }
+}
+
+/* =====================================================================
    ¿QUÉ ES LA RA? — visor coverflow
    ===================================================================== */
 .ra-section {

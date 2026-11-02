@@ -121,13 +121,63 @@ window.addEventListener("scroll", function () {
 //   las imágenes siguen disponibles con los controles.
 const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
 
-function initCarousel(root, { speed, onSlideChange, renderBullet, ...swiperOptions }) {
+// ==== Visor ampliado (lightbox), único para ambos carruseles ===============================
+// <dialog> nativo: es modal, cierra con Escape y mantiene el foco dentro. Se cierra también con la X
+// o tocando fuera de la imagen. Bloquea el desplazamiento de la página y devuelve el foco al cerrar.
+const lightbox = (() => {
+  let dialog = null;
+  let image = null;
+  let opener = null;
+  let onClose = null;
+
+  // Se crea la primera vez que se abre (las páginas sin carruseles no lo incluyen)
+  function create() {
+    dialog = document.createElement("dialog");
+    dialog.className = "rt-lightbox";
+    dialog.setAttribute("aria-label", "Imagen ampliada");
+    dialog.innerHTML =
+      '<button type="button" class="rt-lightbox-close" aria-label="Cerrar imagen ampliada" autofocus>' +
+      '<svg viewBox="0 0 24 24" aria-hidden="true"><line x1="18" y1="6" x2="6" y2="18"></line>' +
+      '<line x1="6" y1="6" x2="18" y2="18"></line></svg></button>' +
+      '<img class="rt-lightbox-img" alt="">';
+    document.body.appendChild(dialog);
+    image = dialog.querySelector(".rt-lightbox-img");
+
+    dialog.addEventListener("click", (event) => {
+      if (event.target !== image) dialog.close(); // X o cualquier punto fuera de la imagen
+    });
+    dialog.addEventListener("close", () => {
+      document.documentElement.classList.remove("rt-lightbox-open");
+      if (opener) opener.focus({ preventScroll: true });
+      if (onClose) onClose();
+      opener = onClose = null;
+    });
+  }
+
+  return {
+    open(source, trigger, closed) {
+      if (!dialog) create();
+      const width = source.naturalWidth || Number(source.getAttribute("width"));
+      const height = source.naturalHeight || Number(source.getAttribute("height"));
+      image.src = source.currentSrc || source.src;
+      image.alt = source.alt;
+      image.style.setProperty("--ar", (width / height).toFixed(4)); // proporción original, sin recortes
+      opener = trigger;
+      onClose = closed;
+      document.documentElement.classList.add("rt-lightbox-open");
+      dialog.showModal();
+    },
+  };
+})();
+
+function initCarousel(root, { speed, onSlideChange, renderBullet, zoom, ...swiperOptions }) {
   const pauseButton = root.querySelector(".rt-pause");
   const pagination = root.querySelector(".rt-pagination");
   let userPaused = reducedMotion.matches;
   let onScreen = false;
   let mouseOver = false;   // solo puntero de mouse real (no toques)
   let keyboardUse = false; // foco de teclado (:focus-visible) o teclas dentro del carrusel
+  let viewerOpen = false;  // visor ampliado abierto desde este carrusel
 
   const swiper = new Swiper(root.querySelector(".swiper"), {
     ...swiperOptions,
@@ -157,10 +207,53 @@ function initCarousel(root, { speed, onSlideChange, renderBullet, ...swiperOptio
       },
       slideChange(s) {
         markCurrentBullet(s);
+        markZoomTargets(s);
         if (onSlideChange) onSlideChange(s);
       },
     },
   });
+
+  // Imagen activa ampliable también con teclado (Enter o Espacio); las demás quedan fuera del orden de foco
+  function markZoomTargets(s) {
+    if (!zoom) return;
+    s.slides.forEach((slide, i) => {
+      const target = slide.querySelector(zoom) || slide;
+      target.tabIndex = i === s.activeIndex ? 0 : -1;
+    });
+  }
+
+  // Al cerrar, el foco vuelve a la imagen; el carrusel queda como estaba según cómo se abrió el visor
+  // (con teclado sigue detenido mientras el foco esté dentro; con toque o clic se reanuda).
+  function openViewer(target, viaKeyboard = false) {
+    viewerOpen = true;
+    sync();
+    lightbox.open(target.matches("img") ? target : target.querySelector("img"), target, () => {
+      viewerOpen = false;
+      keyboardUse = viaKeyboard;
+      sync();
+    });
+  }
+
+  if (zoom) {
+    root.querySelectorAll(`.swiper-slide`).forEach((slide) => {
+      const target = slide.querySelector(zoom) || slide;
+      const image = target.matches("img") ? target : target.querySelector("img");
+      target.setAttribute("role", "button");
+      target.setAttribute("aria-label", `Ampliar imagen: ${image.alt}`);
+      // Se abre con el «click» nativo (último evento de un toque): Swiper lo cancela si hubo arrastre,
+      // así que deslizar no abre el visor; abrir antes (p. ej. en «tap») dejaba que el click de
+      // compatibilidad del mismo toque cayera sobre el visor y lo cerrara.
+      target.addEventListener("click", () => {
+        if (swiper.allowClick && slide === swiper.slides[swiper.activeIndex]) openViewer(target);
+      });
+      target.addEventListener("keydown", (event) => {
+        if (event.key === "Enter" || event.key === " ") {
+          event.preventDefault();
+          openViewer(target, true);
+        }
+      });
+    });
+  }
 
   function markCurrentBullet(s) {
     pagination.querySelectorAll(".rt-dot").forEach((dot, i) => {
@@ -170,7 +263,7 @@ function initCarousel(root, { speed, onSlideChange, renderBullet, ...swiperOptio
   }
 
   function sync() {
-    const run = !userPaused && onScreen && !mouseOver && !keyboardUse;
+    const run = !userPaused && onScreen && !mouseOver && !keyboardUse && !viewerOpen;
     if (run && !swiper.autoplay.running) swiper.autoplay.start();
     if (!run && swiper.autoplay.running) swiper.autoplay.stop();
     if (!run) pagination.style.setProperty("--rt-progress", "0");
@@ -216,6 +309,7 @@ function initCarousel(root, { speed, onSlideChange, renderBullet, ...swiperOptio
   });
 
   markCurrentBullet(swiper);
+  markZoomTargets(swiper);
   if (onSlideChange) onSlideChange(swiper);
   sync();
   return swiper;
@@ -233,6 +327,7 @@ if (raCarousel) {
     grabCursor: true,
     speed: 900,
     coverflowEffect: { rotate: 24, stretch: 0, depth: 180, modifier: 1, slideShadows: false },
+    zoom: ".ra-frame",
     // Leyenda visible de la imagen activa (data-caption, independiente del alt)
     onSlideChange(swiper) {
       const slide = swiper.slides[swiper.activeIndex];
@@ -251,6 +346,7 @@ if (svcCarousel) {
     effect: "fade",
     fadeEffect: { crossFade: true },
     speed: 800,
+    zoom: "img",
     renderBullet: (index, className) =>
       `<button type="button" class="${className}" aria-label="Ir a la imagen ${index + 1}">` +
       `<img src="${thumbs[index]}" alt="" loading="lazy" width="74" height="52"><i></i></button>`,
