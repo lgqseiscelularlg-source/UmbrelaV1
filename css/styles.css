@@ -951,6 +951,22 @@ html.rt-lightbox-open {
   }
 }
 
+/* Móvil: sin botones de anterior/pausa/siguiente (se navega deslizando y la imagen se amplía al
+   tocarla); quedan solo los indicadores, discretos y sin cápsula, debajo de la imagen activa */
+@media (max-width: 768px) {
+  .ra-carousel .rt-btn {
+    display: none;
+  }
+
+  .ra-carousel .rt-controls {
+    bottom: -4px;
+    padding: 0;
+    border: 0;
+    background: none;
+    box-shadow: none;
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .ra-frame::after,
   .ra-corners {

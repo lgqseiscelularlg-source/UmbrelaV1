@@ -544,3 +544,19 @@ Total: 16 archivos, 12,8 MB. Antes de eliminarlos, confirmar que ningún otro pr
 - Carruseles: 30/30 y 27/27. Fuera de `#ra` y `#services`: 0 diferencias de estilo y 0 píxeles distintos.
 
 **Limitaciones:** sin Safari real. Verificar en iPhone: apertura con un toque (sin cierre inmediato), X fuera de la barra de estado y de la isla dinámica, bloqueo del scroll y desenfoque del fondo.
+
+---
+
+## 2026-11-02 — «¿Qué es la RA?»: controles simplificados en móvil
+
+**Cambio (`css/styles.css`):**
+- Móvil (≤ 768px): se ocultan anterior, pausa/reproducir y siguiente. Quedan solo los 5 indicadores, sin cápsula, debajo de la imagen activa (24×44px de área táctil, el activo con progreso).
+- Se navega deslizando o tocando un indicador; tocar la imagen central abre el visor ampliado.
+- Escritorio (> 768px) sin cambios: controles completos y clic en la imagen para ampliarla.
+- Coverflow, profundidad, esquinas de visor y demás estética sin cambios.
+
+**Pruebas (Chromium):**
+- Por ancho: 0 botones visibles y sin cápsula a 320/390/768; 3 botones a 769/1366; indicadores ≥ 44px de alto, accesibles y sin superposición.
+- En móvil táctil, tocar un indicador lleva a esa imagen y el avance automático continúa.
+- Carrusel RA 30/30; visor 89/89.
+- Fuera de `#ra` (incluido «Nuestro Servicio»): 0 diferencias de estilo y 0 píxeles distintos. El comparador ahora ignora los `id` aleatorios que Swiper asigna al contenedor y congela ambos carruseles en el mismo estado.
