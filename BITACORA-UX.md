@@ -585,3 +585,30 @@ Total: 16 archivos, 12,8 MB. Antes de eliminarlos, confirmar que ningún otro pr
 2. Verificar en iPhone el visor ampliado: apertura con un toque, posición de la X respecto de la isla dinámica y la barra de estado, bloqueo del scroll y desenfoque del fondo.
 3. Actualizar `carrusel.test.js` para «Nuestro Servicio» (sin botones) y repetir la regresión general completa (`regresion`, `header`, `reveal`, `ios`); en esta sesión se ejecutaron el visor, controles y comparación visual, no la suite general completa tras este último cambio.
 4. Accesibilidad: «Nuestro Servicio» ya no tiene un botón de pausa persistente (pedido del equipo); el avance se detiene con puntero, foco o movimiento reducido. Evaluar si es suficiente para el criterio WCAG 2.2.2.
+
+---
+
+## 2026-11-03 — Análisis: carrusel RA circular con 5 imágenes visibles (sin implementar; requiere decisión)
+
+**Confirmaciones del equipo (iPhone y notebook):** visor ampliado correcto; imagen ampliada de «Nuestro Servicio» aprobada; con «Reducir movimiento» desactivado el autoplay funciona en iPhone.
+
+**Medición del carrusel actual (Chromium, 5 posiciones centrales, en reposo y a mitad de transición):**
+- 1366px: en reposo 2 imágenes a la izquierda y solo 1 a la derecha; a mitad de transición 3 y 1.
+- 390px: 1 por lado en reposo y **0 a la derecha** a mitad de cada transición (el «desaparecen progresivamente» reportado).
+
+**Causas:**
+1. Con 5 imágenes, mostrar 2 + central + 2 ocupa todas. Para desplazarse una posición, una imagen debe salir por un borde mientras otra entra por el opuesto: hacen falta 6 a la vez.
+2. El modo `loop` de Swiper 11 no duplica: al iniciar cada transición mueve la imagen de un extremo al otro (`loopFix`), y ese salto es la desaparición instantánea de un lado.
+3. El ancho actual de las diapositivas (460px / 82vw) no deja lugar para 2 por lado.
+
+**Alternativas de Swiper descartadas:** clonar diapositivas por script (contenido duplicado, excluido por el equipo); `loopAddBlankSlides` (huecos visibles); otros efectos (misma pista lineal).
+
+**Opciones propuestas:**
+- **A (recomendada) — anillo 3D propio para el carrusel RA, sin Swiper en esa sección:** cada imagen se ubica según su distancia circular a la activa (−2…+2: posición, giro, escala, profundidad). La que pasa de un extremo al otro viaja por detrás, desvaneciéndose, sin huecos ni saltos y sin duplicar contenido. Se mantiene el aspecto del coverflow, las esquinas de visor, los indicadores, los controles de escritorio, el deslizamiento táctil y el visor ampliado. Costo: unas 120–150 líneas de JS propio, reutilizando el comportamiento de `initCarousel` (temporizador, pausa, visibilidad); Swiper sigue en «Nuestro Servicio».
+- **B — Swiper con clones generados por script** (marcados `aria-hidden`): menos código, pero duplica contenido en el DOM.
+- **C — mantener Swiper:** ajustar el ancho para ver 2 por lado en reposo, aceptando que en cada avance la imagen del extremo salte de lado.
+
+**Movimiento reducido y WCAG 2.2.2 (análisis para la prioridad 2):**
+- WCAG 2.2.2 (nivel A) exige que el contenido que se mueve solo más de 5 s pueda pausarse o detenerse. Hoy cumple solo el RA en escritorio (botón). RA en móvil y «Nuestro Servicio» se detienen con puntero o foco, pero no tienen un control persistente: esto es un riesgo **independiente** de «Reducir movimiento».
+- `prefers-reduced-motion` no es un requisito de WCAG A/AA. Avanzar automáticamente con la preferencia activa es aceptable si se elimina el movimiento (cambio instantáneo o fundido breve, sin desplazamiento 3D) y existe una forma de pausar.
+- **Propuesta:** con «Reducir movimiento», autoplay activo (6 s / 5 s) con cambio sin animación de desplazamiento; agregar en ambos carruseles y en móvil un botón de pausa discreto (ícono pequeño junto a los indicadores, área táctil de 44px), sin cápsula ni apariencia de reproductor.
