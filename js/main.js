@@ -319,33 +319,24 @@ function initCarousel(root, { speed, onSlideChange, renderBullet, zoom, ...swipe
   return swiper;
 }
 
-/* ==== Carrusel coverflow «¿Qué es la RA?» ==== */
-// Posiciones del anillo: desplazamiento lateral por paso (en % del ancho de la diapositiva) y profundidad
-function raRing(step, depth) {
-  return {
-    limitProgress: 2,
-    perspective: true,
-    prev: { translate: [`-${step}`, 0, depth], rotate: [0, -24, 0] },
-    next: { translate: [step, 0, depth], rotate: [0, 24, 0] },
-  };
-}
-
+/* ==== Carrusel «¿Qué es la RA?» ==== */
 const raCarousel = document.querySelector(".ra-carousel");
 if (raCarousel) {
   const captionNum = document.querySelector(".ra-caption-num");
   const captionText = document.querySelector(".ra-caption-text");
   initCarousel(raCarousel, {
-    // Bucle circular con 5 posiciones visibles (2 anteriores, la central y 2 siguientes) y 6 imágenes:
-    // - slidesPerView 3 hace que el bucle de Swiper mantenga siempre 2 o más diapositivas a cada lado;
-    // - el efecto «creative» reproduce el coverflow (giro 24°, profundidad) y limitProgress: 2 deja la
-    //   sexta imagen oculta detrás de la posición ±2, así su cambio de lado en el bucle no se ve.
-    effect: "creative",
+    // Desplazamiento horizontal estándar de Swiper (sin giros ni perspectiva) en bucle con las 6 imágenes:
+    // - móvil: 1,6 por vista → central completa y una lateral asomando a cada lado (3 visibles);
+    // - escritorio: 3 por vista en un contenedor del 60 % del ancho (styles.css) → se ven 2 anteriores,
+    //   la central y 2 siguientes. Con 6 imágenes el bucle centrado de Swiper no admite más de 3 por vista;
+    //   la sexta queda fuera de la pantalla y es la que el bucle cambia de lado, sin saltos visibles.
+    // La central destacada y las laterales más chicas y atenuadas son solo CSS (escala y capa oscura).
     centeredSlides: true,
-    slidesPerView: 3,
+    slidesPerView: 1.6,
+    spaceBetween: 12,
     grabCursor: true,
-    speed: 900,
-    creativeEffect: raRing("34%", -150),
-    breakpoints: { 769: { creativeEffect: raRing("62%", -170) } },
+    speed: 800, // igual a la transición de escala en styles.css (.ra-swiper .swiper-slide)
+    breakpoints: { 769: { slidesPerView: 3, spaceBetween: 20 } },
     zoom: ".ra-frame",
     // Leyenda visible de la imagen activa (data-caption, independiente del alt)
     onSlideChange(swiper) {

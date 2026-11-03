@@ -692,3 +692,45 @@ Total: 16 archivos, 12,8 MB. Antes de eliminarlos, confirmar que ningún otro pr
 **Pendiente en iPhone real:**
 1. Con «Reducir movimiento» activado (Ajustes → Accesibilidad → Movimiento): ambos carruseles deben avanzar varias veces seguidas y la barra debe reiniciarse en cada imagen.
 2. Con la preferencia desactivada: lo mismo, y evaluar si la transición de RA sigue viéndose brusca.
+
+---
+
+## 2026-11-03 — Rediseño del movimiento de «¿Qué es la RA?» y composición móvil de «Nuestro Servicio»
+
+**Se conserva** la corrección `autoplay.waitForTransition = !reducedMotion` (`cadf5ac`). Intervalos sin cambios: RA 6 s, Servicio 5 s.
+
+### «¿Qué es la RA?»: desplazamiento horizontal simple
+
+**Antes:** efecto `creative` (giro de 24° y profundidad), con laterales inclinadas y deformadas.
+
+**Ahora (`js/main.js`, `css/styles.css`):** efecto `slide` estándar de Swiper (sin `effect`, sin `creativeEffect`; se elimina `raRing`).
+- Configuración: `loop`, `centeredSlides`, `speed: 800`. Móvil: `slidesPerView: 1.6`, `spaceBetween: 12`. Escritorio (≥ 769px): `slidesPerView: 3`, `spaceBetween: 20`, contenedor de Swiper al 60 % del ancho y `overflow: visible` (la sección recorta en los bordes de la pantalla).
+- Central destacada y laterales más chicas y atenuadas solo por CSS: `scale(0.84)` en las no activas, `none` en la activa, con una transición de 0,8 s igual al desplazamiento. Se mantiene la capa oscura `.ra-frame::after`. En móvil, la anterior y la siguiente se achican hacia la central (`transform-origin`) para que asome más de cada una.
+- Sin giros, perspectiva ni deformación. Las imágenes se mantienen verticales y cuadradas.
+
+**Por qué 3 por vista y no 5 en escritorio (evidencia):** el bucle centrado de Swiper 11.2.10 exige `slides ≥ slidesPerView + max(1, ⌈slidesPerView/2⌉)` (`loopFix`, `swiper-core.mjs`). Con `slidesPerView: 5` hacen falta 8 imágenes. Con las 6 actuales, Swiper avisa «not enough slides for loop mode» y deja vacío el lado derecho (medido: 2 + central + 0). Con `slidesPerView: 3` (necesita 5) el bucle funciona. Las posiciones ±2 quedan fuera del contenedor del 60 % pero dentro de la pantalla, y la sexta (±3) siempre queda fuera de ella. El requisito de cinco visibles se cumple sin duplicar imágenes.
+
+**Detalle técnico:** la regla de Swiper `.swiper-backface-hidden .swiper-slide { transform: translateZ(0) }` carga después de `styles.css` y anulaba la escala. Los selectores propios llevan `.ra-carousel` delante para ganarle.
+
+### «Nuestro Servicio» en móvil (≤ 900px): una sola tarjeta
+
+- Foto, franja de controles y panel de texto forman un único bloque: mismo ancho, borde de 1px, fondo del panel y esquinas de 22px (arriba en la foto, abajo en el panel). Márgenes laterales de 14px y ancho máximo de 640px en tableta.
+- Foto en 3:2 (antes 1,41:1, de borde a borde): 360 × 240px a 390px en lugar de 390 × 276px. `object-fit: cover`, sin deformar. Se descartó 16:10 porque recortaba las etiquetas inferiores de la Catedral.
+- Indicadores y pausa en una franja propia bajo la foto, centrados, sobre fondo liso (ya no sobre la imagen, y sin el degradado). Contraste de los indicadores inactivos 4,05:1 (antes 2,9:1 sobre la foto variable), del activo y de la pausa 6,6:1. Ícono de pausa de 16px con área de 44 × 44px.
+- Escritorio (≥ 901px) sin cambios: 0 diferencias de estilo y de posición a 901, 1024 y 1366px.
+
+### Pruebas (Chromium; no es Safari)
+
+- **Recorrido cuadro a cuadro del RA** (8 avances hacia adelante, más hacia atrás en 390/1366 y 1920), a 320, 390, 768, 1366 y 1920px: 0 saltos (> 15 % del ancho entre cuadros en una imagen visible), 0 deformaciones y 0 desborde horizontal. Visibles en reposo: móvil 3 (central 1 → 6, 1, 2; central 6 → 5, 6, 1), escritorio 5 (central 1 → 5, 6, 1, 2, 3). Contador e indicador sincronizados en todo el ciclo. Sin avisos de Swiper.
+- **Avances consecutivos:** con `reduce`, RA 5 (cada 6,0–6,1 s) y Servicio 6 (cada 5 s), cambios instantáneos. Sin la preferencia, RA 5 (cada ~6,8 s: 6 s más 0,8 s de desplazamiento) y Servicio 6.
+- **Escenarios en emulación táctil (iPhone 13)**, ambos carruseles: 22/22 con `reduce` y 22/22 sin la preferencia. Cubren tocar un indicador, deslizar, visor abierto y cerrado, pausa y reanudación, fuera de pantalla y regreso, barra de progreso y cambio de preferencia en vivo.
+- **Escritorio 1366px con `reduce`:** flecha siguiente; el mouse encima detiene el avance y al salir se reanuda.
+- **Controles de Servicio:** a 320, 390 y 768px, debajo de la foto (sin superposición), panel unido, 1 botón visible, 44px, centrados y dentro de la pantalla.
+- **Regresión:** `index.html`, `larioja.html` y `realitytour.html` a 390 y 1366px, con y sin `reduce`: 0 errores JS y menú móvil correcto. Fuera de `#ra` y `#services` (header, portada, «Quiénes somos», contacto y las otras dos páginas): 0 diferencias de estilo y de posición.
+
+### Pendiente en iPhone real
+
+1. Fluidez del desplazamiento del RA y de la escala con «Reducir movimiento» desactivado (Safari y Chrome).
+2. Con «Reducir movimiento» activado: cambios instantáneos y avance continuo en ambos carruseles.
+3. «Nuestro Servicio»: que la tarjeta se vea como un bloque y que los indicadores y la pausa se distingan y se toquen con comodidad.
+4. Deslizar el RA con el dedo; tocar la imagen central abre el visor.
