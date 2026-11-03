@@ -866,44 +866,53 @@ html.rt-lightbox-open {
   transform: none;
 }
 
-/* Escritorio: 5 imágenes visibles en tres niveles (central 100 %, ±1 75 %, ±2 55 %).
+/* Escritorio: 5 imágenes visibles en tres niveles (central 100 %, ±1 78 %, ±2 58 %), con solapamiento
+   lateral moderado para que la central sea grande (≈ 30,75 % del ancho: 420px a 1366px).
    Swiper en bucle centrado admite como máximo 3 por vista con 6 imágenes (necesita slidesPerView + 3 ≥ 8
    para 5 por vista), así que las posiciones ±2 quedan a cada lado, fuera del contenedor de Swiper.
    Cada posición se reconoce con las clases de Swiper (el bucle mantiene el orden del DOM igual al visual):
    activa = 0, prev/next = ±1, las que siguen a la activa = +2 (y +3), el resto = −2 (y −3).
-   Tamaño: la central (= ancho de diapositiva W) mide 25 % de la pantalla V, así que el contenedor mide
-   3W + 2s = 75 % + 40px (s = 20px de separación de Swiper). Es el máximo que deja las exteriores completas:
-   semiancho del conjunto = W/2 + 0,75W + 0,55W + 2g = 0,474V con huecos g = 1,2vw (margen ≈ 2,6 % por lado).
-   Al achicarse, cada nivel se acerca al centro (translateX) para que los huecos queden parejos:
-   ±1 → (0,875W + g) − (W + s) = −12,5 % + 1,2vw − 20px;  ±2 → (1,525W + 2g) − 2(W + s) = −47,5 % + 2,4vw − 40px.
-   La ±3 queda siempre fuera de la pantalla (su borde cercano está a 0,59V del centro).
-   Escala, desplazamiento y atenuación cambian con la misma transición de 0,8 s del desplazamiento. */
+   Geometría (V = ancho de la sección, W = ancho de diapositiva = central, s = 20px de Swiper):
+   - contenedor = 3W + 2s con W = 0,3075V → calc(92,25% + 40px);
+   - centro de ±1 a 0,2387V = 0,7762W → translateX = 0,7762W − (W + s) = −22,37 % − 20px
+     (la central tapa ~48px de cada inmediata a 1366px);
+   - centro de ±2 a 0,48V − 0,29W = 1,2709W, borde exterior a 2 % de V del borde de la pantalla
+     → translateX = 1,2709W − 2(W + s) = −72,9 % − 40px (la inmediata tapa ~78px de cada exterior);
+   - la ±3 (misma regla que la ±2) queda a ≥ 0,6V del centro: siempre fuera de la pantalla.
+   Escala, desplazamiento, atenuación y orden de apilado cambian con la transición de 0,8 s del
+   desplazamiento; el z-index se interpola, así la imagen que pasa al centro queda encima recién a
+   mitad del avance, cuando ambas tienen el mismo tamaño (sin saltos en la zona solapada). */
 @media (min-width: 769px) {
   .ra-carousel .ra-swiper {
-    width: calc(75% + 40px);
+    width: calc(92.25% + 40px);
   }
 
-  /* −2 (y −3): pequeña y más oscura */
+  /* −2 (y −3): pequeña y más oscura, debajo de las demás */
   .ra-carousel .ra-swiper .swiper-slide {
-    transform: translateX(calc(47.5% - 2.4vw + 40px)) scale(0.55);
+    z-index: 1;
+    transform: translateX(calc(72.9% + 40px)) scale(0.58);
+    transition: transform 0.8s ease, z-index 0.8s ease;
   }
 
   /* +2 (y +3) */
   .ra-carousel .ra-swiper .swiper-slide-active ~ .swiper-slide {
-    transform: translateX(calc(-47.5% + 2.4vw - 40px)) scale(0.55);
+    transform: translateX(calc(-72.9% - 40px)) scale(0.58);
   }
 
   /* ±1: mediana, levemente atenuada */
   .ra-carousel .ra-swiper .swiper-slide.swiper-slide-prev {
-    transform: translateX(calc(12.5% - 1.2vw + 20px)) scale(0.75);
+    z-index: 20;
+    transform: translateX(calc(22.37% + 20px)) scale(0.78);
   }
 
   .ra-carousel .ra-swiper .swiper-slide.swiper-slide-next {
-    transform: translateX(calc(-12.5% + 1.2vw - 20px)) scale(0.75);
+    z-index: 20;
+    transform: translateX(calc(-22.37% - 20px)) scale(0.78);
   }
 
-  /* 0: central grande */
+  /* 0: central grande, encima */
   .ra-carousel .ra-swiper .swiper-slide.swiper-slide-active {
+    z-index: 40;
     transform: none;
   }
 

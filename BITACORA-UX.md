@@ -797,3 +797,39 @@ Total: 16 archivos, 12,8 MB. Antes de eliminarlos, confirmar que ningún otro pr
 - **Controles:** misma posición, apoyados sobre el borde inferior de la central y visibles.
 - **Sin cambios fuera del alcance:** RA a 320, 390 y 768px, «Nuestro Servicio» y header: 0 diferencias de estilo y de posición. La sección RA de escritorio quedó unos 52px más alta. Regresión de las 3 páginas: 0 errores JS.
 - **Comparación visual antes/después a 1024 y 1366px:** el conjunto tiene más presencia, la central domina con claridad y las exteriores se ven completas con margen.
+
+---
+
+## 2026-11-03 — «¿Qué es la RA?» en escritorio: central de 420px a 1366px (cierre del tamaño)
+
+**Pedido:** que la central mida ~400–450px a 1366px, para apreciarla sin el visor, con inmediatas al 75–80 % y exteriores al 55–60 %. Se permite solapamiento lateral moderado.
+
+**Geometría (verificada antes de implementar):** sin solapamiento, una central de 420px no entra (semiancho 781px frente a 683px de pantalla). Con solapamiento sí entra, sin soluciones intermedias:
+- central = 30,75 % del ancho (420px a 1366);
+- inmediatas al 78 %, con la central tapando ~48px de cada una;
+- exteriores al 58 %, con la inmediata tapando ~78px de cada una;
+- borde exterior a 2 % de la pantalla y la sexta imagen siempre fuera de ella (≥ 0,6V del centro).
+
+**Cambio (solo `css/styles.css`, dentro de `@media (min-width: 769px)`):**
+- Contenedor de Swiper: `calc(92.25% + 40px)` (3 diapositivas de 30,75 % más 2 × 20px).
+- `translateX` en % del ancho de la diapositiva: ±1 `calc(∓22.37% ∓ 20px)` con `scale(0.78)`; ±2 `calc(∓72.9% ∓ 40px)` con `scale(0.58)`. Cálculo en el comentario del CSS.
+- **Orden de apilado:** central 40, ±1 20, resto 1. El `z-index` se interpola con la misma transición de 0,8 s, así la imagen que llega al centro pasa encima a mitad del avance (medido: a los 295 ms, con 370 y 377px de ancho, casi iguales) y no se ve un salto en la zona solapada. El `.swiper` de Swiper crea su propio contexto de apilado (`z-index: 1`), por eso los controles (`z-index: 5`) siguen encima.
+- Sin cambios en atenuación, esquinas, controles, indicadores, efecto `slide`, duración, autoplay, movimiento reducido, JS, visor, móvil ni «Nuestro Servicio».
+
+**Ancho visual real medido** (`getBoundingClientRect` del marco de la central, tras terminar la transición):
+
+| Ancho | Central | Inmediata | Exterior | Solapes | Margen |
+|---|---|---|---|---|---|
+| 1024px | **315 × 315** | 246 | 183 | 36 / 58px | 20px |
+| 1366px | **420 × 420** (antes 342) | 328 | 244 | 48 / 78px | 27px |
+| 1920px | **590 × 590** | 461 | 342 | 67 / 109px | 38px |
+
+**Pruebas (Chromium):**
+- **Reposo a 769, 1024, 1366 y 1920px:** 5 visibles con escala 58 / 78 / 100 / 78 / 58 % y capa 0,68 / 0,31 / 0 / 0,31 / 0,68. Diferencia de centro vertical 0px, asimetría 0–1px y desborde 0px.
+- **Movimiento cuadro a cuadro** (7 avances, 7 retrocesos y 6 saltos por indicador, unos 1.400 cuadros por ancho, cada ancho en una ejecución aislada): 0 saltos. Máximo por cuadro 2,9 % de escala y 33px a 1366. Tras cada movimiento vuelve a 58/78/100/78/58 con la central igual a `realIndex`. Un pico de 85px que apareció con 7 navegadores en paralelo fue un cuadro perdido por la carga del equipo; no se repitió al correr solo.
+- **Autoplay:** 5 avances seguidos con `reduce` (cada 6 s, sin transición) y sin la preferencia (cada ~6,8 s), a 1024, 1366 y 1920px.
+- **Visor:** abre con clic en la central, detiene el avance, cierra con Escape y el avance continúa. Flecha y pausa con mouse encima, correctas.
+- **Nota de método:** a 1920 × 900 la prueba se detuvo tras el primer avance. La causa fue el cursor de la prueba en (2, 2), que quedaba encima del carrusel (ahora más alto, en y = −30…631): al moverse las imágenes debajo, el navegador emitió `pointerenter` y se activó la pausa por mouse encima, que es el comportamiento previsto. Con el cursor fuera del carrusel: 5 avances. No es un fallo del autoplay.
+- **Controles:** misma posición, apoyados sobre el borde inferior de la central, visibles y por encima de las imágenes.
+- **Revisión visual** con la central en una foto («Ficha informativa de la Casa de Gobierno»): a 1366px se leen la ficha, los títulos de las etiquetas RA y la fachada sin abrir el visor. También a 1024 y 1920px la composición queda equilibrada.
+- **Sin cambios fuera del alcance:** RA a 320, 390 y 768px, «Nuestro Servicio» y header: 0 diferencias de estilo y de posición. La sección RA de escritorio quedó unos 80px más alta que en la versión anterior. Regresión de las 3 páginas: 0 errores JS.
