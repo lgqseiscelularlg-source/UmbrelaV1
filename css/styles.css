@@ -1087,6 +1087,18 @@ html.rt-lightbox-open {
     #111112;
 }
 
+/* Escritorio (> 900px): menos espacio vacío entre el final de «¿Qué es la RA?» y la foto de «Nuestro
+   Servicio» (84 + 110 = 194px → 56 + 68 = 124px, −36 %). Móvil y tableta (≤ 900px) sin cambios. */
+@media (min-width: 901px) {
+  .ra-section {
+    padding-bottom: 56px;
+  }
+
+  .services-section {
+    padding-top: 68px;
+  }
+}
+
 .svc-stage {
   position: relative;
   display: grid;

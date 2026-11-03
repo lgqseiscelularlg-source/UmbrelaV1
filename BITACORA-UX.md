@@ -833,3 +833,30 @@ Total: 16 archivos, 12,8 MB. Antes de eliminarlos, confirmar que ningún otro pr
 - **Controles:** misma posición, apoyados sobre el borde inferior de la central, visibles y por encima de las imágenes.
 - **Revisión visual** con la central en una foto («Ficha informativa de la Casa de Gobierno»): a 1366px se leen la ficha, los títulos de las etiquetas RA y la fachada sin abrir el visor. También a 1024 y 1920px la composición queda equilibrada.
 - **Sin cambios fuera del alcance:** RA a 320, 390 y 768px, «Nuestro Servicio» y header: 0 diferencias de estilo y de posición. La sección RA de escritorio quedó unos 80px más alta que en la versión anterior. Regresión de las 3 páginas: 0 errores JS.
+
+---
+
+## 2026-11-03 — Escritorio (> 900px): menos espacio entre «¿Qué es la RA?» y «Nuestro Servicio»
+
+**Diagnóstico (medido a 1366px):** entre la leyenda del carrusel RA (último contenido de la sección) y la foto de «Nuestro Servicio» solo hay dos rellenos: `.ra-section { padding-bottom: 84px }` y `.services-section { padding-top: 110px }`, que suman 194px vacíos. No intervienen márgenes ni `min-height`. A 1024px el vacío llega a 234px, porque el panel es más alto que la foto y `align-items: center` la baja 40px.
+
+**Cambio (`css/styles.css`, nuevo bloque `@media (min-width: 901px)` antes de `.svc-stage`):**
+- `.ra-section { padding-bottom: 56px }` (antes 84px).
+- `.services-section { padding-top: 68px }` (antes 110px).
+- Total: −70px. Móvil y tableta (≤ 900px) conservan sus reglas.
+
+**Resultado (antes → después):**
+
+| Ancho | Leyenda RA → foto | Controles RA → foto | Leyenda RA → panel |
+|---|---|---|---|
+| 1024px | 234 → 164px (−30 %) | 313 → 243px (−22 %) | 194 → 124px (−36 %) |
+| 1366px | 194 → 124px (−36 %) | 273 → 203px (−26 %) | 286 → 216px |
+| 1920px | 194 → 124px (−36 %) | 272 → 202px (−26 %) | 287 → 217px |
+
+El espacio vacío visible (desde la leyenda, que es contenido) se reduce un 30–36 %. Medido desde los controles, que incluye la leyenda y su margen, la reducción es del 22–26 %.
+
+**Pruebas (Chromium, contra `17a5706`):**
+- **Estilos calculados:** a 1024, 1366 y 1920px solo cambian los dos rellenos y, como consecuencia directa, el centro geométrico de ambas secciones (`transform-origin` y `perspective-origin`) y la posición del contenido respecto de su sección. Header, portada, «Quiénes somos» y contacto: 0 diferencias. A 320, 390, 768 y 900px: 0 diferencias en toda la página.
+- **Píxeles:** las secciones se acortan exactamente 28px (RA) y 42px (Servicio). Su contenido es idéntico salvo el brillo de fondo (`radial-gradient` en % del alto de la sección), que se corre ≤ 8 niveles de 255, imperceptible. Únicas excepciones: 9 píxeles en el inicio de la barra de progreso del indicador activo (depende del instante de la captura) y 1 píxel aislado.
+- **Comparación visual** de la unión de ambas secciones a 1024, 1366 y 1920px: el único cambio perceptible es la separación. Los controles RA siguen visibles, la foto y el panel de Servicio no se superponen con el carrusel, el título queda dentro del panel y no hay recortes ni desbordes.
+- **Regresión:** 3 páginas a 390 y 1366px, con y sin `reduce`: 0 errores JS. Carrusel RA en escritorio: flecha, avance y pausa con mouse encima, correctos.
