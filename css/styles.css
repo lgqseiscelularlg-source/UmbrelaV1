@@ -866,38 +866,40 @@ html.rt-lightbox-open {
   transform: none;
 }
 
-/* Escritorio: 5 imágenes visibles en tres niveles (central 100 %, ±1 78 %, ±2 60 %).
+/* Escritorio: 5 imágenes visibles en tres niveles (central 100 %, ±1 75 %, ±2 55 %).
    Swiper en bucle centrado admite como máximo 3 por vista con 6 imágenes (necesita slidesPerView + 3 ≥ 8
-   para 5 por vista), así que el contenedor ocupa 2/3 del ancho y las posiciones ±2 quedan a cada lado,
-   fuera de él. Cada posición se reconoce con las clases de Swiper (el bucle mantiene el orden del DOM igual
-   al visual): activa = 0, prev/next = ±1, las que siguen a la activa = +2 (y +3), el resto = −2 (y −3).
-   Al achicarse, cada nivel se acerca al centro (translateX) para que los huecos queden parejos (28px).
-   Cálculo con W = ancho de diapositiva y s = 20px de separación de Swiper:
-   ±1 → (0,89W + 28) − (W + s) = −11 % + 8px;  ±2 → (1,58W + 56) − 2(W + s) = −42 % + 16px.
-   Con el contenedor a 2/3 la ±3 queda siempre fuera de la pantalla (769–1920px).
+   para 5 por vista), así que las posiciones ±2 quedan a cada lado, fuera del contenedor de Swiper.
+   Cada posición se reconoce con las clases de Swiper (el bucle mantiene el orden del DOM igual al visual):
+   activa = 0, prev/next = ±1, las que siguen a la activa = +2 (y +3), el resto = −2 (y −3).
+   Tamaño: la central (= ancho de diapositiva W) mide 25 % de la pantalla V, así que el contenedor mide
+   3W + 2s = 75 % + 40px (s = 20px de separación de Swiper). Es el máximo que deja las exteriores completas:
+   semiancho del conjunto = W/2 + 0,75W + 0,55W + 2g = 0,474V con huecos g = 1,2vw (margen ≈ 2,6 % por lado).
+   Al achicarse, cada nivel se acerca al centro (translateX) para que los huecos queden parejos:
+   ±1 → (0,875W + g) − (W + s) = −12,5 % + 1,2vw − 20px;  ±2 → (1,525W + 2g) − 2(W + s) = −47,5 % + 2,4vw − 40px.
+   La ±3 queda siempre fuera de la pantalla (su borde cercano está a 0,59V del centro).
    Escala, desplazamiento y atenuación cambian con la misma transición de 0,8 s del desplazamiento. */
 @media (min-width: 769px) {
   .ra-carousel .ra-swiper {
-    width: 66.667%;
+    width: calc(75% + 40px);
   }
 
   /* −2 (y −3): pequeña y más oscura */
   .ra-carousel .ra-swiper .swiper-slide {
-    transform: translateX(calc(42% - 16px)) scale(0.6);
+    transform: translateX(calc(47.5% - 2.4vw + 40px)) scale(0.55);
   }
 
   /* +2 (y +3) */
   .ra-carousel .ra-swiper .swiper-slide-active ~ .swiper-slide {
-    transform: translateX(calc(-42% + 16px)) scale(0.6);
+    transform: translateX(calc(-47.5% + 2.4vw - 40px)) scale(0.55);
   }
 
   /* ±1: mediana, levemente atenuada */
   .ra-carousel .ra-swiper .swiper-slide.swiper-slide-prev {
-    transform: translateX(calc(11% - 8px)) scale(0.78);
+    transform: translateX(calc(12.5% - 1.2vw + 20px)) scale(0.75);
   }
 
   .ra-carousel .ra-swiper .swiper-slide.swiper-slide-next {
-    transform: translateX(calc(-11% + 8px)) scale(0.78);
+    transform: translateX(calc(-12.5% + 1.2vw - 20px)) scale(0.75);
   }
 
   /* 0: central grande */

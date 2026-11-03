@@ -764,3 +764,36 @@ Total: 16 archivos, 12,8 MB. Antes de eliminarlos, confirmar que ningún otro pr
 - **Revisión visual a 1024 y 1366px** (reposo y a mitad de transición): los tres niveles se distinguen con claridad, la composición es simétrica, la central queda destacada con sus esquinas de visor y durante el avance cada imagen cambia gradualmente de tamaño y luminosidad.
 
 **Pendiente en navegador real:** fluidez en escritorio (Safari y Chrome).
+
+---
+
+## 2026-11-03 — «¿Qué es la RA?» en escritorio: carrusel más grande y central más dominante
+
+**Pedido:** imágenes un ~20 % más grandes, la central un ~15 % más destacada, laterales inmediatas al 75–80 % y exteriores al 55–65 % de la central, cinco visibles y sin recortes.
+
+**Límite geométrico (verificado antes de cambiar):** el semiancho del conjunto es `central × (0,5 + r₁ + r₂) + 2 huecos`.
+- Con la central +38 % (20 % × 15 %), a 1366px el semiancho sería de 809px con 78/60 %, o de 753px con 75/55 %. La pantalla mide 683px de semiancho, así que las exteriores quedarían cortadas.
+- Además, el +15 % de dominancia de la central llevaría las inmediatas al 78/1,15 = 68 %, fuera del rango 75–80 % pedido.
+- **Se aplicó el máximo compatible con todas las restricciones:** inmediatas al 75 % y exteriores al 55 % (extremos inferiores de los rangos, para que la central domine más) y la central al 25 % del ancho de pantalla.
+
+**Cambio (solo `css/styles.css`, dentro de `@media (min-width: 769px)`):**
+- Contenedor de Swiper: `calc(75% + 40px)` (= 3 diapositivas de 25 % más 2 × 20px de separación). Antes era 2/3.
+- Escalas 100 / 75 / 55 % (antes 100 / 78 / 60 %). Huecos parejos de 1,2vw: `translateX` de ±1 `calc(∓12,5% ± 1,2vw ∓ 20px)` y de ±2 `calc(∓47,5% ± 2,4vw ∓ 40px)`. Cálculo detallado en el comentario del CSS.
+- Sin cambios en atenuación, esquinas de visor, controles, efecto `slide`, duración, autoplay, movimiento reducido, JS, móvil ni «Nuestro Servicio».
+
+**Resultado (central / inmediata / exterior):**
+
+| Ancho | Antes | Ahora | Central | Huecos | Margen lateral |
+|---|---|---|---|---|---|
+| 1024px | 214 / 167 / 128 | 256 / 192 / 141 | +20 % | 12px | 27px |
+| 1366px | 290 / 226 / 174 | 342 / 256 / 188 | +18 % | 16px | 35px |
+| 1920px | 413 / 322 / 248 | 480 / 360 / 264 | +16 % | 23px | 50px |
+
+**Pruebas (Chromium):**
+- **Reposo a 769, 1024, 1366 y 1920px:** 5 visibles con escala 55 / 75 / 100 / 75 / 55 % y capa 0,68 / 0,31 / 0 / 0,31 / 0,68. Diferencia de centro vertical 0px, huecos iguales, asimetría 0px, desborde 0px, exteriores completas y la sexta fuera de la pantalla.
+- **Movimiento cuadro a cuadro** (7 avances, 7 retrocesos y 6 saltos por indicador, unos 1.400 cuadros por ancho): 0 saltos. Máximo por cuadro: 3,2 % de escala; a 1920px, avances simples 24px y 1,6 %, saltos por indicador 42px y 3,2 %. Tras cada movimiento vuelve a 55/75/100/75/55 con la central igual a `realIndex`.
+- **Autoplay:** 5 avances seguidos con `reduce` (cada 6 s, sin transición) y sin la preferencia (cada ~6,8 s), a 1024, 1366 y 1920px.
+- **Visor:** abre con clic en la central, detiene el avance, cierra con Escape y el avance continúa. Flecha y pausa con mouse encima, correctas.
+- **Controles:** misma posición, apoyados sobre el borde inferior de la central y visibles.
+- **Sin cambios fuera del alcance:** RA a 320, 390 y 768px, «Nuestro Servicio» y header: 0 diferencias de estilo y de posición. La sección RA de escritorio quedó unos 52px más alta. Regresión de las 3 páginas: 0 errores JS.
+- **Comparación visual antes/después a 1024 y 1366px:** el conjunto tiene más presencia, la central domina con claridad y las exteriores se ven completas con margen.
