@@ -666,6 +666,24 @@ html.menu-open {
   transform: none;
 }
 
+/* Pausa discreta junto a los indicadores (RA en móvil y «Nuestro Servicio»): ícono pequeño,
+   sin cápsula, área táctil de 44 × 44 px */
+@media (max-width: 768px) {
+  .ra-carousel .rt-pause svg {
+    width: 14px;
+    height: 14px;
+  }
+}
+
+.svc-controls {
+  align-items: center;
+}
+
+.svc-controls .rt-pause svg {
+  width: 14px;
+  height: 14px;
+}
+
 /* =====================================================================
    VISOR AMPLIADO (lightbox) — js/main.js crea un único <dialog> para ambos carruseles
    ===================================================================== */
@@ -947,7 +965,8 @@ html.rt-lightbox-open {
 /* Móvil: sin botones de anterior/pausa/siguiente (se navega deslizando y la imagen se amplía al
    tocarla); quedan solo los indicadores, discretos y sin cápsula, debajo de la imagen activa */
 @media (max-width: 768px) {
-  .ra-carousel .rt-btn {
+  .ra-carousel .rt-prev,
+  .ra-carousel .rt-next {
     display: none;
   }
 

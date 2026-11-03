@@ -199,9 +199,13 @@ document.addEventListener("DOMContentLoaded", () => {
         </div>
       </div>
 
-      <!-- Solo indicadores (miniaturas en escritorio, segmentos en móvil): sin controles de reproducción -->
+      <!-- Indicadores (miniaturas en escritorio, segmentos en móvil) y pausa discreta (WCAG 2.2.2) -->
       <div class="rt-controls svc-controls">
         <div class="rt-pagination"></div>
+        <button type="button" class="rt-btn rt-pause" aria-label="Pausar avance automático">
+          <svg class="rt-icon-pause" viewBox="0 0 24 24" aria-hidden="true"><rect x="7" y="6" width="3" height="12" rx="1" /><rect x="14" y="6" width="3" height="12" rx="1" /></svg>
+          <svg class="rt-icon-play" viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5.5v13l11-6.5z" /></svg>
+        </button>
       </div>
     </div>
 

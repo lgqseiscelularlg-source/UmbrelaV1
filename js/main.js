@@ -117,8 +117,8 @@ window.addEventListener("scroll", function () {
 // - El botón de pausa es persistente: solo el usuario lo reanuda.
 // - Navegar a mano reinicia el tiempo completo (sin cambios inmediatos inesperados).
 // - Se detiene mientras no está en pantalla o tiene el puntero o el foco del teclado.
-// - Con prefers-reduced-motion: reduce empieza pausado y sin animación de transición;
-//   las imágenes siguen disponibles con los controles.
+// - Con prefers-reduced-motion: reduce el avance automático continúa (decisión de producto) pero sin
+//   animación: las imágenes cambian sin desplazamiento ni movimiento 3D. La pausa sigue disponible.
 const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
 
 // ==== Visor ampliado (lightbox), único para ambos carruseles ===============================
@@ -173,7 +173,7 @@ const lightbox = (() => {
 function initCarousel(root, { speed, onSlideChange, renderBullet, zoom, ...swiperOptions }) {
   const pauseButton = root.querySelector(".rt-pause");
   const pagination = root.querySelector(".rt-pagination");
-  let userPaused = reducedMotion.matches;
+  let userPaused = false;
   let onScreen = false;
   let mouseOver = false;   // solo puntero de mouse real (no toques)
   let keyboardUse = false; // foco de teclado (:focus-visible) o teclas dentro del carrusel
@@ -305,7 +305,6 @@ function initCarousel(root, { speed, onSlideChange, renderBullet, zoom, ...swipe
 
   reducedMotion.addEventListener("change", (event) => {
     swiper.params.speed = event.matches ? 0 : speed;
-    userPaused = event.matches;
     sync();
   });
 

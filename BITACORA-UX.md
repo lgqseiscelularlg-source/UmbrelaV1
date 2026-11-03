@@ -636,3 +636,27 @@ Total: 16 archivos, 12,8 MB. Antes de eliminarlos, confirmar que ningún otro pr
 - Carrusel RA 30/30 (leyenda «0N / 06»); visor 89/89; controles 17/17.
 - Fuera de `#ra`: 0 diferencias de estilo y 0 píxeles distintos.
 - Las pruebas de deslizamiento se ajustaron para arrastrar dentro de la pantalla: el contenedor de Swiper ahora es más ancho que ella.
+
+---
+
+## 2026-11-03 — Autoplay con «Reducir movimiento» y pausa discreta
+
+**Decisión del equipo:** ambos carruseles avanzan solos (RA cada 6 s, Servicio cada 5 s) también con `prefers-reduced-motion: reduce`.
+
+**Cambios:**
+- `js/main.js`: con movimiento reducido, el carrusel ya no empieza pausado. Solo se elimina la animación (`speed` 0): las imágenes cambian sin desplazamiento ni movimiento 3D. La preferencia se reevalúa si cambia con la página abierta (solo la velocidad).
+- `index.html` y `css/styles.css`: botón de pausa/reanudar persistente y discreto en RA móvil (antes oculto) y en «Nuestro Servicio» (nuevo). Ícono turquesa de 14px sin cápsula, área táctil de 44 × 44px, etiqueta «Pausar/Reanudar avance automático». RA en escritorio sin cambios.
+- Se mantienen: navegación manual, pausa temporal con el visor abierto, con mouse encima o foco de teclado, y fuera de pantalla.
+
+**WCAG 2.2.2 y movimiento reducido:**
+- 2.2.2 (nivel A) exige poder pausar contenido que se mueve solo más de 5 s: ahora ambos carruseles tienen un control persistente en todos los tamaños.
+- `prefers-reduced-motion` no es requisito A/AA. Con la preferencia activa no hay animación de desplazamiento ni 3D (cambio instantáneo), lo que reduce el impacto en personas sensibles al movimiento; el cambio periódico de imagen sigue ocurriendo por decisión de producto y puede detenerse con el botón.
+- Alternativa si se quisiera ser más conservador: con la preferencia activa, intervalos más largos (p. ej. 10 s) o empezar en pausa.
+
+**Pruebas (Chromium; no es Safari):**
+- Carrusel RA 30/30: con `reduce` avanza solo con velocidad 0 y el usuario puede pausar.
+- Controles 23/23: 1 botón visible (pausa) en RA ≤ 768px y en Servicio, 3 en RA escritorio. En móvil táctil, tocar la pausa detiene el avance (≥ 7 s sin cambios) y volver a tocarla lo reanuda; botón de 44 × 44px.
+- Visor 89/89: con `reduce` se detiene abierto y sigue al cerrar.
+- Regresión general 64/64, header 29/29, revelado 13/13, iOS 17/17. Fuera de ambos carruseles: 0 diferencias de estilo y de píxeles.
+
+**Pendiente en iPhone real:** con «Reducir movimiento» activado, verificar que ambos carruseles avanzan sin animación y que la pausa discreta se puede tocar con comodidad; verificar el bucle de 6 imágenes y que las cinco posiciones se perciban.
