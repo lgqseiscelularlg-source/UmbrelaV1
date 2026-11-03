@@ -183,7 +183,10 @@ function initCarousel(root, { speed, onSlideChange, renderBullet, zoom, ...swipe
     ...swiperOptions,
     loop: true,
     speed: reducedMotion.matches ? 0 : speed,
-    autoplay: { delay: Number(root.dataset.delay) || 6000, disableOnInteraction: false },
+    // waitForTransition: Swiper pausa el autoplay en cada cambio y lo reanuda con el «transitionend» del
+    // contenedor. Con velocidad 0 (movimiento reducido) y efectos fade/creative ese evento nunca llega,
+    // y el autoplay quedaba pausado para siempre tras el primer avance. Sin animación no hay que esperar.
+    autoplay: { delay: Number(root.dataset.delay) || 6000, disableOnInteraction: false, waitForTransition: !reducedMotion.matches },
     // Flechas y botón de pausa son opcionales (no todos los carruseles los muestran)
     navigation: { prevEl: root.querySelector(".rt-prev"), nextEl: root.querySelector(".rt-next"), enabled: !!root.querySelector(".rt-next") },
     pagination: {
@@ -305,6 +308,7 @@ function initCarousel(root, { speed, onSlideChange, renderBullet, zoom, ...swipe
 
   reducedMotion.addEventListener("change", (event) => {
     swiper.params.speed = event.matches ? 0 : speed;
+    swiper.params.autoplay.waitForTransition = !event.matches;
     sync();
   });
 

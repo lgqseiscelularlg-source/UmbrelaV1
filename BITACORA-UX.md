@@ -660,3 +660,35 @@ Total: 16 archivos, 12,8 MB. Antes de eliminarlos, confirmar que ningún otro pr
 - Regresión general 64/64, header 29/29, revelado 13/13, iOS 17/17. Fuera de ambos carruseles: 0 diferencias de estilo y de píxeles.
 
 **Pendiente en iPhone real:** con «Reducir movimiento» activado, verificar que ambos carruseles avanzan sin animación y que la pausa discreta se puede tocar con comodidad; verificar el bucle de 6 imágenes y que las cinco posiciones se perciban.
+
+---
+
+## 2026-11-03 — Corrección · Autoplay detenido tras el primer avance (iPhone, ambos carruseles)
+
+**Síntoma (iPhone real, Safari y Chrome):** la primera imagen muestra la barra de progreso, avanza a la segunda y ahí queda: la barra no vuelve a empezar y no hay más avances automáticos. La navegación manual funciona. En «¿Qué es la RA?» el primer cambio se ve brusco.
+
+**Causa (confirmada en el código de Swiper 11.2.10 y reproducida):**
+- En cada cambio de imagen, el autoplay de Swiper se pausa (`beforeTransitionStart` → `pause(true, true)`) y, con `waitForTransition: true` (valor por defecto), solo se reanuda al recibir un evento `transitionend` en el contenedor (`swiper-wrapper`).
+- Los efectos `fade` («Nuestro Servicio») y `creative` (RA) no mueven el contenedor (`virtualTranslate`): Swiper fabrica ese `transitionend` cuando termina la animación de la diapositiva, **pero solo si la duración es distinta de 0** (`effectVirtualTransitionEnd`, condición `duration !== 0`).
+- Desde el cambio «Autoplay también con movimiento reducido» (`998d0d5`), con «Reducir movimiento» la velocidad es 0. El evento nunca llega y el autoplay queda en `running = true, paused = true` para siempre. Como `running` sigue en `true`, `sync()` de `initCarousel` no lo reinicia; la barra queda en 0 porque el tiempo restante se congela.
+- El mismo bloqueo ocurre al navegar a mano con velocidad 0 (cualquier cambio de imagen deja el autoplay esperando).
+- **Conclusión:** el iPhone de prueba tiene activado «Reducir movimiento». Por eso también el cambio es instantáneo («brusco»): es el comportamiento previsto con la preferencia (velocidad 0, sin desplazamiento), no un problema de fluidez del efecto. Sin la preferencia, el equipo ya había confirmado que el autoplay funcionaba en iPhone.
+
+**Reproducción (Chromium, emulación iPhone 13 táctil, `reducedMotion: reduce`, instrumentación temporal solo en el navegador de prueba, sin cambios en el sitio):**
+- Versión anterior: RA avanza a los 6,1 s y Servicio a los 5,1 s; luego 0 avances. Registro: `slideChange → autoplayPause → beforeTransitionStart → transitionStart → transitionEnd → autoplay` y nunca `autoplayResume`. Estado final `running=true, paused=true`, `--rt-progress: 0`. Mismo comportamiento en ambos carruseles y sin errores JS: coincide con lo observado en el iPhone.
+- Versión anterior sin la preferencia: avanza normalmente.
+
+**Corrección mínima (`js/main.js`, `initCarousel`):** `autoplay.waitForTransition` = `!reducedMotion.matches`, y se actualiza junto con la velocidad si la preferencia cambia con la página abierta. Sin animación no hay nada que esperar; con animación el comportamiento es exactamente el anterior. Sin temporizadores paralelos, reinicios forzados ni cambios de estilos o de efecto.
+
+**Pruebas (Chromium; no es Safari):**
+- Avances consecutivos con `reduce`: RA 5 (cada 6,0–6,1 s), Servicio 6 (cada 5,0–5,1 s). Sin la preferencia: RA 5 (cada ~6,9 s: 6 s + 0,9 s de animación, igual que antes), Servicio 6.
+- Escenarios en emulación táctil, con y sin `reduce`, ambos carruseles: avance tras tocar un indicador, tras deslizar, tras abrir y cerrar el visor (detenido mientras está abierto), pausa y reanudación con el botón accesible, detenido fuera de pantalla y avance al volver, barra de progreso activa, y cambio de la preferencia en vivo: **22/22 con `reduce` y 22/22 sin la preferencia**. Versión anterior: 9/22 con `reduce` (falla todo avance posterior al primero) y 21/22 sin la preferencia (falla al activar `reduce` en vivo: 1 avance y se detiene).
+- Escritorio 1366px con `reduce`: flecha siguiente y luego 2 avances; mouse encima detiene; al salir reanuda.
+- Regresión: `index.html`, `larioja.html` y `realitytour.html` a 390 y 1366px, con y sin `reduce`: 0 errores JS; menú móvil abre y cierra. No se modificaron HTML ni CSS.
+- Nota de método: un primer guion de deslizamiento usaba `page.mouse.move`, que genera un `pointerenter` de mouse sin salida y activa (a propósito) la pausa por mouse encima. Era un artefacto de la prueba; con un deslizamiento solo táctil el avance continúa.
+
+**Transición brusca de RA:** no se modificó. Con «Reducir movimiento» el cambio instantáneo es lo esperado. Para evaluar la fluidez real del efecto hay que probar en el iPhone con la preferencia desactivada.
+
+**Pendiente en iPhone real:**
+1. Con «Reducir movimiento» activado (Ajustes → Accesibilidad → Movimiento): ambos carruseles deben avanzar varias veces seguidas y la barra debe reiniciarse en cada imagen.
+2. Con la preferencia desactivada: lo mismo, y evaluar si la transición de RA sigue viéndose brusca.
