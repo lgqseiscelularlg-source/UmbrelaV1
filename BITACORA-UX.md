@@ -612,3 +612,27 @@ Total: 16 archivos, 12,8 MB. Antes de eliminarlos, confirmar que ningún otro pr
 - WCAG 2.2.2 (nivel A) exige que el contenido que se mueve solo más de 5 s pueda pausarse o detenerse. Hoy cumple solo el RA en escritorio (botón). RA en móvil y «Nuestro Servicio» se detienen con puntero o foco, pero no tienen un control persistente: esto es un riesgo **independiente** de «Reducir movimiento».
 - `prefers-reduced-motion` no es un requisito de WCAG A/AA. Avanzar automáticamente con la preferencia activa es aceptable si se elimina el movimiento (cambio instantáneo o fundido breve, sin desplazamiento 3D) y existe una forma de pausar.
 - **Propuesta:** con «Reducir movimiento», autoplay activo (6 s / 5 s) con cambio sin animación de desplazamiento; agregar en ambos carruseles y en móvil un botón de pausa discreto (ícono pequeño junto a los indicadores, área táctil de 44px), sin cápsula ni apariencia de reproductor.
+
+---
+
+## 2026-11-03 — Carrusel RA circular: 6 imágenes y 5 posiciones visibles
+
+**Prueba de concepto (fuera del repo, Swiper 11.2.10, sexta diapositiva temporal):**
+- Coverflow con `slidesPerView: "auto"`: en móvil solo entra 1 imagen por lado.
+- Comprimir con `stretch`: la ±2 queda oculta detrás de la ±1 y la ±3 se ve en el borde, junto con su salto de lado.
+- `loopAdditionalSlides`: Swiper avisa «not enough slides» y desbalancea el bucle.
+- **Configuración que cumple:** efecto `creative` con `limitProgress: 2` (reproduce el coverflow: giro 24° y profundidad; las imágenes más allá de ±2 quedan apiladas detrás de la ±2, por lo que la sexta cambia de lado sin verse) + `slidesPerView: 3` (el bucle mantiene ≥ 2 diapositivas a cada lado).
+- Con `slidesPerView: 3` la imagen central mide 1/3 del contenedor (124px a 390px); en móvil el contenedor de Swiper pasa a 190 % del ancho (la sección ya recorta el exceso) y la central queda en ~63vw.
+
+**Implementado (`index.html`, `css/styles.css`, `js/main.js`, `assets/img/web/dique-los-sauces.jpg`):**
+- Sexta diapositiva con `alt` propio y leyenda independiente («Dique Los Sauces, Sanagasta · Foto: Necman etcetera (CC BY-SA 4.0)»). Indicadores y contador pasan a 6 automáticamente.
+- Configuración anterior aplicada; paso lateral 34 % en ≤ 768px y 62 % en escritorio. Se eliminan los anchos fijos de diapositiva (460px / 82vw) que Swiper ya no usa.
+- Sin clones ni duplicados; las 5 imágenes previas se conservan.
+
+**Imagen agregada:** «Dique Los Sauces en Sanagasta» — autor **Necman etcetera** — licencia **CC BY-SA 4.0** — https://commons.wikimedia.org/wiki/File:Dique_Los_Sauces_en_Sanagasta.jpg. Descargada de upload.wikimedia.org (1920×1440) y redimensionada a 1200×900, JPEG q80, 255 KB. La versión redimensionada se distribuye bajo la misma licencia. Atribución visible en la leyenda y comentario en el HTML. Se descartó «Ciudad de La Rioja.JPG» (dominio público) por ser una calle con lluvia, poco representativa.
+
+**Pruebas (Chromium, sitio real con 6 imágenes):**
+- 320/390/768/1366: en las 6 posiciones centrales, 2 + 1 + 2 en reposo con el orden correcto (centro 1 → izq. 5, 6 / der. 2, 3, …), ≥ 2 por lado durante toda la transición (incluida 6 → 1), sin desborde y sin avisos de Swiper.
+- Carrusel RA 30/30 (leyenda «0N / 06»); visor 89/89; controles 17/17.
+- Fuera de `#ra`: 0 diferencias de estilo y 0 píxeles distintos.
+- Las pruebas de deslizamiento se ajustaron para arrastrar dentro de la pantalla: el contenedor de Swiper ahora es más ancho que ella.

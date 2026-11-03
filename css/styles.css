@@ -835,10 +835,6 @@ html.rt-lightbox-open {
   padding: 10px 0 40px;
 }
 
-.ra-swiper .swiper-slide {
-  width: 460px;
-}
-
 .ra-frame {
   position: relative;
   margin: 0;
@@ -946,9 +942,6 @@ html.rt-lightbox-open {
     margin-bottom: 30px;
   }
 
-  .ra-swiper .swiper-slide {
-    width: 82vw;
-  }
 }
 
 /* Móvil: sin botones de anterior/pausa/siguiente (se navega deslizando y la imagen se amplía al
@@ -956,6 +949,14 @@ html.rt-lightbox-open {
 @media (max-width: 768px) {
   .ra-carousel .rt-btn {
     display: none;
+  }
+
+  /* Swiper fija el ancho de cada diapositiva en 1/3 del contenedor (slidesPerView: 3, necesario para que
+     el bucle mantenga 2 imágenes a cada lado). En móvil el contenedor es más ancho que la pantalla para
+     que la imagen central conserve su tamaño (~63vw); la sección recorta lo que queda fuera. */
+  .ra-carousel .ra-swiper {
+    width: 190%;
+    margin-left: -45%;
   }
 
   .ra-carousel .rt-controls {

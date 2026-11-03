@@ -317,17 +317,32 @@ function initCarousel(root, { speed, onSlideChange, renderBullet, zoom, ...swipe
 }
 
 /* ==== Carrusel coverflow «¿Qué es la RA?» ==== */
+// Posiciones del anillo: desplazamiento lateral por paso (en % del ancho de la diapositiva) y profundidad
+function raRing(step, depth) {
+  return {
+    limitProgress: 2,
+    perspective: true,
+    prev: { translate: [`-${step}`, 0, depth], rotate: [0, -24, 0] },
+    next: { translate: [step, 0, depth], rotate: [0, 24, 0] },
+  };
+}
+
 const raCarousel = document.querySelector(".ra-carousel");
 if (raCarousel) {
   const captionNum = document.querySelector(".ra-caption-num");
   const captionText = document.querySelector(".ra-caption-text");
   initCarousel(raCarousel, {
-    effect: "coverflow",
+    // Bucle circular con 5 posiciones visibles (2 anteriores, la central y 2 siguientes) y 6 imágenes:
+    // - slidesPerView 3 hace que el bucle de Swiper mantenga siempre 2 o más diapositivas a cada lado;
+    // - el efecto «creative» reproduce el coverflow (giro 24°, profundidad) y limitProgress: 2 deja la
+    //   sexta imagen oculta detrás de la posición ±2, así su cambio de lado en el bucle no se ve.
+    effect: "creative",
     centeredSlides: true,
-    slidesPerView: "auto",
+    slidesPerView: 3,
     grabCursor: true,
     speed: 900,
-    coverflowEffect: { rotate: 24, stretch: 0, depth: 180, modifier: 1, slideShadows: false },
+    creativeEffect: raRing("34%", -150),
+    breakpoints: { 769: { creativeEffect: raRing("62%", -170) } },
     zoom: ".ra-frame",
     // Leyenda visible de la imagen activa (data-caption, independiente del alt)
     onSlideChange(swiper) {
