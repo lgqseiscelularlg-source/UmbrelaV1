@@ -1287,8 +1287,9 @@ html.rt-lightbox-open {
   }
 }
 
-/* Tableta y móvil: una sola tarjeta — foto arriba, franja de controles y panel de texto debajo, con el
-   mismo ancho, borde y fondo (sin elementos superpuestos sobre la foto) */
+/* Tableta y móvil (opción B, «imagen protagonista»): un panel común (fondo y borde sutiles) contiene la
+   foto como pieza redondeada en sus cuatro esquinas, la franja de controles debajo y el texto. Así se lee
+   como una sola composición y no como tres bloques sueltos (sin elementos superpuestos sobre la foto). */
 @media (max-width: 900px) {
   .services-section {
     padding: 8px 14px 64px;
@@ -1297,21 +1298,21 @@ html.rt-lightbox-open {
   .svc-stage {
     display: block;
     max-width: 640px;
-  }
-
-  .svc-carousel {
-    overflow: hidden;
+    padding: 10px;
     border: 1px solid rgba(255, 255, 255, 0.1);
-    border-bottom: 0;
-    border-radius: 22px 22px 0 0;
-    background: rgba(27, 28, 30, 0.95);
+    border-radius: 26px;
+    background:
+      radial-gradient(90% 45% at 50% 0%, rgba(36, 177, 186, 0.08), transparent 70%),
+      rgba(27, 28, 30, 0.95);
+    box-shadow: 0 30px 70px rgba(0, 0, 0, 0.5);
   }
 
-  /* Encuadre algo más bajo que la foto original (1,41:1 → 3:2); object-fit: cover recorta sin deformar */
+  /* Foto protagonista: cuatro esquinas redondeadas, proporción 3:2 (algo más baja que la original 1,41:1);
+     object-fit: cover recorta sin deformar */
   .svc-carousel .svc-swiper {
     aspect-ratio: 3 / 2;
-    border-radius: 0;
-    box-shadow: none;
+    border-radius: 18px;
+    box-shadow: 0 14px 30px rgba(0, 0, 0, 0.45), 0 0 0 1px rgba(255, 255, 255, 0.08);
   }
 
   .svc-swiper::after {
@@ -1325,8 +1326,7 @@ html.rt-lightbox-open {
     width: auto;
     justify-content: center;
     gap: 4px;
-    padding: 2px 8px;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+    padding: 4px 8px 0;
   }
 
   /* Swiper le da width: 100% (su hoja carga después; por eso el selector más específico):
@@ -1374,11 +1374,14 @@ html.rt-lightbox-open {
     height: 16px;
   }
 
+  /* El texto comparte el fondo del panel común (sin caja propia) */
   .svc-card {
     margin: 0;
-    padding: 24px 22px 26px;
-    border-top: 0;
-    border-radius: 0 0 22px 22px;
+    padding: 14px 12px 16px;
+    border: 0;
+    border-radius: 0;
+    background: none;
+    box-shadow: none;
   }
 
   .svc-card h2 {

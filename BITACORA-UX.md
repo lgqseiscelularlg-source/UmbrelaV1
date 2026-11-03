@@ -903,3 +903,50 @@ El espacio vacío visible (desde la leyenda, que es contenido) se reduce un 30�
 - **Escritorio sin cambios (contra `89afb41`):** `speed` y `waitForTransition` idénticos a 769 y 1366px, con y sin `reduce`. Estilos calculados de toda la página a 901, 1024, 1366 y 1920px con `reduce`: 0 diferencias. Sin la preferencia, las diferencias son transiciones capturadas a mitad de camino: la versión anterior contra sí misma da la misma cantidad. Píxeles con los carruseles detenidos a 1024, 1366 y 1920px: solo la franja de 3px de la barra de progreso.
 
 **Pendiente en iPhone real (Safari y Chrome):** con «Reducir movimiento» activado y desactivado, varios avances seguidos con desplazamiento suave, sin detenerse, y comprobar el tamaño de la central.
+
+---
+
+## 2026-11-03 — Móvil · «Nuestro Servicio»: opción B «imagen protagonista»
+
+**Cambio (solo `css/styles.css`, dentro del bloque existente `@media (max-width: 900px)`; escritorio sin cambios):**
+- `.svc-stage` pasa a ser un **panel común**: relleno de 10px, borde de 1px rgba(255,255,255,0,1), radio de 26px, fondo del panel con un brillo turquesa muy tenue arriba (`radial-gradient`) y sombra. Contiene la foto, los controles y el texto, que así se leen como una sola composición.
+- **Foto protagonista:** 3:2 con las **cuatro esquinas redondeadas** (18px), sombra suave y aro de 1px, `object-fit: cover` (sin deformar). `.svc-carousel` ya no tiene borde ni fondo propios.
+- **Controles** (indicadores y pausa) centrados debajo de la foto, sobre el fondo del panel (contraste de los indicadores inactivos ≈ 4:1). Pausa de 44 × 44px.
+- **Texto:** `.svc-card` sin caja propia (sin fondo, borde ni sombra), con relleno de 14px 12px 16px dentro del panel común. Título, apartados, textos, colores y tipografías sin cambios.
+
+**Medidas:** foto de 270 × 180 a 320px, 325 × 217 a 375px, 340 × 227 a 390px, 380 × 253 a 430px y 640 × 427 a 768px. Margen interno de 11px por lado, 0px de desborde y el panel de texto dentro del panel común en todos los anchos.
+
+**Pruebas (Chromium con emulación táctil; no es Safari real):**
+- Escenarios táctiles de «Nuestro Servicio» (tocar un indicador, deslizar, abrir y cerrar el visor, pausa y reanudación, fuera de pantalla y regreso, barra de progreso): **0 fallos en 10 corridas completas**, con y sin `reduce`.
+- **Autoplay:** 5 o más avances seguidos cada 5 s, con y sin `reduce`.
+- **Controles** a 320, 390 y 768px: debajo de la foto, sin superposición, centrados, 1 botón visible, 44px y dentro de la pantalla.
+- **Escritorio sin cambios (contra `ac79939`):** estilos calculados de toda la página a 901, 1024, 1366 y 1920px: 0 diferencias. Header y «Quiénes somos» en móvil: 0 diferencias. Regresión de las 3 páginas: 0 errores JS.
+
+---
+
+## 2026-11-03 — ABIERTO · Fallo intermitente del autoplay RA en móvil tras pulsar un indicador (causa no confirmada)
+
+**Estado: NO resuelto. Causa NO confirmada.** No se modificó el carrusel RA para intentar corregirlo.
+
+**Síntoma (solo en pruebas automatizadas, Chromium con emulación de iPhone 13):** en el guion de escenarios, después de tocar un indicador del RA (o de deslizar), el carrusel a veces deja de avanzar durante toda la ventana de medición (unos 20 s). Vuelve a avanzar después de abrir y cerrar el visor ampliado, y a partir de ahí todos los casos pasan.
+
+**Condiciones conocidas:**
+- Aparece **solo sin «Reducir movimiento»**. Con `reduce`: 0 fallos en todas las corridas.
+- Aparece con la versión `ac79939` (RA móvil a 600 ms). Antes de ese commit, el RA móvil con `reduce` usaba velocidad 0, así que no hay un punto de comparación equivalente.
+- **Es intermitente:** 4 de 8 corridas en la última tanda (con 4 navegadores en paralelo), y también antes en 2 de unas 10 corridas. Afecta siempre a los primeros casos del RA («avance tras navegación manual», «avance tras deslizar») y una vez también a «tap indicador».
+- «Nuestro Servicio» no lo presenta: 0 fallos.
+
+**Pruebas realizadas:**
+- **Toque de un indicador** a +0, +100, +300, +500, +650, +1500 y +3000 ms después de un avance automático (con el revelado `.hidden` desactivado): **no se reproduce**. Siempre hay 2–3 avances en los 15 s siguientes y el estado final es `running=true, paused=false`. El momento del toque respecto de la transición no parece ser la causa.
+- **Autoplay sin tocar** (5 avances seguidos) y **recorrido cuadro a cuadro** (18 avances): sin fallos.
+- **Registro de eventos en las corridas que fallaron:**
+  - el foco en el indicador o la pausa nunca se informa como `:focus-visible` (no parece ser la pausa por teclado);
+  - aparecieron 2 eventos de puntero de tipo **mouse** (cursor virtual de Playwright) en el conjunto de corridas fallidas: al menos parte de los casos puede ser el artefacto ya documentado (cursor virtual sobre el carrusel después de que el revelado `.hidden` mueve el contenido), pero no alcanza para explicarlos todos;
+  - se registraron `autoplayStop` del RA, es decir, `sync()` detiene el avance porque se cumple alguna condición de pausa. No se llegó a aislar cuál.
+
+**Hipótesis pendientes (sin confirmar):**
+1. Artefacto del cursor virtual (pausa por mouse encima) en más casos de los registrados.
+2. Una condición de `sync()` que queda activa tras el toque, que se limpia al cerrar el visor (allí se reinicia `keyboardUse`).
+3. Interacción entre el revelado `.hidden` (solo sin `reduce`), el desplazamiento de la página y la visibilidad (`IntersectionObserver`).
+
+**Próximo paso sugerido:** en una sesión nueva, registrar en cada `sync()` el valor de `userPaused`, `onScreen`, `mouseOver`, `keyboardUse` y `viewerOpen` (instrumentación temporal, fuera de producción) y repetir el guion hasta capturar una falla. **Validar en iPhone real:** tocar un indicador del RA y deslizar, sin «Reducir movimiento», y comprobar que el avance automático continúa.
