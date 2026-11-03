@@ -866,12 +866,54 @@ html.rt-lightbox-open {
   transform: none;
 }
 
-/* Escritorio: 5 imágenes visibles. Swiper en bucle centrado admite como máximo 3 por vista con 6 imágenes
-   (necesita slidesPerView + 3 ≥ 8 para 5 por vista), así que el contenedor ocupa el 60 % del ancho y las
-   posiciones ±2 quedan a cada lado, fuera de él; la sexta queda a ±3, siempre fuera de la pantalla. */
+/* Escritorio: 5 imágenes visibles en tres niveles (central 100 %, ±1 78 %, ±2 60 %).
+   Swiper en bucle centrado admite como máximo 3 por vista con 6 imágenes (necesita slidesPerView + 3 ≥ 8
+   para 5 por vista), así que el contenedor ocupa 2/3 del ancho y las posiciones ±2 quedan a cada lado,
+   fuera de él. Cada posición se reconoce con las clases de Swiper (el bucle mantiene el orden del DOM igual
+   al visual): activa = 0, prev/next = ±1, las que siguen a la activa = +2 (y +3), el resto = −2 (y −3).
+   Al achicarse, cada nivel se acerca al centro (translateX) para que los huecos queden parejos (28px).
+   Cálculo con W = ancho de diapositiva y s = 20px de separación de Swiper:
+   ±1 → (0,89W + 28) − (W + s) = −11 % + 8px;  ±2 → (1,58W + 56) − 2(W + s) = −42 % + 16px.
+   Con el contenedor a 2/3 la ±3 queda siempre fuera de la pantalla (769–1920px).
+   Escala, desplazamiento y atenuación cambian con la misma transición de 0,8 s del desplazamiento. */
 @media (min-width: 769px) {
   .ra-carousel .ra-swiper {
-    width: 60%;
+    width: 66.667%;
+  }
+
+  /* −2 (y −3): pequeña y más oscura */
+  .ra-carousel .ra-swiper .swiper-slide {
+    transform: translateX(calc(42% - 16px)) scale(0.6);
+  }
+
+  /* +2 (y +3) */
+  .ra-carousel .ra-swiper .swiper-slide-active ~ .swiper-slide {
+    transform: translateX(calc(-42% + 16px)) scale(0.6);
+  }
+
+  /* ±1: mediana, levemente atenuada */
+  .ra-carousel .ra-swiper .swiper-slide.swiper-slide-prev {
+    transform: translateX(calc(11% - 8px)) scale(0.78);
+  }
+
+  .ra-carousel .ra-swiper .swiper-slide.swiper-slide-next {
+    transform: translateX(calc(-11% + 8px)) scale(0.78);
+  }
+
+  /* 0: central grande */
+  .ra-carousel .ra-swiper .swiper-slide.swiper-slide-active {
+    transform: none;
+  }
+
+  /* Con .ra-carousel delante: la regla base de .ra-frame::after está más abajo en el archivo */
+  .ra-carousel .ra-frame::after {
+    background: rgba(17, 17, 18, 0.68);
+    transition-duration: 0.8s;
+  }
+
+  .ra-swiper .swiper-slide-prev .ra-frame::after,
+  .ra-swiper .swiper-slide-next .ra-frame::after {
+    opacity: 0.45;
   }
 }
 

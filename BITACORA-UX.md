@@ -734,3 +734,33 @@ Total: 16 archivos, 12,8 MB. Antes de eliminarlos, confirmar que ningún otro pr
 2. Con «Reducir movimiento» activado: cambios instantáneos y avance continuo en ambos carruseles.
 3. «Nuestro Servicio»: que la tarjeta se vea como un bloque y que los indicadores y la pausa se distingan y se toquen con comodidad.
 4. Deslizar el RA con el dedo; tocar la imagen central abre el visor.
+
+---
+
+## 2026-11-03 — «¿Qué es la RA?» en escritorio: tres niveles de profundidad
+
+**Problema:** en escritorio las cuatro laterales tenían el mismo tamaño (84 %) y el carrusel se veía plano.
+
+**Cambio (solo `css/styles.css`, dentro de `@media (min-width: 769px)`):** sin cambios en JS, `initCarousel`, `waitForTransition`, autoplay, móvil, «Nuestro Servicio», imágenes, indicadores, controles ni visor.
+
+| Posición | Escala | Capa oscura | Desplazamiento hacia el centro |
+|---|---|---|---|
+| −2 / +2 | 60 % | 0,68 | `calc(±42% ∓ 16px)` |
+| −1 / +1 | 78 % | 0,31 (opacidad 0,45 × 0,68) | `calc(±11% ∓ 8px)` |
+| 0 | 100 % | 0 | — |
+
+- **Cómo se reconoce cada posición, sin JS nuevo:** el bucle de Swiper mantiene el orden del DOM igual al visual. La activa es 0, `swiper-slide-prev` y `-next` son ±1, `.swiper-slide-active ~ .swiper-slide` es +2 (y +3), y el estilo base es −2 (y −3).
+- El `translateX` compensa la reducción de escala para que los cinco huecos midan lo mismo (28px). Escala y desplazamiento van en un mismo `transform` y cambian con la transición de 0,8 s del desplazamiento de Swiper; la capa oscura, también en 0,8 s.
+- El contenedor de Swiper pasa del 60 % a 2/3 del ancho, para que la central gane tamaño (260 → 290px a 1366) y la sexta imagen (±3) quede siempre fuera de la pantalla entre 769 y 1920px.
+- Centro vertical común (`transform-origin` centrado). Sin rotaciones ni perspectiva.
+- Con «Reducir movimiento» se mantienen las reglas existentes: sin transición de `transform` ni de la capa (cambio instantáneo).
+
+**Pruebas (Chromium):**
+- **Reposo a 769, 1024, 1366 y 1920px:** 5 visibles con escala 60 / 78 / 100 / 78 / 60 %, capa 0,68 / 0,31 / 0 / 0,31 / 0,68. Diferencia de centro vertical 0px, huecos 28 / 28 / 28 / 28px, asimetría 0px, márgenes laterales iguales (53, 81 y 127px a 1024, 1366 y 1920) y 0px de desborde.
+- **Movimiento cuadro a cuadro** (7 avances, 7 retrocesos y 6 saltos por indicador, unos 1.400 cuadros por ancho) a 769, 1024, 1366 y 1920px: 0 saltos de posición o de escala. El cambio máximo de escala por cuadro es 2,7 % (5,4 % a 1920 en saltos de varias posiciones), y tras cada movimiento se vuelve a 60/78/100/78/60 con la central igual a `realIndex`.
+- **Autoplay:** 5 avances seguidos con `reduce` (cada 6 s, sin transición) y sin la preferencia (cada ~6,8 s), a 1024, 1366 y 1920px.
+- **Visor:** abre con clic en la central, el carrusel se detiene, cierra con Escape y el avance continúa. Flecha siguiente y pausa por mouse encima, correctas.
+- **Sin cambios fuera del alcance:** RA a 320, 390 y 768px, «Nuestro Servicio», header y «Quiénes somos»: 0 diferencias de estilo y de posición. La sección RA de escritorio quedó unos 30px más alta. Regresión de las 3 páginas: 0 errores JS.
+- **Revisión visual a 1024 y 1366px** (reposo y a mitad de transición): los tres niveles se distinguen con claridad, la composición es simétrica, la central queda destacada con sus esquinas de visor y durante el avance cada imagen cambia gradualmente de tamaño y luminosidad.
+
+**Pendiente en navegador real:** fluidez en escritorio (Safari y Chrome).
