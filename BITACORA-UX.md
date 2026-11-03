@@ -860,3 +860,46 @@ El espacio vacío visible (desde la leyenda, que es contenido) se reduce un 30�
 - **Píxeles:** las secciones se acortan exactamente 28px (RA) y 42px (Servicio). Su contenido es idéntico salvo el brillo de fondo (`radial-gradient` en % del alto de la sección), que se corre ≤ 8 niveles de 255, imperceptible. Únicas excepciones: 9 píxeles en el inicio de la barra de progreso del indicador activo (depende del instante de la captura) y 1 píxel aislado.
 - **Comparación visual** de la unión de ambas secciones a 1024, 1366 y 1920px: el único cambio perceptible es la separación. Los controles RA siguen visibles, la foto y el panel de Servicio no se superponen con el carrusel, el título queda dentro del panel y no hay recortes ni desbordes.
 - **Regresión:** 3 páginas a 390 y 1366px, con y sin `reduce`: 0 errores JS. Carrusel RA en escritorio: flecha, avance y pausa con mouse encima, correctos.
+
+---
+
+## 2026-11-03 — Móvil · «¿Qué es la RA?»: desplazamiento suave también con «Reducir movimiento», central más grande y sin leyenda
+
+**Problema (iPhone real):** con «Reducir movimiento» las imágenes cambiaban de golpe. La causa: `initCarousel` usaba `speed: 0` con esa preferencia. Además, la central era chica (61 % del ancho) y el contador con la descripción ocupaba espacio.
+
+### A. Transición (`js/main.js`)
+- `initCarousel` acepta ahora `speed` como función `(reducido) => ms` y `speedMedia` (consultas de medios que obligan a recalcularla). Con un número sigue funcionando como antes (0 con movimiento reducido): «Nuestro Servicio» no cambia.
+- RA: `speed: (reduced) => mobileQuery.matches ? 600 : reduced ? 0 : 800` con `speedMedia: [mobileQuery]` (≤ 768px).
+  - Móvil: 600 ms siempre, con y sin la preferencia.
+  - Escritorio: 800 ms, o 0 con la preferencia (sin cambios, verificado).
+- **Corrección del autoplay conservada y generalizada:** `autoplay.waitForTransition = velocidad efectiva > 0`, tanto al iniciar como al cambiar la preferencia o el tamaño. Swiper solo espera el `transitionend` del contenedor cuando hay transición; con velocidad 0 no espera, así que no vuelve el bloqueo tras el primer avance.
+- `css/styles.css`: escala y atenuación de las diapositivas móviles en 0,6 s (igual al desplazamiento). La regla de movimiento reducido que anula esas transiciones queda solo para escritorio: `@media (prefers-reduced-motion: reduce) and (min-width: 769px)`.
+
+**Compromiso de accesibilidad (explícito):** en móvil el carrusel RA **mantiene una animación de desplazamiento de 600 ms aunque la persona haya pedido reducir movimiento**. Es una decisión de producto: el cambio instantáneo se percibía brusco. **No se respeta por completo `prefers-reduced-motion`** en este componente. Mitigaciones: desplazamiento horizontal corto, sin giros, zoom ni parallax; botón de pausa persistente (44 × 44px, WCAG 2.2.2); el avance se detiene fuera de pantalla y con el visor abierto. El resto del sitio, el escritorio y «Nuestro Servicio» siguen respetando la preferencia.
+
+### B. Tamaño
+- `slidesPerView` 1,6 → 1,2 y `spaceBetween` 12 → 8: la central ocupa el **83 %** del ancho. La anterior y la siguiente asoman a los costados (al 84 %, reducidas hacia la central, con su capa oscura).
+- Proporción cuadrada del marco sin cambios. Esquinas de visor, capa de atenuación, indicadores y pausa, iguales.
+
+| Ancho | Central (antes → ahora) | Asoma de cada lateral |
+|---|---|---|
+| 320px | 196 → 265px | 19px |
+| 375px | — → 311px | 24px |
+| 390px | 239 → 324px | 25px |
+| 430px | — → 357px | 29px |
+| 768px | — → 639px | 57px |
+
+### C. Leyenda
+- `.ra-caption { display: none }` solo en ≤ 768px: sin contador ni descripción. El `alt` de cada imagen y la etiqueta accesible del visor siguen intactos. En escritorio no cambia.
+
+### Pruebas (Chromium con emulación táctil; **no se probó en Safari real**: el entorno no lo permite)
+- **Cuadro a cuadro** a 320, 375, 390, 430 y 768px, con `reduce` y sin la preferencia, 7 avances:
+  - cada avance dura ~600 ms con ~34 cuadros intermedios (antes, con `reduce`: 1 cuadro con un salto de 270px);
+  - máximo 17–39px por cuadro según el ancho; 0 desborde; leyenda `display: none`.
+- **Prueba larga:** 18 avances seguidos (3 ciclos, con 6 → 1 tres veces) a 320 y 390px con `reduce`: 0 saltos y regreso al orden inicial. En una de unas 15 corridas apareció 1 cuadro con salto a 320px; no se repitió en unos 70 avances posteriores y es compatible con un cuadro perdido del equipo de prueba.
+- **Autoplay:** 5 avances seguidos del RA (cada ~6,6 s: 6 s más 0,6 s) y de Servicio (cada 5 s), con y sin `reduce`.
+- **Escenarios táctiles (iPhone 13)**, ambos carruseles: 22/22 con `reduce` y 22/22 sin la preferencia, en 6 corridas tras corregir la prueba. Cubren tocar un indicador, deslizar, abrir y cerrar el visor, pausa y reanudación, fuera de pantalla y regreso, barra de progreso y cambio de preferencia en vivo.
+- **Nota de método:** sin la preferencia, la animación de revelado (`.hidden`) puede dejar el carrusel bajo el cursor virtual de Playwright en (0, 0). Eso genera un `pointerenter` de tipo mouse y activa la pausa prevista con el mouse encima, que no existe en un iPhone. Los guiones ahora mueven ese cursor fuera de los carruseles. Antes de esa corrección, 1 corrida falló 4 casos por esta causa (registrada con el evento) y otra falló 2 casos que no se repitieron en 5 corridas posteriores con registro del puntero.
+- **Escritorio sin cambios (contra `89afb41`):** `speed` y `waitForTransition` idénticos a 769 y 1366px, con y sin `reduce`. Estilos calculados de toda la página a 901, 1024, 1366 y 1920px con `reduce`: 0 diferencias. Sin la preferencia, las diferencias son transiciones capturadas a mitad de camino: la versión anterior contra sí misma da la misma cantidad. Píxeles con los carruseles detenidos a 1024, 1366 y 1920px: solo la franja de 3px de la barra de progreso.
+
+**Pendiente en iPhone real (Safari y Chrome):** con «Reducir movimiento» activado y desactivado, varios avances seguidos con desplazamiento suave, sin detenerse, y comprobar el tamaño de la central.

@@ -170,7 +170,10 @@ const lightbox = (() => {
   };
 })();
 
-function initCarousel(root, { speed, onSlideChange, renderBullet, zoom, ...swiperOptions }) {
+// speed: duración en ms (con movimiento reducido pasa a 0) o una función (reducido) => ms para los
+// carruseles que deciden según el tamaño de pantalla; speedMedia: consultas de medios que la reevalúan.
+function initCarousel(root, { speed, speedMedia = [], onSlideChange, renderBullet, zoom, ...swiperOptions }) {
+  const speedFor = () => (typeof speed === "function" ? speed(reducedMotion.matches) : (reducedMotion.matches ? 0 : speed));
   const pauseButton = root.querySelector(".rt-pause");
   const pagination = root.querySelector(".rt-pagination");
   let userPaused = false;
@@ -182,11 +185,11 @@ function initCarousel(root, { speed, onSlideChange, renderBullet, zoom, ...swipe
   const swiper = new Swiper(root.querySelector(".swiper"), {
     ...swiperOptions,
     loop: true,
-    speed: reducedMotion.matches ? 0 : speed,
+    speed: speedFor(),
     // waitForTransition: Swiper pausa el autoplay en cada cambio y lo reanuda con el «transitionend» del
-    // contenedor. Con velocidad 0 (movimiento reducido) y efectos fade/creative ese evento nunca llega,
-    // y el autoplay quedaba pausado para siempre tras el primer avance. Sin animación no hay que esperar.
-    autoplay: { delay: Number(root.dataset.delay) || 6000, disableOnInteraction: false, waitForTransition: !reducedMotion.matches },
+    // contenedor. Con velocidad 0 ese evento nunca llega y el autoplay quedaba pausado para siempre tras
+    // el primer avance. Por eso solo se espera la transición cuando la hay (velocidad > 0).
+    autoplay: { delay: Number(root.dataset.delay) || 6000, disableOnInteraction: false, waitForTransition: speedFor() > 0 },
     // Flechas y botón de pausa son opcionales (no todos los carruseles los muestran)
     navigation: { prevEl: root.querySelector(".rt-prev"), nextEl: root.querySelector(".rt-next"), enabled: !!root.querySelector(".rt-next") },
     pagination: {
@@ -306,11 +309,15 @@ function initCarousel(root, { speed, onSlideChange, renderBullet, zoom, ...swipe
     onScreen = true;
   }
 
-  reducedMotion.addEventListener("change", (event) => {
-    swiper.params.speed = event.matches ? 0 : speed;
-    swiper.params.autoplay.waitForTransition = !event.matches;
+  // Si cambia la preferencia (o el tamaño, para los carruseles que lo usan) se recalcula la velocidad y,
+  // con ella, si el autoplay debe esperar la transición
+  function applySpeed() {
+    swiper.params.speed = speedFor();
+    swiper.params.autoplay.waitForTransition = swiper.params.speed > 0;
     sync();
-  });
+  }
+  reducedMotion.addEventListener("change", applySpeed);
+  speedMedia.forEach((query) => query.addEventListener("change", applySpeed));
 
   markCurrentBullet(swiper);
   markZoomTargets(swiper);
@@ -326,16 +333,20 @@ if (raCarousel) {
   const captionText = document.querySelector(".ra-caption-text");
   initCarousel(raCarousel, {
     // Desplazamiento horizontal estándar de Swiper (sin giros ni perspectiva) en bucle con las 6 imágenes:
-    // - móvil: 1,6 por vista → central completa y una lateral asomando a cada lado (3 visibles);
-    // - escritorio: 3 por vista en un contenedor del 60 % del ancho (styles.css) → se ven 2 anteriores,
-    //   la central y 2 siguientes. Con 6 imágenes el bucle centrado de Swiper no admite más de 3 por vista;
+    // - móvil: 1,2 por vista → central de ~83 % del ancho y la anterior y la siguiente asomando a los lados;
+    // - escritorio: 3 por vista en un contenedor más ancho (styles.css) → se ven 2 anteriores, la central y
+    //   2 siguientes. Con 6 imágenes el bucle centrado de Swiper no admite más de 3 por vista;
     //   la sexta queda fuera de la pantalla y es la que el bucle cambia de lado, sin saltos visibles.
     // La central destacada y las laterales más chicas y atenuadas son solo CSS (escala y capa oscura).
     centeredSlides: true,
-    slidesPerView: 1.6,
-    spaceBetween: 12,
+    slidesPerView: 1.2,
+    spaceBetween: 8,
     grabCursor: true,
-    speed: 800, // igual a la transición de escala en styles.css (.ra-swiper .swiper-slide)
+    // Escritorio: 800 ms (0 con movimiento reducido, sin cambios). Móvil: 600 ms SIEMPRE, también con
+    // «Reducir movimiento» (decisión de producto: el cambio instantáneo resultaba brusco; ver bitácora).
+    // Coinciden con las transiciones de escala de styles.css (.ra-swiper .swiper-slide).
+    speed: (reduced) => (mobileQuery.matches ? 600 : reduced ? 0 : 800),
+    speedMedia: [mobileQuery],
     breakpoints: { 769: { slidesPerView: 3, spaceBetween: 20 } },
     zoom: ".ra-frame",
     // Leyenda visible de la imagen activa (data-caption, independiente del alt)

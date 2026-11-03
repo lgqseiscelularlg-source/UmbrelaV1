@@ -855,11 +855,12 @@ html.rt-lightbox-open {
 }
 
 /* Central a tamaño completo; laterales algo más chicas (la capa .ra-frame::after las atenúa).
-   Solo escala, sin giros ni perspectiva; misma duración que el desplazamiento (speed: 800 en main.js).
+   Solo escala, sin giros ni perspectiva; misma duración que el desplazamiento móvil (600 ms en main.js;
+   escritorio redefine 0,8 s más abajo).
    Selector con .ra-carousel: debe ganarle a «.swiper-backface-hidden .swiper-slide» de Swiper. */
 .ra-carousel .ra-swiper .swiper-slide {
   transform: scale(0.84);
-  transition: transform 0.8s ease, transform-origin 0.8s ease;
+  transition: transform 0.6s ease, transform-origin 0.6s ease;
 }
 
 .ra-carousel .ra-swiper .swiper-slide-active {
@@ -1045,6 +1046,12 @@ html.rt-lightbox-open {
     display: none;
   }
 
+  /* Sin contador ni descripción debajo del carrusel: el espacio queda para las imágenes
+     (las descripciones accesibles siguen en el alt de cada imagen) */
+  .ra-caption {
+    display: none;
+  }
+
   /* Las laterales se reducen hacia la central (y no hacia su propio centro) para que asome más de
      cada una junto a los bordes de la pantalla */
   .ra-carousel .ra-swiper .swiper-slide-prev {
@@ -1064,7 +1071,10 @@ html.rt-lightbox-open {
   }
 }
 
-@media (prefers-reduced-motion: reduce) {
+/* «Reducir movimiento»: en escritorio el carrusel cambia sin animación (speed 0). En móvil se mantiene el
+   desplazamiento de 600 ms con su escala y atenuación (decisión de producto, ver bitácora): no se respeta
+   por completo esa preferencia; el botón de pausa permite detener el avance. */
+@media (prefers-reduced-motion: reduce) and (min-width: 769px) {
   .ra-carousel .ra-swiper .swiper-slide,
   .ra-frame::after,
   .ra-corners {
