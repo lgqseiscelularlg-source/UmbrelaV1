@@ -1,377 +1,374 @@
+// Punto de entrada: inicializa cada parte de la página cuando el HTML está listo.
+// Todo queda dentro de este bloque para no crear variables globales.
 document.addEventListener("DOMContentLoaded", function () {
-
-  // Funcionalidad del menú hamburguesa
-  const navLinks = document.querySelectorAll(".nav-links a"); // Selecciona todos los enlaces del menú
-  const menuToggle = document.querySelector(".menu-toggle");
-  const navMenu = document.querySelector(".nav-links");
-
-  // Abre o cierra el menú y sincroniza ícono (X), atributos ARIA y bloqueo de scroll
-  function setMenuOpen(open) {
-    navMenu.classList.toggle("active", open);
-    menuToggle.classList.toggle("active", open);
-    menuToggle.setAttribute("aria-expanded", String(open));
-    menuToggle.setAttribute("aria-label", open ? "Cerrar menú" : "Abrir menú");
-    document.documentElement.classList.toggle("menu-open", open);
-  }
-
-  menuToggle.addEventListener("click", function () {
-    setMenuOpen(!navMenu.classList.contains("active"));
-  });
-
-  // Cierra el menú al seleccionar una opción
-  navLinks.forEach((link) => {
-    link.addEventListener("click", () => {
-      setMenuOpen(false);
-    });
-  });
-
-  // Cierra el menú con Escape y devuelve el foco al botón
-  document.addEventListener("keydown", (event) => {
-    if (event.key === "Escape" && navMenu.classList.contains("active")) {
-      setMenuOpen(false);
-      menuToggle.focus();
-    }
-  });
-
-  // Si se pasa a escritorio (rotación o redimensión) con el menú abierto, se cierra
-  // para no dejar el scroll bloqueado
+  // Consultas compartidas: el menú y el carrusel RA usan el tamaño móvil; los carruseles, la preferencia
+  // de movimiento reducido
   const mobileQuery = window.matchMedia("(max-width: 768px)");
-  mobileQuery.addEventListener("change", (event) => {
-    if (!event.matches) setMenuOpen(false);
-  });
+  const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
 
-  // ============================ NAVBAR OCULTA / MUESTRA EN SCROLL ============================
-let lastScrollTop = 0;
-const header = document.querySelector("header");
-const body = document.body;
-const isRealityTourPage = body.classList.contains("realitytour-page");
+  // ==== Menú de navegación ===================================================================
+  // Configura el menú hamburguesa: abrir, cerrar, Escape y cierre al pasar a escritorio
+  function initNavigation() {
+    const menuToggle = document.querySelector(".menu-toggle");
+    const navMenu = document.querySelector(".nav-links");
+    if (!menuToggle || !navMenu) return;
+    const navLinks = navMenu.querySelectorAll("a");
 
-window.addEventListener("scroll", function () {
-  const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
-  const scrollHeight = document.documentElement.scrollHeight;
-  const windowHeight = window.innerHeight;
-  const windowWidth = window.innerWidth; // ✅ CORRECTO
-  const isMobile = windowWidth <= 768;
-  const nearBottom = scrollTop + windowHeight >= scrollHeight - 10; // casi al final
+    // Abre o cierra el menú y sincroniza ícono (X), atributos ARIA y bloqueo de scroll
+    function setMenuOpen(open) {
+      navMenu.classList.toggle("active", open);
+      menuToggle.classList.toggle("active", open);
+      menuToggle.setAttribute("aria-expanded", String(open));
+      menuToggle.setAttribute("aria-label", open ? "Cerrar menú" : "Abrir menú");
+      document.documentElement.classList.toggle("menu-open", open);
+    }
 
-  // Umbral de desplazamiento
-  let scrollThreshold = 100;
+    menuToggle.addEventListener("click", function () {
+      setMenuOpen(!navMenu.classList.contains("active"));
+    });
 
-  // Solo en móvil + realitytour.html => ocultar más rápido
-  if (isRealityTourPage && isMobile) {
-    scrollThreshold = 30;
-  }
+    // Cierra el menú al seleccionar una opción
+    navLinks.forEach((link) => {
+      link.addEventListener("click", () => {
+        setMenuOpen(false);
+      });
+    });
 
-  // Evitar rebote al final de la página
-  if (isRealityTourPage && nearBottom) {
-    return; // No hacemos nada si está al final
-  }
-
-  // Ocultar al bajar (clase en lugar de estilo inline; ver header.header-oculto en styles.css)
-  if (scrollTop > lastScrollTop && scrollTop > scrollThreshold) {
-    header.classList.add("header-oculto");
-  }
-  // Mostrar al subir
-  else if (scrollTop < lastScrollTop - 10 && !nearBottom) {
-    header.classList.remove("header-oculto");
-  }
-
-  // Fondo transparente al inicio, oscuro al desplazarse (header.scrolled)
-  header.classList.toggle("scrolled", scrollTop > 100);
-
-  lastScrollTop = scrollTop;
-});
-
-
-
-
-  // Comportamiento del contenido al deslizar por primera vez hacia abajo
-
-  let hasScrolled = false;
-  const elements = document.querySelectorAll(".hidden");
-
-  // Configuración del Intersection Observer
-  const observerOptions = {
-    threshold: 0, // Se activará cuando el 10% del elemento sea visible
-  };
-
-  const observer = new IntersectionObserver((entries, observer) => {
-    entries.forEach((entry) => {
-      if (entry.isIntersecting) {
-        // Cuando el elemento entra en la vista
-        entry.target.classList.add("visible");
-        observer.unobserve(entry.target); // Deja de observar el elemento una vez que es visible
+    // Cierra el menú con Escape y devuelve el foco al botón
+    document.addEventListener("keydown", (event) => {
+      if (event.key === "Escape" && navMenu.classList.contains("active")) {
+        setMenuOpen(false);
+        menuToggle.focus();
       }
     });
-  }, observerOptions);
 
-  // Aplicar el Observer a cada elemento con la clase .hidden
-  elements.forEach((el) => {
-    observer.observe(el);
-  });
-  // Revelado listo: <head> ya no necesita mostrar todo como respaldo (ver index.html)
-  document.documentElement.classList.add("reveal-ready");
-  
-// ==== Carruseles («¿Qué es la RA?» y «Nuestro Servicio») =================================
-// - Avance automático por defecto (data-delay en el contenedor .rt-carousel).
-// - El botón de pausa es persistente: solo el usuario lo reanuda.
-// - Navegar a mano reinicia el tiempo completo (sin cambios inmediatos inesperados).
-// - Se detiene mientras no está en pantalla o tiene el puntero o el foco del teclado.
-// - Con prefers-reduced-motion: reduce el avance automático continúa (decisión de producto) pero sin
-//   animación: las imágenes cambian sin desplazamiento ni movimiento 3D. La pausa sigue disponible.
-const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
-
-// ==== Visor ampliado (lightbox), único para ambos carruseles ===============================
-// <dialog> nativo: es modal, cierra con Escape y mantiene el foco dentro. Se cierra también con la X
-// o tocando fuera de la imagen. Bloquea el desplazamiento de la página y devuelve el foco al cerrar.
-const lightbox = (() => {
-  let dialog = null;
-  let image = null;
-  let opener = null;
-  let onClose = null;
-
-  // Se crea la primera vez que se abre (las páginas sin carruseles no lo incluyen)
-  function create() {
-    dialog = document.createElement("dialog");
-    dialog.className = "rt-lightbox";
-    dialog.setAttribute("aria-label", "Imagen ampliada");
-    dialog.innerHTML =
-      '<button type="button" class="rt-lightbox-close" aria-label="Cerrar imagen ampliada" autofocus>' +
-      '<svg viewBox="0 0 24 24" aria-hidden="true"><line x1="18" y1="6" x2="6" y2="18"></line>' +
-      '<line x1="6" y1="6" x2="18" y2="18"></line></svg></button>' +
-      '<img class="rt-lightbox-img" alt="">';
-    document.body.appendChild(dialog);
-    image = dialog.querySelector(".rt-lightbox-img");
-
-    dialog.addEventListener("click", (event) => {
-      if (event.target !== image) dialog.close(); // X o cualquier punto fuera de la imagen
-    });
-    dialog.addEventListener("close", () => {
-      document.documentElement.classList.remove("rt-lightbox-open");
-      if (opener) opener.focus({ preventScroll: true });
-      if (onClose) onClose();
-      opener = onClose = null;
+    // Si se pasa a escritorio (rotación o redimensión) con el menú abierto, se cierra
+    // para no dejar el scroll bloqueado
+    mobileQuery.addEventListener("change", (event) => {
+      if (!event.matches) setMenuOpen(false);
     });
   }
 
-  return {
-    open(source, trigger, closed) {
-      if (!dialog) create();
-      const width = source.naturalWidth || Number(source.getAttribute("width"));
-      const height = source.naturalHeight || Number(source.getAttribute("height"));
-      image.src = source.currentSrc || source.src;
-      image.alt = source.alt;
-      image.style.setProperty("--ar", (width / height).toFixed(4)); // proporción original, sin recortes
-      opener = trigger;
-      onClose = closed;
-      document.documentElement.classList.add("rt-lightbox-open");
-      dialog.showModal();
-    },
-  };
-})();
+  // ==== Encabezado ===========================================================================
+  // Oculta el encabezado al bajar, lo muestra al subir y le da fondo oscuro al desplazarse
+  function initHeader() {
+    const header = document.querySelector("header");
+    if (!header) return;
+    const isRealityTourPage = document.body.classList.contains("realitytour-page");
+    let lastScrollTop = 0;
 
-// speed: duración en ms (con movimiento reducido pasa a 0) o una función (reducido) => ms para los
-// carruseles que deciden según el tamaño de pantalla; speedMedia: consultas de medios que la reevalúan.
-function initCarousel(root, { speed, speedMedia = [], onSlideChange, renderBullet, zoom, ...swiperOptions }) {
-  const speedFor = () => (typeof speed === "function" ? speed(reducedMotion.matches) : (reducedMotion.matches ? 0 : speed));
-  const pauseButton = root.querySelector(".rt-pause");
-  const pagination = root.querySelector(".rt-pagination");
-  let userPaused = false;
-  let onScreen = false;
-  let mouseOver = false;   // solo puntero de mouse real (no toques)
-  let keyboardUse = false; // foco de teclado (:focus-visible) o teclas dentro del carrusel
-  let viewerOpen = false;  // visor ampliado abierto desde este carrusel
+    window.addEventListener("scroll", function () {
+      const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+      const scrollHeight = document.documentElement.scrollHeight;
+      const windowHeight = window.innerHeight;
+      const isMobile = window.innerWidth <= 768;
+      const nearBottom = scrollTop + windowHeight >= scrollHeight - 10; // casi al final
 
-  const swiper = new Swiper(root.querySelector(".swiper"), {
-    ...swiperOptions,
-    loop: true,
-    speed: speedFor(),
-    // waitForTransition: Swiper pausa el autoplay en cada cambio y lo reanuda con el «transitionend» del
-    // contenedor. Con velocidad 0 ese evento nunca llega y el autoplay quedaba pausado para siempre tras
-    // el primer avance. Por eso solo se espera la transición cuando la hay (velocidad > 0).
-    autoplay: { delay: Number(root.dataset.delay) || 6000, disableOnInteraction: false, waitForTransition: speedFor() > 0 },
-    // Flechas y botón de pausa son opcionales (no todos los carruseles los muestran)
-    navigation: { prevEl: root.querySelector(".rt-prev"), nextEl: root.querySelector(".rt-next"), enabled: !!root.querySelector(".rt-next") },
-    pagination: {
-      el: pagination,
-      clickable: true,
-      bulletClass: "rt-dot",
-      bulletActiveClass: "is-active",
-      renderBullet: renderBullet || ((index, className) =>
-        `<button type="button" class="${className}" aria-label="Ir a la imagen ${index + 1}"><i></i></button>`),
-    },
-    a11y: {
-      prevSlideMessage: "Imagen anterior",
-      nextSlideMessage: "Imagen siguiente",
-      paginationBulletMessage: "Ir a la imagen {{index}}",
-      slideLabelMessage: "Imagen {{index}} de {{slidesLength}}",
-      itemRoleDescriptionMessage: "diapositiva",
-    },
-    on: {
-      // Progreso del indicador activo (solo se actualiza el contenedor de indicadores)
-      autoplayTimeLeft(s, timeLeft, progress) {
-        pagination.style.setProperty("--rt-progress", (1 - progress).toFixed(3));
-      },
-      slideChange(s) {
-        markCurrentBullet(s);
-        markZoomTargets(s);
-        if (onSlideChange) onSlideChange(s);
-      },
-    },
-  });
+      // En realitytour.html y en móvil se oculta antes
+      const scrollThreshold = isRealityTourPage && isMobile ? 30 : 100;
 
-  // Imagen activa ampliable también con teclado (Enter o Espacio); las demás quedan fuera del orden de foco
-  function markZoomTargets(s) {
-    if (!zoom) return;
-    s.slides.forEach((slide, i) => {
-      const target = slide.querySelector(zoom) || slide;
-      target.tabIndex = i === s.activeIndex ? 0 : -1;
+      // En realitytour.html, al llegar al final no se cambia nada (evita el rebote)
+      if (isRealityTourPage && nearBottom) return;
+
+      // Oculta al bajar (clase header-oculto en styles.css) y muestra al subir
+      if (scrollTop > lastScrollTop && scrollTop > scrollThreshold) {
+        header.classList.add("header-oculto");
+      } else if (scrollTop < lastScrollTop - 10 && !nearBottom) {
+        header.classList.remove("header-oculto");
+      }
+
+      // Fondo transparente al inicio, oscuro al desplazarse
+      header.classList.toggle("scrolled", scrollTop > 100);
+
+      lastScrollTop = scrollTop;
     });
   }
 
-  // Al cerrar, el foco vuelve a la imagen; el carrusel queda como estaba según cómo se abrió el visor
-  // (con teclado sigue detenido mientras el foco esté dentro; con toque o clic se reanuda).
-  function openViewer(target, viaKeyboard = false) {
-    viewerOpen = true;
-    sync();
-    lightbox.open(target.matches("img") ? target : target.querySelector("img"), target, () => {
-      viewerOpen = false;
-      keyboardUse = viaKeyboard;
-      sync();
-    });
-  }
-
-  if (zoom) {
-    root.querySelectorAll(`.swiper-slide`).forEach((slide) => {
-      const target = slide.querySelector(zoom) || slide;
-      const image = target.matches("img") ? target : target.querySelector("img");
-      target.setAttribute("role", "button");
-      target.setAttribute("aria-label", `Ampliar imagen: ${image.alt}`);
-      // Se abre con el «click» nativo (último evento de un toque): Swiper lo cancela si hubo arrastre,
-      // así que deslizar no abre el visor; abrir antes (p. ej. en «tap») dejaba que el click de
-      // compatibilidad del mismo toque cayera sobre el visor y lo cerrara.
-      target.addEventListener("click", () => {
-        if (swiper.allowClick && slide === swiper.slides[swiper.activeIndex]) openViewer(target);
-      });
-      target.addEventListener("keydown", (event) => {
-        if (event.key === "Enter" || event.key === " ") {
-          event.preventDefault();
-          openViewer(target, true);
+  // ==== Aparición de contenido al desplazarse ==================================================
+  // Muestra los elementos .hidden cuando entran en pantalla (una sola vez cada uno)
+  function initScrollReveal() {
+    const observer = new IntersectionObserver((entries, observer) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add("visible");
+          observer.unobserve(entry.target);
         }
       });
+    }, { threshold: 0 });
+
+    document.querySelectorAll(".hidden").forEach((el) => observer.observe(el));
+
+    // Revelado listo: el <head> ya no necesita mostrar todo como respaldo (ver index.html)
+    document.documentElement.classList.add("reveal-ready");
+  }
+
+  // ==== Carruseles («¿Qué es la RA?» y «Nuestro Servicio») =====================================
+  // - Avance automático por defecto (data-delay en el contenedor .rt-carousel).
+  // - El botón de pausa es persistente: solo el usuario lo reanuda.
+  // - Navegar a mano reinicia el tiempo completo (sin cambios inmediatos inesperados).
+  // - Se detiene mientras no está en pantalla, tiene el puntero o el foco del teclado, o el visor abierto.
+  // - Con prefers-reduced-motion la velocidad la decide cada carrusel (ver initCarousels): el RA móvil
+  //   mantiene su desplazamiento de 600 ms; los demás cambian sin animación. La pausa sigue disponible.
+
+  // ==== Visor ampliado (lightbox), único para ambos carruseles ============================
+  // <dialog> nativo: es modal, cierra con Escape y mantiene el foco dentro. Se cierra también con la X
+  // o tocando fuera de la imagen. Bloquea el desplazamiento de la página y devuelve el foco al cerrar.
+  const lightbox = (() => {
+    let dialog = null;
+    let image = null;
+    let opener = null;
+    let onClose = null;
+
+    // Se crea la primera vez que se abre (las páginas sin carruseles no lo incluyen)
+    function create() {
+      dialog = document.createElement("dialog");
+      dialog.className = "rt-lightbox";
+      dialog.setAttribute("aria-label", "Imagen ampliada");
+      dialog.innerHTML =
+        '<button type="button" class="rt-lightbox-close" aria-label="Cerrar imagen ampliada" autofocus>' +
+        '<svg viewBox="0 0 24 24" aria-hidden="true"><line x1="18" y1="6" x2="6" y2="18"></line>' +
+        '<line x1="6" y1="6" x2="18" y2="18"></line></svg></button>' +
+        '<img class="rt-lightbox-img" alt="">';
+      document.body.appendChild(dialog);
+      image = dialog.querySelector(".rt-lightbox-img");
+
+      dialog.addEventListener("click", (event) => {
+        if (event.target !== image) dialog.close(); // X o cualquier punto fuera de la imagen
+      });
+      dialog.addEventListener("close", () => {
+        document.documentElement.classList.remove("rt-lightbox-open");
+        if (opener) opener.focus({ preventScroll: true });
+        if (onClose) onClose();
+        opener = onClose = null;
+      });
+    }
+
+    return {
+      open(source, trigger, closed) {
+        if (!dialog) create();
+        const width = source.naturalWidth || Number(source.getAttribute("width"));
+        const height = source.naturalHeight || Number(source.getAttribute("height"));
+        image.src = source.currentSrc || source.src;
+        image.alt = source.alt;
+        image.style.setProperty("--ar", (width / height).toFixed(4)); // proporción original, sin recortes
+        opener = trigger;
+        onClose = closed;
+        document.documentElement.classList.add("rt-lightbox-open");
+        dialog.showModal();
+      },
+    };
+  })();
+
+  // speed: duración en ms (con movimiento reducido pasa a 0) o una función (reducido) => ms para los
+  // carruseles que deciden según el tamaño de pantalla; speedMedia: consultas de medios que la reevalúan.
+  function initCarousel(root, { speed, speedMedia = [], onSlideChange, renderBullet, zoom, ...swiperOptions }) {
+    const speedFor = () => (typeof speed === "function" ? speed(reducedMotion.matches) : (reducedMotion.matches ? 0 : speed));
+    const pauseButton = root.querySelector(".rt-pause");
+    const pagination = root.querySelector(".rt-pagination");
+    let userPaused = false;
+    let onScreen = false;
+    let mouseOver = false;   // solo puntero de mouse real (no toques)
+    let keyboardUse = false; // foco de teclado (:focus-visible) o teclas dentro del carrusel
+    let viewerOpen = false;  // visor ampliado abierto desde este carrusel
+
+    const swiper = new Swiper(root.querySelector(".swiper"), {
+      ...swiperOptions,
+      loop: true,
+      speed: speedFor(),
+      // waitForTransition: Swiper pausa el autoplay en cada cambio y lo reanuda con el «transitionend» del
+      // contenedor. Con velocidad 0 ese evento nunca llega y el autoplay quedaba pausado para siempre tras
+      // el primer avance. Por eso solo se espera la transición cuando la hay (velocidad > 0).
+      autoplay: { delay: Number(root.dataset.delay) || 6000, disableOnInteraction: false, waitForTransition: speedFor() > 0 },
+      // Flechas y botón de pausa son opcionales (no todos los carruseles los muestran)
+      navigation: { prevEl: root.querySelector(".rt-prev"), nextEl: root.querySelector(".rt-next"), enabled: !!root.querySelector(".rt-next") },
+      pagination: {
+        el: pagination,
+        clickable: true,
+        bulletClass: "rt-dot",
+        bulletActiveClass: "is-active",
+        renderBullet: renderBullet || ((index, className) =>
+          `<button type="button" class="${className}" aria-label="Ir a la imagen ${index + 1}"><i></i></button>`),
+      },
+      a11y: {
+        prevSlideMessage: "Imagen anterior",
+        nextSlideMessage: "Imagen siguiente",
+        paginationBulletMessage: "Ir a la imagen {{index}}",
+        slideLabelMessage: "Imagen {{index}} de {{slidesLength}}",
+        itemRoleDescriptionMessage: "diapositiva",
+      },
+      on: {
+        // Progreso del indicador activo (solo se actualiza el contenedor de indicadores)
+        autoplayTimeLeft(s, timeLeft, progress) {
+          pagination.style.setProperty("--rt-progress", (1 - progress).toFixed(3));
+        },
+        slideChange(s) {
+          markCurrentBullet(s);
+          markZoomTargets(s);
+          if (onSlideChange) onSlideChange(s);
+        },
+      },
     });
-  }
 
-  function markCurrentBullet(s) {
-    pagination.querySelectorAll(".rt-dot").forEach((dot, i) => {
-      if (i === s.realIndex) dot.setAttribute("aria-current", "true");
-      else dot.removeAttribute("aria-current");
-    });
-  }
+    // Imagen activa ampliable también con teclado (Enter o Espacio); las demás quedan fuera del orden de foco
+    function markZoomTargets(s) {
+      if (!zoom) return;
+      s.slides.forEach((slide, i) => {
+        const target = slide.querySelector(zoom) || slide;
+        target.tabIndex = i === s.activeIndex ? 0 : -1;
+      });
+    }
 
-  function sync() {
-    const run = !userPaused && onScreen && !mouseOver && !keyboardUse && !viewerOpen;
-    if (run && !swiper.autoplay.running) swiper.autoplay.start();
-    if (!run && swiper.autoplay.running) swiper.autoplay.stop();
-    if (!run) pagination.style.setProperty("--rt-progress", "0");
-    root.classList.toggle("is-paused", userPaused);
-    if (pauseButton) pauseButton.setAttribute("aria-label", userPaused ? "Reanudar avance automático" : "Pausar avance automático");
-  }
-
-  if (pauseButton) pauseButton.addEventListener("click", () => {
-    userPaused = !userPaused;
-    sync();
-  });
-
-  // Mouse encima o uso de teclado dentro: se detiene mientras dure (al salir, el tiempo empieza completo).
-  // Los toques NO cuentan: en pantallas táctiles el navegador emula mouseenter y deja :hover activo
-  // sin un mouseleave confiable, lo que dejaba el carrusel detenido para siempre en iPhone.
-  // Tampoco cuenta el foco que deja un clic con el mouse: solo el foco de teclado (:focus-visible).
-  root.addEventListener("pointerenter", (event) => {
-    if (event.pointerType === "mouse") { mouseOver = true; sync(); }
-  });
-  root.addEventListener("pointerleave", (event) => {
-    if (event.pointerType === "mouse") { mouseOver = false; sync(); }
-  });
-  root.addEventListener("focusin", () => { keyboardUse = !!root.querySelector(":focus-visible"); sync(); });
-  root.addEventListener("keydown", () => { keyboardUse = true; sync(); });
-  root.addEventListener("focusout", (event) => {
-    if (!root.contains(event.relatedTarget)) { keyboardUse = false; sync(); }
-  });
-
-  // Fuera de pantalla: se detiene
-  if ("IntersectionObserver" in window) {
-    new IntersectionObserver((entries) => {
-      onScreen = entries[entries.length - 1].isIntersecting;
+    // Al cerrar, el foco vuelve a la imagen; el carrusel queda como estaba según cómo se abrió el visor
+    // (con teclado sigue detenido mientras el foco esté dentro; con toque o clic se reanuda).
+    function openViewer(target, viaKeyboard = false) {
+      viewerOpen = true;
       sync();
-    }, { threshold: 0.25 }).observe(root);
-  } else {
-    onScreen = true;
-  }
+      lightbox.open(target.matches("img") ? target : target.querySelector("img"), target, () => {
+        viewerOpen = false;
+        keyboardUse = viaKeyboard;
+        sync();
+      });
+    }
 
-  // Si cambia la preferencia (o el tamaño, para los carruseles que lo usan) se recalcula la velocidad y,
-  // con ella, si el autoplay debe esperar la transición
-  function applySpeed() {
-    swiper.params.speed = speedFor();
-    swiper.params.autoplay.waitForTransition = swiper.params.speed > 0;
+    if (zoom) {
+      root.querySelectorAll(`.swiper-slide`).forEach((slide) => {
+        const target = slide.querySelector(zoom) || slide;
+        const image = target.matches("img") ? target : target.querySelector("img");
+        target.setAttribute("role", "button");
+        target.setAttribute("aria-label", `Ampliar imagen: ${image.alt}`);
+        // Se abre con el «click» nativo (último evento de un toque): Swiper lo cancela si hubo arrastre,
+        // así que deslizar no abre el visor; abrir antes (p. ej. en «tap») dejaba que el click de
+        // compatibilidad del mismo toque cayera sobre el visor y lo cerrara.
+        target.addEventListener("click", () => {
+          if (swiper.allowClick && slide === swiper.slides[swiper.activeIndex]) openViewer(target);
+        });
+        target.addEventListener("keydown", (event) => {
+          if (event.key === "Enter" || event.key === " ") {
+            event.preventDefault();
+            openViewer(target, true);
+          }
+        });
+      });
+    }
+
+    function markCurrentBullet(s) {
+      pagination.querySelectorAll(".rt-dot").forEach((dot, i) => {
+        if (i === s.realIndex) dot.setAttribute("aria-current", "true");
+        else dot.removeAttribute("aria-current");
+      });
+    }
+
+    function sync() {
+      const run = !userPaused && onScreen && !mouseOver && !keyboardUse && !viewerOpen;
+      if (run && !swiper.autoplay.running) swiper.autoplay.start();
+      if (!run && swiper.autoplay.running) swiper.autoplay.stop();
+      if (!run) pagination.style.setProperty("--rt-progress", "0");
+      root.classList.toggle("is-paused", userPaused);
+      if (pauseButton) pauseButton.setAttribute("aria-label", userPaused ? "Reanudar avance automático" : "Pausar avance automático");
+    }
+
+    if (pauseButton) pauseButton.addEventListener("click", () => {
+      userPaused = !userPaused;
+      sync();
+    });
+
+    // Mouse encima o uso de teclado dentro: se detiene mientras dure (al salir, el tiempo empieza completo).
+    // Los toques NO cuentan: en pantallas táctiles el navegador emula mouseenter y deja :hover activo
+    // sin un mouseleave confiable, lo que dejaba el carrusel detenido para siempre en iPhone.
+    // Tampoco cuenta el foco que deja un clic con el mouse: solo el foco de teclado (:focus-visible).
+    root.addEventListener("pointerenter", (event) => {
+      if (event.pointerType === "mouse") { mouseOver = true; sync(); }
+    });
+    root.addEventListener("pointerleave", (event) => {
+      if (event.pointerType === "mouse") { mouseOver = false; sync(); }
+    });
+    root.addEventListener("focusin", () => { keyboardUse = !!root.querySelector(":focus-visible"); sync(); });
+    root.addEventListener("keydown", () => { keyboardUse = true; sync(); });
+    root.addEventListener("focusout", (event) => {
+      if (!root.contains(event.relatedTarget)) { keyboardUse = false; sync(); }
+    });
+
+    // Fuera de pantalla: se detiene
+    if ("IntersectionObserver" in window) {
+      new IntersectionObserver((entries) => {
+        onScreen = entries[entries.length - 1].isIntersecting;
+        sync();
+      }, { threshold: 0.25 }).observe(root);
+    } else {
+      onScreen = true;
+    }
+
+    // Si cambia la preferencia (o el tamaño, para los carruseles que lo usan) se recalcula la velocidad y,
+    // con ella, si el autoplay debe esperar la transición
+    function applySpeed() {
+      swiper.params.speed = speedFor();
+      swiper.params.autoplay.waitForTransition = swiper.params.speed > 0;
+      sync();
+    }
+    reducedMotion.addEventListener("change", applySpeed);
+    speedMedia.forEach((query) => query.addEventListener("change", applySpeed));
+
+    markCurrentBullet(swiper);
+    markZoomTargets(swiper);
+    if (onSlideChange) onSlideChange(swiper);
     sync();
+    return swiper;
   }
-  reducedMotion.addEventListener("change", applySpeed);
-  speedMedia.forEach((query) => query.addEventListener("change", applySpeed));
 
-  markCurrentBullet(swiper);
-  markZoomTargets(swiper);
-  if (onSlideChange) onSlideChange(swiper);
-  sync();
-  return swiper;
-}
+  // Inicializa los carruseles de la página (solo los que existen)
+  function initCarousels() {
+    /* ==== Carrusel «¿Qué es la RA?» ==== */
+    const raCarousel = document.querySelector(".ra-carousel");
+    if (raCarousel) {
+      const captionNum = document.querySelector(".ra-caption-num");
+      const captionText = document.querySelector(".ra-caption-text");
+      initCarousel(raCarousel, {
+        // Desplazamiento horizontal estándar de Swiper (sin giros ni perspectiva) en bucle con las 6 imágenes:
+        // - móvil: 1,2 por vista → central de ~83 % del ancho y la anterior y la siguiente asomando a los lados;
+        // - escritorio: 3 por vista en un contenedor más ancho (styles.css) → se ven 2 anteriores, la central y
+        //   2 siguientes. Con 6 imágenes el bucle centrado de Swiper no admite más de 3 por vista;
+        //   la sexta queda fuera de la pantalla y es la que el bucle cambia de lado, sin saltos visibles.
+        // La central destacada y las laterales más chicas y atenuadas son solo CSS (escala y capa oscura).
+        centeredSlides: true,
+        slidesPerView: 1.2,
+        spaceBetween: 8,
+        grabCursor: true,
+        // Escritorio: 800 ms (0 con movimiento reducido, sin cambios). Móvil: 600 ms SIEMPRE, también con
+        // «Reducir movimiento» (decisión de producto: el cambio instantáneo resultaba brusco; ver bitácora).
+        // Coinciden con las transiciones de escala de styles.css (.ra-swiper .swiper-slide).
+        speed: (reduced) => (mobileQuery.matches ? 600 : reduced ? 0 : 800),
+        speedMedia: [mobileQuery],
+        breakpoints: { 769: { slidesPerView: 3, spaceBetween: 20 } },
+        zoom: ".ra-frame",
+        // Leyenda visible de la imagen activa (data-caption, independiente del alt)
+        onSlideChange(swiper) {
+          const slide = swiper.slides[swiper.activeIndex];
+          const total = String(swiper.slides.length).padStart(2, "0");
+          captionNum.textContent = `${String(swiper.realIndex + 1).padStart(2, "0")} / ${total}`;
+          captionText.textContent = slide ? slide.dataset.caption : "";
+        },
+      });
+    }
 
-/* ==== Carrusel «¿Qué es la RA?» ==== */
-const raCarousel = document.querySelector(".ra-carousel");
-if (raCarousel) {
-  const captionNum = document.querySelector(".ra-caption-num");
-  const captionText = document.querySelector(".ra-caption-text");
-  initCarousel(raCarousel, {
-    // Desplazamiento horizontal estándar de Swiper (sin giros ni perspectiva) en bucle con las 6 imágenes:
-    // - móvil: 1,2 por vista → central de ~83 % del ancho y la anterior y la siguiente asomando a los lados;
-    // - escritorio: 3 por vista en un contenedor más ancho (styles.css) → se ven 2 anteriores, la central y
-    //   2 siguientes. Con 6 imágenes el bucle centrado de Swiper no admite más de 3 por vista;
-    //   la sexta queda fuera de la pantalla y es la que el bucle cambia de lado, sin saltos visibles.
-    // La central destacada y las laterales más chicas y atenuadas son solo CSS (escala y capa oscura).
-    centeredSlides: true,
-    slidesPerView: 1.2,
-    spaceBetween: 8,
-    grabCursor: true,
-    // Escritorio: 800 ms (0 con movimiento reducido, sin cambios). Móvil: 600 ms SIEMPRE, también con
-    // «Reducir movimiento» (decisión de producto: el cambio instantáneo resultaba brusco; ver bitácora).
-    // Coinciden con las transiciones de escala de styles.css (.ra-swiper .swiper-slide).
-    speed: (reduced) => (mobileQuery.matches ? 600 : reduced ? 0 : 800),
-    speedMedia: [mobileQuery],
-    breakpoints: { 769: { slidesPerView: 3, spaceBetween: 20 } },
-    zoom: ".ra-frame",
-    // Leyenda visible de la imagen activa (data-caption, independiente del alt)
-    onSlideChange(swiper) {
-      const slide = swiper.slides[swiper.activeIndex];
-      const total = String(swiper.slides.length).padStart(2, "0");
-      captionNum.textContent = `${String(swiper.realIndex + 1).padStart(2, "0")} / ${total}`;
-      captionText.textContent = slide ? slide.dataset.caption : "";
-    },
-  });
-}
+    /* ==== Showcase «Nuestro Servicio» (fundido; miniaturas como indicadores en escritorio) ==== */
+    const svcCarousel = document.querySelector(".svc-carousel");
+    if (svcCarousel) {
+      const thumbs = [...svcCarousel.querySelectorAll(".swiper-slide img")].map((img) => img.getAttribute("src"));
+      initCarousel(svcCarousel, {
+        effect: "fade",
+        fadeEffect: { crossFade: true },
+        speed: 800,
+        zoom: "img",
+        renderBullet: (index, className) =>
+          `<button type="button" class="${className}" aria-label="Ir a la imagen ${index + 1}">` +
+          `<img src="${thumbs[index]}" alt="" loading="lazy" width="74" height="52"><i></i></button>`,
+      });
+    }
+  }
 
-/* ==== Showcase «Nuestro Servicio» (fundido; miniaturas como indicadores en escritorio) ==== */
-const svcCarousel = document.querySelector(".svc-carousel");
-if (svcCarousel) {
-  const thumbs = [...svcCarousel.querySelectorAll(".swiper-slide img")].map((img) => img.getAttribute("src"));
-  initCarousel(svcCarousel, {
-    effect: "fade",
-    fadeEffect: { crossFade: true },
-    speed: 800,
-    zoom: "img",
-    renderBullet: (index, className) =>
-      `<button type="button" class="${className}" aria-label="Ir a la imagen ${index + 1}">` +
-      `<img src="${thumbs[index]}" alt="" loading="lazy" width="74" height="52"><i></i></button>`,
-  });
-}
-
+  // Arranque, en el mismo orden de siempre
+  initNavigation();
+  initHeader();
+  initScrollReveal();
+  initCarousels();
 });

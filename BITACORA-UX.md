@@ -1157,3 +1157,68 @@ Inspección rápida de `index.html`, `larioja.html`, `realitytour.html`, `css/st
 - Validar en un iPhone real que la cámara, el cambio de cámara y la pantalla completa siguen igual.
 
 **Archivos modificados:** `js/realitytour.js` y `BITACORA-UX.md`. **Commit:** el que contiene esta entrada, «Etapa 1: organizar realitytour.js (cámara) sin cambiar su comportamiento».
+
+---
+
+## Mejora estructural — Etapa 2: organización de `main.js`
+
+*Segunda de cinco etapas. Solo se modificó `js/main.js` (y esta bitácora). No se avanzó a la Etapa 3.*
+
+**Problemas estructurales encontrados** (deuda técnica del 04/11, prioridad media):
+- Un único `DOMContentLoaded` de ~375 líneas con todas las funcionalidades en secuencia, sin funciones que las delimitaran.
+- Indentación rota a mitad del archivo: el bloque del encabezado y todo lo posterior estaban en la columna 0, porque se habían agregado como parches.
+- Código muerto: `hasScrolled` (declarada y nunca usada) y la variable intermedia `body`.
+- Comentarios desactualizados o de prueba:
+  - «se activará cuando el 10 % sea visible», con un umbral que en realidad es 0;
+  - `// ✅ CORRECTO`;
+  - el comentario general de los carruseles decía que con movimiento reducido cambian «sin animación», algo que no es cierto para el RA móvil desde `ac79939`.
+- `mobileQuery` se declaraba dentro del bloque del menú pero también la usaba el carrusel RA, dependencia que no se veía a simple vista.
+
+**Organización anterior:** menú → encabezado → revelado → `reducedMotion` → visor (`lightbox`) → `initCarousel()` → carrusel RA → carrusel Servicio, todo seguido dentro del `DOMContentLoaded`.
+
+**Organización nueva** (el mismo `DOMContentLoaded` sigue siendo el único punto de entrada, sin variables globales):
+
+| Bloque | Contenido |
+|---|---|
+| Consultas compartidas | `mobileQuery` (menú y carrusel RA) y `reducedMotion` (carruseles), declaradas al comienzo con un comentario sobre quién las usa |
+| `initNavigation()` | Menú hamburguesa: `setMenuOpen()`, clic del botón, cierre al elegir una opción, Escape y cierre al pasar a escritorio. Comprueba que existan el botón y el menú |
+| `initHeader()` | Oculta y muestra el encabezado al desplazarse y le da fondo oscuro; `lastScrollTop` queda dentro de la función. Comprueba que exista el `header` |
+| `initScrollReveal()` | `IntersectionObserver` de los elementos `.hidden` y la clase `reveal-ready` |
+| `lightbox` | **Sin cambios** (ya estaba encapsulado): solo se indentó |
+| `initCarousel()` | **Sin cambios**: el controlador común de los carruseles, solo se indentó |
+| `initCarousels()` | Agrupa las configuraciones de «¿Qué es la RA?» y «Nuestro Servicio», copiadas sin cambios |
+| Arranque | `initNavigation(); initHeader(); initScrollReveal(); initCarousels();`, en el mismo orden que antes |
+
+**Dependencias y comportamientos preservados:**
+- **Swiper sin cambios:** la configuración, los eventos, las velocidades (RA móvil 600 ms siempre; escritorio 800 ms o 0 con `reduce`; Servicio 800 ms o 0), `autoplay.waitForTransition = velocidad > 0`, los tiempos (6 s y 5 s), las condiciones de pausa (`userPaused`, `onScreen`, `mouseOver`, `keyboardUse`, `viewerOpen`), los indicadores con progreso, el botón de pausa y el visor. **Verificado por programa:** el `lightbox`, `initCarousel()` y las dos configuraciones son idénticos al original línea por línea, salvo los espacios de indentación.
+- **Mismo orden de inicialización y de registro de eventos**, incluido el de los dos `change` de `mobileQuery`: primero el cierre del menú, después la velocidad del RA.
+- **Pequeños cambios internos sin efecto observable:**
+  - los enlaces del menú se buscan dentro del menú (`navMenu.querySelectorAll("a")`) en lugar de `.nav-links a` en toda la página; hay un solo `.nav-links` por página;
+  - el umbral del encabezado se calcula con una expresión en lugar de un `if`;
+  - se agregaron las comprobaciones de existencia de los elementos del menú y del `header` (presentes en las tres páginas).
+
+**Pruebas (Chromium; misma huella de comportamiento antes y después):**
+- **Huella de comportamiento:** en las 3 páginas × iPhone 13 y 1366px × con y sin `reduce` (12 combinaciones, 98 mediciones) se registraron:
+  - los listeners registrados por tipo;
+  - las clases de `<html>`;
+  - el estado de cada Swiper (velocidad, `waitForTransition`, tiempo, vistas, efecto, bucle, indicadores, imágenes ampliables);
+  - el menú móvil (abrir, Escape con foco devuelto, cierre al pasar a escritorio, cierre al elegir un enlace);
+  - el encabezado en 6 posiciones de desplazamiento;
+  - el revelado al cargar y al recorrer la página;
+  - el visor de ambos carruseles (abrir, detener, cerrar, devolver el foco);
+  - los errores JS.
+  
+  **Resultado: idéntico.** La única variación es la cantidad de listeners `load` en imágenes que agrega Swiper según qué imágenes terminaron de cargar; varía igual al ejecutar la versión anterior contra sí misma.
+- **Escenarios táctiles** de ambos carruseles: 22/22 con `reduce` y 22/22 sin la preferencia (una corrida de cada uno).
+- **Autoplay:** 5 avances seguidos del RA y 6 de Servicio, con y sin `reduce`.
+- **Transición del RA móvil a 390px:** con `reduce` y sin la preferencia, unos 34 cuadros por avance (~600 ms) y 0 saltos.
+- **Escritorio 1366px con `reduce`:** 5 avances, visor correcto, transiciones CSS anuladas como antes; flecha y pausa con mouse encima, correctas.
+- **Cámara** de `realitytour.html` (también carga `main.js`): idéntica a la referencia de la Etapa 1.
+- **Errores JS:** 0 en todas las ejecuciones.
+
+**Riesgos y limitaciones:**
+- Pruebas en Chromium con emulación; no se probó en un iPhone real en esta etapa. Conviene una verificación rápida del menú, el encabezado y ambos carruseles.
+- El fallo intermitente documentado («ABIERTO · Fallo intermitente del autoplay RA en móvil tras pulsar un indicador», solo en la emulación) no apareció en estas ejecuciones. No se investigó y sigue registrado como abierto.
+- `main.js` sigue siendo un solo archivo (374 líneas), por decisión del plan. Si más adelante crece con la RA, `lightbox` e `initCarousel` son los candidatos naturales para separarse.
+
+**Archivos modificados:** `js/main.js` y `BITACORA-UX.md`. **Commit:** el que contiene esta entrada, «Etapa 2: organizar main.js por responsabilidades sin cambiar su comportamiento».
