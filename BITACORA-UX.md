@@ -1069,3 +1069,44 @@ En todos los casos `waitForTransition` es `true` solo si hay transición. El aut
 ### 8. Resumen para la defensa
 
 Los carruseles de RealityTour usan la biblioteca Swiper, que avanza automáticamente y, antes de cada nuevo avance, espera la señal del navegador que indica que terminó la animación anterior. Para respetar la opción «Reducir movimiento» de iOS habíamos configurado la animación con duración cero. Sin animación, el navegador nunca emitía esa señal, y por eso los carruseles avanzaban una sola vez y quedaban detenidos. Lo confirmamos en el código de la biblioteca y lo reprodujimos en pruebas automatizadas. La solución fue que el carrusel espere la señal solo cuando realmente hay una animación. Después, como el cambio instantáneo resultaba brusco, decidimos de forma consciente usar en el carrusel móvil «¿Qué es la RA?» un desplazamiento breve de 600 ms incluso con esa opción activada, y conservamos un botón para pausarlo. Documentamos que esto no respeta por completo la preferencia de accesibilidad. El resultado fue validado por el usuario en un iPhone real.
+
+---
+
+## 2026-11-04 — Navegación: el logo lleva al inicio
+
+**Antes:**
+- En `index.html` y `realitytour.html` el logo era una imagen suelta, sin acción.
+- `larioja.html` ya lo envolvía en un enlace (`<a href="index.html" aria-label="RealityTour, ir al inicio">`), con un destino distinto al de su opción «Inicio» (`index.html#home`).
+
+**Cambio:** se reutilizó el patrón de `larioja.html` en las tres páginas, sin JavaScript nuevo.
+- **HTML:** el logo va dentro de `<a … aria-label="RealityTour, ir al inicio">`, con el **mismo `href` que «Inicio» en cada página**: `#home` en `index.html` e `index.html#home` en `larioja.html` y `realitytour.html`.
+- **CSS:** en la regla existente `.logo` se agregó `display: block`. Una imagen en línea dentro del enlace suma el espacio de la línea de texto: en el header móvil eran +5px (76 → 81px), medido al probar. Con `display: block` el header conserva exactamente su alto. No se agregaron clases ni reglas nuevas.
+
+**Pruebas (Chromium):**
+- **Destino**, en las 3 páginas, con clic a 1366px y con toque en iPhone 13 emulado, partiendo de la página desplazada: el `href` del logo es idéntico al de «Inicio» y lleva a `index.html#home`, con `#home` arriba (`scrollY` 0). Sin errores JS.
+- **Teclado:** el logo es el primer elemento con Tab, con foco visible (`:focus-visible`) y nombre accesible «RealityTour, ir al inicio»; Enter lleva al inicio.
+- **Aspecto:**
+  - capturas del header antes y después, a 390 y 1366px: idénticas píxel a píxel en `larioja.html` y `realitytour.html`;
+  - en `index.html` también son idénticas, comparadas con el video de portada oculto (el header es transparente sobre el video);
+  - misma geometría del header y del logo en todos los casos.
+- **Menú móvil abierto:** el panel cubre el logo, así que no puede tocarse en ese estado y el menú no puede quedar abierto al usarlo. Por eso no hace falta la lógica de cierre de «Inicio».
+- **Regresión:** 3 páginas a 390 y 1366px, con y sin `reduce`: 0 errores JS y menú móvil correcto.
+
+---
+
+## Deuda técnica pendiente (inspección breve, 2026-11-04)
+
+Inspección rápida de `index.html`, `larioja.html`, `realitytour.html`, `css/styles.css` (1.590 líneas), `css/larioja.css` (477), `js/main.js` (377) y `js/realitytour.js` (91). **No se corrigió nada.** Sirve para planificar un ordenamiento controlado antes de integrar la funcionalidad definitiva de realidad aumentada.
+
+| Prioridad | Tema | Explicación breve |
+|---|---|---|
+| **Alta** | `js/realitytour.js` sin estructura | Variables y funciones de la cámara en el ámbito global, con indentación inconsistente. Decide si actuar comprobando `location.pathname.includes("realitytour.html")`, en lugar de buscar los elementos de la página. Registra eventos (`switchCameraBtn`, `fullscreenBtn`) fuera de ese chequeo, y fallaría si el archivo se cargara en otra página. Es la base donde se integrará la RA definitiva: conviene ordenarlo antes (módulo o función de inicialización, sin cambiar el comportamiento). |
+| **Media** | `js/main.js` con responsabilidades mezcladas | Un solo `DOMContentLoaded` de ~370 líneas contiene el menú, el header al desplazarse, el revelado `.hidden`, el visor ampliado y los carruseles. El bloque del header tiene otra indentación (añadido como parche) y comentarios de prueba (`// ✅ CORRECTO`). Separar en funciones de inicialización por componente (o archivos) facilitaría el mantenimiento. |
+| **Media** | Orden de las hojas de estilo frente a Swiper | `swiper-bundle.min.css` se carga después de `css/styles.css`, por lo que varias reglas propias necesitan más especificidad para ganarle a Swiper (`.ra-carousel .ra-swiper .swiper-slide`, `.svc-carousel .svc-controls .rt-pagination`, documentado en entradas anteriores). Cargar Swiper antes permitiría simplificar esos selectores. Requiere comparación visual completa. |
+| **Media** | Script del video de portada fuera de lugar | En `index.html` hay un `<script>` en línea entre `</head>` y `<body>` (posición no válida en HTML; el navegador lo corrige). Debería ir dentro de `main.js` o al final del `body`. **Toca el video de portada**: requiere prueba en iPhone. |
+| **Baja** | Selectores repetidos en `css/styles.css` | `.biography-section` está definido dos veces a nivel superior (líneas ~207 y ~1409) y `.svc-controls` dos veces (~679 y ~1153; la segunda pertenece al bloque de «Nuestro Servicio»). Conviene unificarlos para evitar contradicciones al editar. |
+| **Baja** | Puntos de corte no unificados | Coexisten 700, 768/769, 900/901 y 1200px. Algunos son intencionales (900px en «Nuestro Servicio»), pero no hay una convención documentada; conviene definirla (comentario o variables) antes de agregar secciones. |
+| **Baja** | Comentarios con emojis y notas de prueba | Unos 31 comentarios con emojis en `styles.css`, de etapas anteriores. Son ruido, sin efecto funcional; se pueden normalizar durante el ordenamiento. |
+| **Baja** | `!important` en `styles.css` | 6 usos. Revisar si alguno puede eliminarse al reordenar la cascada (ver la fila de Swiper). |
+
+**Sugerencia de orden:** 1) `realitytour.js` (antes de la RA definitiva); 2) separación por componentes en `main.js`; 3) cascada CSS y selectores repetidos, con comparación visual antes y después. Cada paso en commits pequeños y verificables.

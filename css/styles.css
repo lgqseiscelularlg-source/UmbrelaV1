@@ -51,6 +51,7 @@ html {
 }
 
 .logo {
+  display: block; /* dentro del enlace al inicio: sin el espacio de línea que agrega una imagen en línea */
   width: auto; /* el ancho sale de la proporción (los atributos width/height solo reservan espacio) */
   height: 50px;
 }
