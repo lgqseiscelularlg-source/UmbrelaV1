@@ -1,91 +1,93 @@
-  /* -------------------------------------------- SEGUNDA PAGINA */
+/* ==== Cámara de realitytour.html ====
+   Este archivo se carga al final del <body>, así que los elementos de la cámara ya existen.
+   Todo queda dentro de una función para no crear variables globales. */
+(function () {
+  // Inicializa la cámara y sus botones
+  function initCamera() {
+    const video = document.getElementById("camera-stream");
+    const cameraContainer = document.querySelector(".camera-container");
+    const switchCameraBtn = document.getElementById("switch-camera-btn");
+    const fullscreenBtn = document.getElementById("fullscreen-btn");
+    const exitFullscreenBtn = document.getElementById("exit-fullscreen-btn"); // la X para salir
+    const header = document.querySelector("header");
 
-  let currentStream = null;
-  let useFrontCamera = false; // Empezamos con la cámara trasera
+    // Comprueba que la cámara esté en la página (si no, no hace nada)
+    if (!video) return;
 
-  // Verificar si estamos en la página realitytour.html
-  if (window.location.pathname.includes("realitytour.html")) {
-    const video = document.getElementById('camera-stream');
-    const fullscreenBtn = document.getElementById('fullscreen-btn');
-    const switchCameraBtn = document.getElementById('switch-camera-btn');
-    const cameraContainer = document.querySelector('.camera-container');
-    const exitFullscreenBtn = document.getElementById('exit-fullscreen-btn'); // llama al boton X que esta creado en html
+    let currentStream = null;
+    let useFrontCamera = false; // empieza con la cámara trasera
 
-      // Función para detener el stream actual
+    // Detiene la cámara que esté en uso
     function stopCameraStream() {
-    if (currentStream) {
+      if (currentStream) {
         currentStream.getTracks().forEach((track) => track.stop());
         currentStream = null;
       }
     }
-  
-    // Función para iniciar la cámara
+
+    // Enciende la cámara elegida (frontal o trasera)
     function startCamera() {
       const constraints = {
         video: {
-          facingMode: useFrontCamera ? "user" : "environment", // Alternar entre cámara frontal y trasera
+          facingMode: useFrontCamera ? "user" : "environment",
         },
       };
 
-      // Detener la cámara si ya está en uso
       stopCameraStream();
 
-    // Acceder a la cámara
-    navigator.mediaDevices.getUserMedia(constraints)
-      .then(function (stream) {
-        currentStream = stream;
-        video.srcObject = stream;
-      })
-      .catch(function (error) {
-        console.error("Error al acceder a la cámara: ", error);
+      navigator.mediaDevices
+        .getUserMedia(constraints)
+        .then(function (stream) {
+          currentStream = stream;
+          video.srcObject = stream;
+        })
+        .catch(function (error) {
+          console.error("Error al acceder a la cámara: ", error);
+        });
+    }
+
+    // Pantalla completa simulada: oculta la barra de navegación y muestra la X para salir
+    function enterFullscreen() {
+      cameraContainer.classList.add("fullscreen-mode");
+      document.body.style.overflow = "hidden"; // evita el desplazamiento
+      header.style.display = "none";
+      fullscreenBtn.style.display = "none";
+      exitFullscreenBtn.style.display = "block";
+    }
+
+    // Vuelve a la vista normal
+    function exitFullscreen() {
+      cameraContainer.classList.remove("fullscreen-mode");
+      document.body.style.overflow = "auto";
+      header.style.display = "block";
+      fullscreenBtn.style.display = "block";
+      exitFullscreenBtn.style.display = "none";
+    }
+
+    // Al cargar la página arranca con la cámara trasera
+    startCamera();
+
+    // Cambia entre la cámara frontal y trasera
+    if (switchCameraBtn) {
+      switchCameraBtn.addEventListener("click", function () {
+        useFrontCamera = !useFrontCamera;
+        startCamera();
       });
     }
 
-    // Iniciar la cámara trasera por defecto al cargar la página
-    startCamera();
+    // Activa o desactiva la vista de pantalla completa
+    if (cameraContainer && fullscreenBtn && exitFullscreenBtn && header) {
+      fullscreenBtn.addEventListener("click", function () {
+        if (cameraContainer.classList.contains("fullscreen-mode")) exitFullscreen();
+        else enterFullscreen();
+      });
 
-  // Función para alternar entre la cámara frontal y la trasera
-  switchCameraBtn.addEventListener('click', function () {
-    useFrontCamera = !useFrontCamera; // Cambiamos entre la cámara frontal y trasera
-    startCamera(); // Reiniciamos la cámara con la nueva configuración
-  });
+      exitFullscreenBtn.addEventListener("click", exitFullscreen);
+    }
 
-// Función para activar y desactivar pantalla completa en dispositivos móviles
-// === MODO PANTALLA COMPLETA COMPATIBLE CON MÓVILES ===
-// Función para activar y desactivar pantalla completa en dispositivos móviles
-fullscreenBtn.addEventListener('click', function () {
-  cameraContainer.classList.toggle('fullscreen-mode');
-
-  if (cameraContainer.classList.contains('fullscreen-mode')) {
-    // 🔹 Modo “pantalla completa” simulado
-    document.body.style.overflow = 'hidden'; // Evita desplazamiento
-    document.querySelector('header').style.display = 'none'; // Oculta la barra de navegación
-    fullscreenBtn.style.display = 'none'; // Oculta el botón de fullscreen
-    exitFullscreenBtn.style.display = 'block'; // Muestra la X
-  } else {
-    // 🔹 Volver al modo normal
-    document.body.style.overflow = 'auto';
-    document.querySelector('header').style.display = 'block';
-    fullscreenBtn.style.display = 'block'; // Vuelve a mostrar el botón
-    exitFullscreenBtn.style.display = 'none'; // Oculta la X
-  }
-});
-
-
-// Acción del botón X (salir de pantalla completa)
-exitFullscreenBtn.addEventListener('click', () => {
-  cameraContainer.classList.remove('fullscreen-mode');
-  document.body.style.overflow = 'auto';
-  document.querySelector('header').style.display = 'block';
-  fullscreenBtn.style.display = 'block'; // Mostrar botón fullscreen
-  exitFullscreenBtn.style.display = 'none'; // Ocultar X
-});
-
-
-    
-      // Detener la cámara cuando se cambia de página
-  window.addEventListener("beforeunload", stopCameraStream);
-    
+    // Apaga la cámara al salir de la página
+    window.addEventListener("beforeunload", stopCameraStream);
   }
 
-  /* -------------------------------------------- FIN DE SEGUNDA PAGINA */
+  initCamera();
+})();

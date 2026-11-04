@@ -1110,3 +1110,50 @@ Inspección rápida de `index.html`, `larioja.html`, `realitytour.html`, `css/st
 | **Baja** | `!important` en `styles.css` | 6 usos. Revisar si alguno puede eliminarse al reordenar la cascada (ver la fila de Swiper). |
 
 **Sugerencia de orden:** 1) `realitytour.js` (antes de la RA definitiva); 2) separación por componentes en `main.js`; 3) cascada CSS y selectores repetidos, con comparación visual antes y después. Cada paso en commits pequeños y verificables.
+
+---
+
+## 2026-11-04 — Mejora estructural · Etapa 1: organización de `js/realitytour.js`
+
+*Primera de cinco etapas (1 `realitytour.js`, 2 `main.js`, 3 CSS, 4 HTML y recursos, 5 validación). Solo se ejecutó esta etapa.*
+
+**Problemas estructurales encontrados** (deuda técnica del 04/11, prioridad alta):
+- `currentStream` y `useFrontCamera` en el ámbito global; `startCamera` y `stopCameraStream` se publicaban en `window`, porque eran funciones declaradas dentro de un bloque `if` sin modo estricto.
+- Toda la lógica dependía de `window.location.pathname.includes("realitytour.html")` y no de que existan los elementos de la cámara.
+- Indentación muy irregular: hacía parecer que los eventos de los botones estaban fuera del `if`, aunque en realidad estaban dentro.
+- La lógica de «salir de pantalla completa» estaba copiada dos veces (rama `else` del botón de pantalla completa y botón X), además de comentarios repetidos y con emojis.
+
+**Modificaciones (solo `js/realitytour.js`):**
+- Todo el código queda dentro de una función autoejecutable y una función `initCamera()`. No se crean variables globales.
+- `initCamera()` busca los elementos y **solo continúa si existe el `<video id="camera-stream">`**; ya no consulta la URL. Los eventos se registran dentro de la inicialización y solo si sus botones existen: cambiar cámara (si existe el botón) y pantalla completa y X (si existen el contenedor, ambos botones y el `header`).
+- Funciones agrupadas por responsabilidad: `stopCameraStream()`, `startCamera()`, `enterFullscreen()` y `exitFullscreen()`. El botón de pantalla completa alterna entre las dos últimas y la X usa `exitFullscreen()`; desaparece la copia de código.
+- Indentación uniforme y comentarios breves en español.
+
+**Comportamiento conservado (sin cambios):**
+- Arranca con la cámara trasera (`facingMode: "environment"`) al cargar.
+- El botón alterna con la frontal (`"user"`) deteniendo antes la pista anterior.
+- La pantalla completa simulada aplica los mismos estilos en línea: `overflow` del `body`, `display` del header y de ambos botones.
+- La X restaura la vista; la cámara se detiene en `beforeunload`.
+- Mismo orden: primero se pide la cámara y luego se registran los botones.
+- Mismo mensaje de error en consola.
+
+**Por qué esta estructura:** una función de inicialización con funciones internas es lo más simple que evita globales y deja un punto de entrada claro (`initCamera`) para integrar la RA definitiva. No justifica clases ni módulos ES, que además cambiarían la forma de cargar el script.
+
+**Pruebas (Chromium con cámara simulada `--use-fake-device-for-media-stream`; no hay cámara física en este entorno: no se probó una cámara real):** misma secuencia antes y después en iPhone 13 emulado. Se registraron:
+- las llamadas a `getUserMedia` y sus restricciones;
+- el estado del `<video>` y de las pistas;
+- los estilos en línea al entrar y salir de pantalla completa (con el botón, con la X y con dos clics seguidos);
+- la detención de la pista al cambiar de cámara y en `beforeunload`;
+- los listeners registrados.
+
+**Resultado: salida idéntica en todos los puntos**, incluido el caso sin `navigator.mediaDevices`. Además:
+- variables y funciones del script en `window`: antes `startCamera` y `stopCameraStream`, ahora ninguna;
+- cargado en una página sin cámara: 0 errores propios;
+- regresión de las 3 páginas a 390 y 1366px: 0 errores JS.
+
+**Pendiente (documentado, no implementado por ser un cambio funcional):**
+- Si el navegador no ofrece `navigator.mediaDevices` (navegadores antiguos o página servida por HTTP no seguro), `startCamera()` lanza un error antes de registrar los botones, que dejan de responder. Comportamiento heredado, verificado igual antes y después. Conviene comprobar `navigator.mediaDevices` y mostrar un aviso.
+- La pantalla completa usa estilos en línea (`style.display`, `style.overflow`); en la Etapa 3 podría pasar a una clase CSS.
+- Validar en un iPhone real que la cámara, el cambio de cámara y la pantalla completa siguen igual.
+
+**Archivos modificados:** `js/realitytour.js` y `BITACORA-UX.md`. **Commit:** el que contiene esta entrada, «Etapa 1: organizar realitytour.js (cámara) sin cambiar su comportamiento».
