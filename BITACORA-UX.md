@@ -1222,3 +1222,79 @@ Inspección rápida de `index.html`, `larioja.html`, `realitytour.html`, `css/st
 - `main.js` sigue siendo un solo archivo (374 líneas), por decisión del plan. Si más adelante crece con la RA, `lightbox` e `initCarousel` son los candidatos naturales para separarse.
 
 **Archivos modificados:** `js/main.js` y `BITACORA-UX.md`. **Commit:** el que contiene esta entrada, «Etapa 2: organizar main.js por responsabilidades sin cambiar su comportamiento».
+
+---
+
+## Mejora estructural — Etapa 3: organización de CSS
+
+*Tercera de cinco etapas. Solo se modificó `css/styles.css` (y esta bitácora). No se avanzó a la Etapa 4.*
+
+**Problemas estructurales encontrados:**
+- **Bloques fuera de su sección:**
+  - `.biography-section`, `.bio-container` y `.bio img` estaban entre los estilos generales, lejos del resto de «¿Quiénes somos?»;
+  - la base de la cámara (`#camera-section`, `.camera-container`, `#camera-stream`, marcada «SEGUNDA PAGINA») estaba antes del menú móvil, separada de su pantalla completa y de sus botones, que estaban al final del archivo;
+  - contacto estaba en medio, antes de los carruseles.
+- **Selectores duplicados:** `.biography-section` (dos reglas a nivel superior) y `.svc-controls` (una regla suelta con `align-items` en la zona compartida de los carruseles, además de la principal). El ícono de pausa móvil del RA y el de Servicio también estaban en la zona compartida, fuera de su sección.
+- **Bloque del menú móvil** (`@media (max-width: 768px)`) con indentación rota.
+- **Comentarios:** unos 30 con emojis (🔹, ✅, 📱), código viejo comentado (`/*color: blueviolet;*/`, `/*background: rgb(101, 33, 165);*/`, `/*background: transparent; …*/`), notas de prueba («antes era fixed», «antes max-width: 1200px», «AJUSTADA FINAL», «(CORREGIDA)»), encabezados duplicados («CABECERA» / «CABECERA GLOBAL») y un título desactualizado («visor coverflow»).
+- **4 `!important`:** `.main-section { background }` y tres en `.contact-link`.
+
+**Organización nueva de `styles.css`** (secciones con el mismo formato de encabezado):
+
+| Orden | Sección |
+|---|---|
+| 1 | Generales, con la leyenda de puntos de corte |
+| 2 | Encabezado y navegación, incluido el menú hamburguesa móvil a continuación |
+| 3 | Botón principal |
+| 4 | Aparición de contenido al desplazarse |
+| 5 | Portada (video de fondo) |
+| 6 | Carruseles: elementos compartidos |
+| 7 | Visor ampliado |
+| 8 | ¿Qué es la RA? |
+| 9 | Nuestro Servicio |
+| 10 | ¿Quiénes somos? |
+| 11 | Contacto |
+| 12 | Página RealityTour: cámara |
+
+El método fue mover bloques completos por programa, sin reescribir reglas a mano, y conservar el orden relativo de las reglas que compiten entre sí.
+
+**Selectores consolidados y reglas reubicadas:**
+- **`.biography-section`:** una sola regla con todas sus declaraciones (tipografía, color, fondo, `padding: 4em 1em`, `text-align: center`). Las dos reglas anteriores tenían el mismo `padding` y no se contradecían.
+- **`.svc-controls`:** `align-items: center` pasó a la regla principal. `.svc-controls .rt-pause svg` (14px) quedó en la sección de Servicio, antes del bloque ≤ 900px que lo cambia a 16px; se mantiene el orden.
+- **`.ra-carousel .rt-pause svg`** (14px en ≤ 768px) pasó al bloque móvil del RA.
+
+**Puntos de corte:** se conservaron todos, porque cada uno cumple una función. Quedan documentados al comienzo de la hoja:
+- **768/769px:** móvil y escritorio;
+- **769–960px:** escritorio angosto, el menú se compacta;
+- **700px:** espaciado de «¿Qué es la RA?» en teléfonos;
+- **900/901px:** «Nuestro Servicio» apilado o en capas;
+- **1200px:** «Nuestro Servicio» más ancho.
+
+**Swiper:** se **conserva el orden de carga actual** (`styles.css` y después `swiper-bundle.min.css`). Invertirlo cambiaría la cascada de todas las reglas que comparten especificidad con las de Swiper y obligaría a revisar cada carrusel en todos los tamaños. El beneficio sería solo simplificar unos pocos selectores (`.ra-carousel .ra-swiper .swiper-slide`, `.svc-carousel .svc-controls .rt-pagination`). Además, el orden lo define el HTML, que corresponde a la Etapa 4. Queda como deuda.
+
+**`!important`:** se eliminaron los 4, sin efecto en el resultado:
+- **`.main-section { background: none }`:** ninguna otra regla asigna fondo a esa sección.
+- **`.contact-link`:** el color y `text-decoration` no compiten con otras reglas de enlaces, y en `:hover` la regla `.contact-link:hover` (0,2,0) ya gana a `.contact-link` (0,1,0) por especificidad.
+
+Quedan 0 `!important` en `styles.css` (las dos menciones restantes están en comentarios). `larioja.css` no tenía ninguno ni requería cambios.
+
+**Pruebas y comparaciones (Chromium; antes = `640310d`):**
+- **Huella de estilos calculados** de todos los elementos y sus `::before`/`::after`, más la posición y el tamaño de cada elemento y el ancho desplazable de la página:
+  - 3 páginas × 7 anchos (320, 375, 390, 430, 768, 900 y 1366px) × con y sin `reduce`;
+  - estados adicionales: menú móvil abierto, visor abierto, cámara en pantalla completa y `:hover` del enlace de contacto;
+  - carruseles detenidos en la misma imagen y video en el mismo cuadro.
+  
+  La versión anterior contra sí misma da 0 diferencias, así que la prueba es determinista. **Resultado: 0 diferencias** tras la reorganización y tras quitar los `!important`. Las únicas diferencias crudas son las URL absolutas de `background-image`, que incluyen el puerto de cada servidor de prueba: un artefacto que se normalizó.
+- **Píxeles de página completa** de las 3 páginas a 390 y 1366px: **idénticos**.
+- **Funcional:**
+  - regresión de las 3 páginas: 0 errores JS;
+  - escenarios táctiles de ambos carruseles con `reduce`: 22/22;
+  - escritorio: flecha, avance y pausa con mouse encima, correctos.
+
+**Riesgos y deuda técnica pendiente:**
+- **Orden de carga de Swiper:** para evaluar en la Etapa 4, con comparación visual completa.
+- **Pantalla completa de la cámara:** sigue usando estilos en línea desde `js/realitytour.js` (Etapa 1); podría pasar a una clase CSS, pero cambia JS.
+- **`styles.css` sigue siendo un solo archivo** (1.583 líneas). Con las secciones ordenadas, separarlo por componentes sería sencillo si crece con la RA.
+- **No se probó en un iPhone real en esta etapa.** Como los estilos calculados son idénticos, el riesgo es bajo, pero conviene una mirada rápida.
+
+**Archivos modificados:** `css/styles.css` y `BITACORA-UX.md`. **Commit:** el que contiene esta entrada, «Etapa 3: organizar styles.css por componentes sin cambiar el diseño».

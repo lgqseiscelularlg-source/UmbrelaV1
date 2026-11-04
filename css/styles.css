@@ -1,3 +1,12 @@
+/* =====================================================================
+   GENERALES
+   ===================================================================== */
+/* Puntos de corte usados en esta hoja:
+   - 768px / 769px: móvil y escritorio (menú hamburguesa, carruseles, contacto, «¿Quiénes somos?»)
+   - 769px–960px: escritorio angosto, el menú se compacta para entrar en una línea
+   - 700px: espaciado de «¿Qué es la RA?» en teléfonos
+   - 900px / 901px: «Nuestro Servicio» apilado en una tarjeta / escenario en capas
+   - 1200px: «Nuestro Servicio» más ancho en pantallas grandes */
 body {
   margin: 0;
   font-family: Arial, sans-serif;
@@ -5,8 +14,13 @@ body {
   color: white; /* Texto en blanco  */
 }
 
-/* ====== CABECERA ====== */
-/* ====== CABECERA GLOBAL ====== */
+html {
+  scroll-behavior: smooth;
+}
+
+/* =====================================================================
+   ENCABEZADO Y NAVEGACIÓN
+   ===================================================================== */
 header {
   position: fixed;
   top: 0;
@@ -22,32 +36,25 @@ header {
   box-sizing: border-box;
 }
 
-/* ====== CONTENEDOR DE NAVEGACIÓN ====== */
 header nav {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  width: 100%; /* 🔹 antes max-width: 1200px */
+  width: 100%;
   margin: 0;
   padding: 0.8em 1em;
   box-sizing: border-box;
-  background: inherit; /* 🔹 hereda del header */
+  background: inherit; /* hereda el fondo del header */
 }
 
-/* ====== FONDO OSCURO EN SCROLL ====== */
+/* Fondo oscuro al desplazarse (clase puesta por main.js) */
 header.scrolled {
   background-color: #111112;
 }
 
-/* ====== OCULTO AL BAJAR (clase puesta por main.js) ======
-   Visible mientras un enlace interno tiene el foco del teclado */
+/* Oculto al bajar (clase puesta por main.js); visible mientras un enlace interno tiene el foco */
 header.header-oculto:not(:focus-within) {
   transform: translateY(-100%);
-}
-
-
-html {
-  scroll-behavior: smooth;
 }
 
 .logo {
@@ -82,7 +89,6 @@ html {
 }
 
 .nav-links li a:hover {
-  /*color: blueviolet;*/
   color: #249da6;
 }
 
@@ -103,7 +109,6 @@ html {
     white-space: nowrap;
   }
 }
-
 
 .menu-toggle {
   display: none;
@@ -135,169 +140,39 @@ html.menu-open {
   margin: 5px 0;
 }
 
-.cta-button {
-  background: #249da6;
-  border: none;
-  padding: 1em 2em;
-  cursor: pointer;
-  font-size: 1.2em;
-  color: white;
-  border-radius: 50px;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
-  transition: transform 0.3s ease, background 0.3s ease;
-  position: relative;
-  overflow: hidden;
-  z-index: 1;
-}
-
-.cta-button::before {
-  content: "";
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  width: 300%;
-  height: 300%;
-  background: rgba(255, 255, 255, 0.2);
-  transition: all 0.3s ease;
-  transform: translate(-50%, -50%) scale(0);
-  border-radius: 50%;
-  z-index: -1;
-}
-
-.cta-button:hover {
-  /*background: rgb(101, 33, 165);*/
-  background: #249da6;
-  transform: scale(1.1);
-}
-
-.cta-button:hover::before {
-  transform: translate(-50%, -50%) scale(1);
-}
-
-.cta-button:active {
-  transform: scale(0.9);
-}
-
-/* Revelado al desplazarse. :where() no suma especificidad: la cascada es la misma que con .hidden.
-   La clase js-reveal la pone <head> solo si el revelado puede funcionar (ver index.html). */
-:where(.js-reveal) .hidden {
-  opacity: 0;
-  transform: translateY(150px) scale(0.95); /* Desplazamiento y reducción de tamaño */
-  transition: opacity 1.2s ease-out, transform 1.2s cubic-bezier(0.25, 1, 0.5, 1); /* Efecto suavizado */
-}
-
-:where(.js-reveal) .visible {
-  opacity: 1;
-  transform: translateY(0) scale(1); /* Escala y posición final */
-}
-
-/* Movimiento reducido: contenido visible sin desplazamientos ni scroll suave */
-@media (prefers-reduced-motion: reduce) {
-  html {
-    scroll-behavior: auto;
-  }
-
-  .hidden {
-    opacity: 1;
-    transform: none;
-    transition: none;
-  }
-}
-
-.biography-section {
-  padding: 4em 1em;
-  text-align: center;
-}
-
-.biography-section h2 {
-  margin-bottom: 1em;
-}
-
-.bio-container {
-  display: flex;
-  justify-content: space-around;
-  flex-wrap: wrap;
-}
-
-.bio img {
-  width: 100%;
-  height: auto;
-}
-
-                                /* SEGUNDA PAGINA */
-/* La sección ocupa el alto visible (svh: con las barras de Safari visibles; vh como respaldo)
-   y reserva arriba el alto del header fijo (76px) + 10px de aire. */
-#camera-section {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  box-sizing: border-box;
-  height: 100vh;
-  height: 100svh;
-  padding: 86px 20px 20px;
-}
-
-.camera-container {
-  position: relative;
-  /* Ancho limitado también por el alto disponible para que la caja 9:16 entre completa:
-     alto disponible = 100svh - 106px (padding de la sección) - 4px (borde) */
-  width: min(100%, 400px, calc((100vh - 110px) * 9 / 16));
-  width: min(100%, 400px, calc((100svh - 110px) * 9 / 16));
-  aspect-ratio: 9/16;
-  background-color: #000000;
-  border: 2px solid #333333;
-  overflow: hidden;
-
-}
-
-#camera-stream {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-
-
-
-/* ----------------------------------------------------FIN DE SEGUNDA PAGINA ------------------------------------------------------*/
-
-
+/* Menú hamburguesa en móviles */
 @media (max-width: 768px) {
+  .nav-links {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100vh;
+    height: 100dvh;  /* Alto visible real en iOS (barras de Safari); 100vh como respaldo */
+    box-sizing: border-box;
+    background-color: rgba(0, 0, 0, 0.95);
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;  /* El centrado vertical lo dan los márgenes auto de los extremos */
+    align-items: center;  /* Centrado horizontal */
+    gap: 1.8em;
+    padding: 80px 0;  /* Deja libre la franja del logo y la X */
+    margin: 0;  /* Sin márgenes */
+    overflow-y: auto;  /* Pantallas bajas / horizontal: el menú se desplaza en vez de recortarse */
+    transform: translateY(-100%);
+    opacity: 0;
+    visibility: hidden;  /* Cerrado: fuera del foco de teclado y lectores */
+    transition: transform 0.5s ease, opacity 0.5s ease, visibility 0s linear 0.5s;
+    overscroll-behavior: contain;
+    z-index: 1001;  /* Sobre el contenido del header, debajo del botón (1002) */
+  }
 
-  /* Menu responsive */
-  /* ====== MENÚ HAMBURGUESA (versión móvil) ====== */
-.nav-links {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100vh;
-  height: 100dvh;                /* 🔹 Alto visible real en iOS (barras de Safari); 100vh como respaldo */
-  box-sizing: border-box;
-  background-color: rgba(0, 0, 0, 0.95);
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-start;   /* 🔹 El centrado vertical lo dan los márgenes auto de los extremos */
-  align-items: center;           /* 🔹 Centrado horizontal */
-  gap: 1.8em;
-  padding: 80px 0;               /* 🔹 Deja libre la franja del logo y la X */
-  margin: 0;                     /* 🔹 Sin márgenes */
-  overflow-y: auto;              /* 🔹 Pantallas bajas / horizontal: el menú se desplaza en vez de recortarse */
-  transform: translateY(-100%);
-  opacity: 0;
-  visibility: hidden;            /* 🔹 Cerrado: fuera del foco de teclado y lectores */
-  transition: transform 0.5s ease, opacity 0.5s ease, visibility 0s linear 0.5s;
-  overscroll-behavior: contain;
-  z-index: 1001;                 /* 🔹 Sobre el contenido del header, debajo del botón (1002) */
-}
-
-
-
-.nav-links.active {
-  transform: translateY(0);
-  opacity: 1;
-  visibility: visible;
-  transition: transform 0.5s ease, opacity 0.5s ease, visibility 0s;
-}
+  .nav-links.active {
+    transform: translateY(0);
+    opacity: 1;
+    visibility: visible;
+    transition: transform 0.5s ease, opacity 0.5s ease, visibility 0s;
+  }
 
   .nav-links li {
     list-style: none;
@@ -321,7 +196,7 @@ html.menu-open {
   }
 
   .nav-links li a:hover {
-   color: #249da6; /* Color al pasar el ratón */
+    color: #249da6; /* Color al pasar el ratón */
   }
 
   .logo {
@@ -369,7 +244,83 @@ html.menu-open {
   }
 }
 
-/* ===== SECCIÓN INICIO (video de fondo) ===== */
+/* =====================================================================
+   BOTÓN PRINCIPAL
+   ===================================================================== */
+.cta-button {
+  background: #249da6;
+  border: none;
+  padding: 1em 2em;
+  cursor: pointer;
+  font-size: 1.2em;
+  color: white;
+  border-radius: 50px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+  transition: transform 0.3s ease, background 0.3s ease;
+  position: relative;
+  overflow: hidden;
+  z-index: 1;
+}
+
+.cta-button::before {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 300%;
+  height: 300%;
+  background: rgba(255, 255, 255, 0.2);
+  transition: all 0.3s ease;
+  transform: translate(-50%, -50%) scale(0);
+  border-radius: 50%;
+  z-index: -1;
+}
+
+.cta-button:hover {
+  background: #249da6;
+  transform: scale(1.1);
+}
+
+.cta-button:hover::before {
+  transform: translate(-50%, -50%) scale(1);
+}
+
+.cta-button:active {
+  transform: scale(0.9);
+}
+
+/* =====================================================================
+   APARICIÓN DE CONTENIDO AL DESPLAZARSE
+   ===================================================================== */
+/* Revelado al desplazarse. :where() no suma especificidad: la cascada es la misma que con .hidden.
+   La clase js-reveal la pone <head> solo si el revelado puede funcionar (ver index.html). */
+:where(.js-reveal) .hidden {
+  opacity: 0;
+  transform: translateY(150px) scale(0.95); /* Desplazamiento y reducción de tamaño */
+  transition: opacity 1.2s ease-out, transform 1.2s cubic-bezier(0.25, 1, 0.5, 1); /* Efecto suavizado */
+}
+
+:where(.js-reveal) .visible {
+  opacity: 1;
+  transform: translateY(0) scale(1); /* Escala y posición final */
+}
+
+/* Movimiento reducido: contenido visible sin desplazamientos ni scroll suave */
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  .hidden {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+}
+
+/* =====================================================================
+   PORTADA (video de fondo)
+   ===================================================================== */
 .main-section {
   position: relative;
   display: flex;
@@ -379,11 +330,11 @@ html.menu-open {
   height: 100svh; /* iOS: alto visible con barras de Safari; 100vh como respaldo */
   overflow: hidden;
   color: white;
-  background: none !important;
+  background: none;
 }
 
 .mobile-video-bg {
-  position: absolute;     /* antes era fixed */
+  position: absolute;
   top: 0;
   left: 0;
   width: 100%;
@@ -399,124 +350,6 @@ html.menu-open {
   inset: 0;
   background: rgba(0, 0, 0, 0.4);
   z-index: 0;
-}
-
-/* === SECCIÓN CONTACTO AJUSTADA FINAL === --------------------------------------------------------*/
-.contact-section {
-  background-color: #050506; /* Fondo más oscuro para cierre visual */
-  padding: 3em 1em 4em 1em;
-  text-align: center;
-  color: white;
-}
-
-.contact-section h2 {
-  font-size: 1.8em;
-  margin-bottom: 0.8em;
-  letter-spacing: 2px;
-}
-
-.contact-email {
-  font-size: 1.1em;
-  font-weight: 600;
-  color: white;
-  margin-bottom: 2em;
-}
-
-/* Contenedor general */
-.contact-container {
-  max-width: 900px;
-  margin: 0 auto;
-}
-
-/* Grilla de contactos */
-.contact-grid {
-  display: flex;
-  justify-content: center;
-  align-items: flex-start;
-  flex-wrap: nowrap;
-  gap: 1.5em;
-  width: 100%;
-  max-width: 900px;
-  margin: 0 auto;
-}
-
-/* Elementos individuales */
-.contact-item {
-  flex: 1 1 45%;
-  min-width: 0; /* permite encoger bajo el ancho del correo más largo */
-  overflow-wrap: anywhere; /* en pantallas angostas el correo se parte en vez de recortarse */
-  text-align: center;
-}
-
-.contact-item h3 {
-  font-size: 1em;
-  font-weight: bold;
-  margin-bottom: 0.4em;
-}
-
-.contact-item p {
-  margin: 0.25em 0;
-  font-size: 0.85em; /* 🔹 Tamaño ligeramente más pequeño en móvil */
-  text-decoration: none;
-  color: white;
-}
-
-/* Enlaces de LinkedIn */
-.contact-link {
-  display: inline-block;
-  margin-top: 0.4em;
-  color: #249da6 !important; /* 🔹 Mismo color que el botón RealityTour */
-  text-decoration: none !important;
-  font-size: 0.9em;
-  transition: color 0.3s ease;
-}
-
-.contact-link:hover {
-  color: white !important;
-}
-
-/* Línea divisoria central visible también en móvil */
-.divider {
-  width: 1px;
-  background: linear-gradient(
-    rgba(255, 255, 255, 0),
-    rgba(255, 255, 255, 0.4),
-    rgba(255, 255, 255, 0)
-  );
-  height: 90px;
-  opacity: 0.8;
-  align-self: stretch;
-}
-
-/* 📱 Ajustes móviles específicos */
-@media (max-width: 768px) {
-  .contact-section {
-    padding: 3em 0.5em 3.5em 0.5em; /* equilibrio vertical en móvil */
-  }
-
-  .contact-grid {
-    flex-direction: row;
-    justify-content: space-evenly;
-    align-items: stretch;
-    gap: 1em;
-  }
-
-  .contact-item h3 {
-    font-size: 0.95em;
-  }
-
-  .contact-item p {
-    font-size: 0.8em;
-  }
-
-  .contact-link {
-    font-size: 0.85em;
-  }
-
-  .divider {
-    display: block; /* 🔹 Mantiene la línea visible en móvil */
-    height: 80px;
-  }
 }
 
 /* =====================================================================
@@ -667,24 +500,6 @@ html.menu-open {
   transform: none;
 }
 
-/* Pausa discreta junto a los indicadores (RA en móvil y «Nuestro Servicio»): ícono pequeño,
-   sin cápsula, área táctil de 44 × 44 px */
-@media (max-width: 768px) {
-  .ra-carousel .rt-pause svg {
-    width: 14px;
-    height: 14px;
-  }
-}
-
-.svc-controls {
-  align-items: center;
-}
-
-.svc-controls .rt-pause svg {
-  width: 14px;
-  height: 14px;
-}
-
 /* =====================================================================
    VISOR AMPLIADO (lightbox) — js/main.js crea un único <dialog> para ambos carruseles
    ===================================================================== */
@@ -794,7 +609,7 @@ html.rt-lightbox-open {
 }
 
 /* =====================================================================
-   ¿QUÉ ES LA RA? — visor coverflow
+   ¿QUÉ ES LA RA? — carrusel horizontal con tres niveles de profundidad
    ===================================================================== */
 .ra-section {
   position: relative;
@@ -1047,6 +862,12 @@ html.rt-lightbox-open {
     display: none;
   }
 
+  /* Pausa discreta: ícono pequeño sin cápsula, área táctil de 44 × 44 px */
+  .ra-carousel .rt-pause svg {
+    width: 14px;
+    height: 14px;
+  }
+
   /* Sin contador ni descripción debajo del carrusel: el espacio queda para las imágenes
      (las descripciones accesibles siguen en el alt de cada imagen) */
   .ra-caption {
@@ -1152,6 +973,7 @@ html.rt-lightbox-open {
 /* Escritorio: miniaturas (indicadores) sobre la imagen, abajo a la izquierda */
 .svc-controls {
   position: absolute;
+  align-items: center;
   left: 22px;
   bottom: 18px;
   z-index: 5;
@@ -1204,6 +1026,12 @@ html.rt-lightbox-open {
 .svc-controls .rt-dot.is-active i {
   width: 100%;
   background: transparent;
+}
+
+/* Pausa discreta junto a los indicadores: ícono pequeño, área táctil de 44 × 44 px */
+.svc-controls .rt-pause svg {
+  width: 14px;
+  height: 14px;
 }
 
 /* Panel superpuesto al borde derecho del showcase */
@@ -1405,18 +1233,36 @@ html.rt-lightbox-open {
   }
 }
 
-/* === SECCIÓN ¿QUIÉNES SOMOS? – ESTILO SUAVE Y MODERNO === */
+/* =====================================================================
+   ¿QUIÉNES SOMOS?
+   ===================================================================== */
 .biography-section {
-  font-family: "Poppins", "Segoe UI", "Helvetica Neue", Arial, sans-serif; /* 🔹 Fuente más moderna y fluida */
+  font-family: "Poppins", "Segoe UI", "Helvetica Neue", Arial, sans-serif;
   color: #f0f0f0;
-  background-color: #111112; /* Asegura coherencia con el resto del sitio */
+  background-color: #111112;
   padding: 4em 1em;
+  text-align: center;
+}
+
+.biography-section h2 {
+  margin-bottom: 1em;
+}
+
+.bio-container {
+  display: flex;
+  justify-content: space-around;
+  flex-wrap: wrap;
+}
+
+.bio img {
+  width: 100%;
+  height: auto;
 }
 
 .bio {
   max-width: 45%;
   text-align: left;
-  line-height: 1.7; /* 🔹 Mejora legibilidad */
+  line-height: 1.7;
 }
 
 .bio h3 {
@@ -1429,11 +1275,11 @@ html.rt-lightbox-open {
 
 .bio p {
   font-size: 1em;
-  color: #d4d4d4; /* 🔹 Gris suave */
+  color: #d4d4d4;
   line-height: 1.8;
   letter-spacing: 0.3px;
   text-align: justify;
-  text-shadow: 0 0 6px rgba(0, 0, 0, 0.3); /* 🔹 Suaviza sobre fondo oscuro */
+  text-shadow: 0 0 6px rgba(0, 0, 0, 0.3);
   transition: color 0.3s ease, transform 0.3s ease;
 }
 
@@ -1443,7 +1289,7 @@ html.rt-lightbox-open {
   transform: scale(1.01);
 }
 
-/* === VERSIÓN MÓVIL – SECCIÓN ¿QUIÉNES SOMOS? (CORREGIDA) === */
+/* Biografías en columna en móviles */
 @media (max-width: 768px) {
   .biography-section {
     padding: 2.5em 1em 3.5em 1em;
@@ -1452,21 +1298,21 @@ html.rt-lightbox-open {
 
   .bio-container {
     display: flex;
-    flex-direction: column;   /* 🔹 Biografías una debajo de otra */
-    align-items: center;      /* 🔹 Centra horizontalmente todo */
+    flex-direction: column;
+    align-items: center;
     justify-content: flex-start;
-    gap: 2.5em;               /* 🔹 Espacio uniforme entre biografías */
-    overflow: visible;        /* ✅ Asegura que nada se corte */
+    gap: 2.5em;
+    overflow: visible;
   }
 
   .bio {
     width: 100%;
-    max-width: 380px;         /* 🔹 Mantiene proporción agradable en móvil */
+    max-width: 380px;
     text-align: center;
     margin: 0 auto;
     line-height: 1.6;
-    opacity: 1;               /* ✅ Evita que la segunda quede oculta por animación */
-    transform: none;          /* ✅ Resetea posibles transformaciones */
+    opacity: 1;
+    transform: none;
   }
 
   .bio img {
@@ -1504,7 +1350,170 @@ html.rt-lightbox-open {
   }
 }
 
-/* === Modo pantalla completa simulado ----------------------------------------------------=== */
+/* =====================================================================
+   CONTACTO
+   ===================================================================== */
+.contact-section {
+  background-color: #050506; /* Fondo más oscuro para cierre visual */
+  padding: 3em 1em 4em 1em;
+  text-align: center;
+  color: white;
+}
+
+.contact-section h2 {
+  font-size: 1.8em;
+  margin-bottom: 0.8em;
+  letter-spacing: 2px;
+}
+
+.contact-email {
+  font-size: 1.1em;
+  font-weight: 600;
+  color: white;
+  margin-bottom: 2em;
+}
+
+/* Contenedor general */
+.contact-container {
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+/* Grilla de contactos */
+.contact-grid {
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  flex-wrap: nowrap;
+  gap: 1.5em;
+  width: 100%;
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+/* Elementos individuales */
+.contact-item {
+  flex: 1 1 45%;
+  min-width: 0; /* permite encoger bajo el ancho del correo más largo */
+  overflow-wrap: anywhere; /* en pantallas angostas el correo se parte en vez de recortarse */
+  text-align: center;
+}
+
+.contact-item h3 {
+  font-size: 1em;
+  font-weight: bold;
+  margin-bottom: 0.4em;
+}
+
+.contact-item p {
+  margin: 0.25em 0;
+  font-size: 0.85em;
+  text-decoration: none;
+  color: white;
+}
+
+/* Enlaces de LinkedIn */
+.contact-link {
+  display: inline-block;
+  margin-top: 0.4em;
+  color: #249da6;
+  text-decoration: none;
+  font-size: 0.9em;
+  transition: color 0.3s ease;
+}
+
+.contact-link:hover {
+  color: white;
+}
+
+/* Línea divisoria central visible también en móvil */
+.divider {
+  width: 1px;
+  background: linear-gradient(
+    rgba(255, 255, 255, 0),
+    rgba(255, 255, 255, 0.4),
+    rgba(255, 255, 255, 0)
+  );
+  height: 90px;
+  opacity: 0.8;
+  align-self: stretch;
+}
+
+/* Contacto en móviles */
+@media (max-width: 768px) {
+  .contact-section {
+    padding: 3em 0.5em 3.5em 0.5em; /* equilibrio vertical en móvil */
+  }
+
+  .contact-grid {
+    flex-direction: row;
+    justify-content: space-evenly;
+    align-items: stretch;
+    gap: 1em;
+  }
+
+  .contact-item h3 {
+    font-size: 0.95em;
+  }
+
+  .contact-item p {
+    font-size: 0.8em;
+  }
+
+  .contact-link {
+    font-size: 0.85em;
+  }
+
+  .divider {
+    display: block;
+    height: 80px;
+  }
+}
+
+/* Contacto es la última sección: sus elementos solo aparecen con opacidad. Un translateY
+   extendería el alto desplazable de la página más allá del final mientras están ocultos.
+   #contact .hidden (1,1,0) supera a .hidden/.visible sin !important. */
+#contact .hidden {
+  transform: none;
+  margin-bottom: 0;
+  padding-bottom: 0;
+}
+
+/* =====================================================================
+   PÁGINA REALITYTOUR: CÁMARA
+   ===================================================================== */
+/* La sección ocupa el alto visible (svh: con las barras de Safari visibles; vh como respaldo)
+   y reserva arriba el alto del header fijo (76px) + 10px de aire. */
+#camera-section {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  box-sizing: border-box;
+  height: 100vh;
+  height: 100svh;
+  padding: 86px 20px 20px;
+}
+
+.camera-container {
+  position: relative;
+  /* Ancho limitado también por el alto disponible para que la caja 9:16 entre completa:
+     alto disponible = 100svh - 106px (padding de la sección) - 4px (borde) */
+  width: min(100%, 400px, calc((100vh - 110px) * 9 / 16));
+  width: min(100%, 400px, calc((100svh - 110px) * 9 / 16));
+  aspect-ratio: 9/16;
+  background-color: #000000;
+  border: 2px solid #333333;
+  overflow: hidden;
+
+}
+
+#camera-stream {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* Pantalla completa simulada (clase puesta por js/realitytour.js) */
 .camera-container.fullscreen-mode {
   position: fixed;
   top: 0;
@@ -1515,9 +1524,7 @@ html.rt-lightbox-open {
   max-width: none;
   border: none;
   z-index: 9999;
-  /*background: transparent; /* ✅ Permite que el video sea el fondo */
 }
-
 
 .camera-container.fullscreen-mode video {
   width: 100%;
@@ -1525,24 +1532,22 @@ html.rt-lightbox-open {
   object-fit: cover;
 }
 
-
-/* === Botones de cámara unificados con diseño elegante y fondo translúcido ===------------------------------------------------------ */
+/* Botones sobre la cámara, con fondo translúcido */
 .camera-btn {
   position: absolute;
   display: flex;
   justify-content: center;
   align-items: center;
   padding: 10px;
-  border-radius: 10px;                  /* 🔹 Bordes suaves rectangulares */
-  background: rgba(0, 0, 0, 0.2);       /* 🔹 Fondo translúcido gris suave (idéntico al original fullscreen) */
-  backdrop-filter: blur(3px);           /* 🔹 Desenfoque sutil para efecto elegante */
+  border-radius: 10px;
+  background: rgba(0, 0, 0, 0.2);
+  backdrop-filter: blur(3px);
   border: none;
   cursor: pointer;
   transition: background 0.3s ease, transform 0.2s ease;
   z-index: 10;
 }
 
-/* Íconos internos */
 .camera-btn svg {
   width: 22px;
   height: 22px;
@@ -1550,13 +1555,12 @@ html.rt-lightbox-open {
   stroke-width: 2;
 }
 
-/* Hover con efecto visual suave */
 .camera-btn:hover {
   background: rgba(255, 255, 255, 0.25);
   transform: scale(1.05);
 }
 
-/* --- Posiciones individuales --- */
+/* Posición de cada botón */
 #switch-camera-btn {
   top: 15px;
   right: 15px;
@@ -1569,22 +1573,11 @@ html.rt-lightbox-open {
 
 #exit-fullscreen-btn {
   top: 15px;
-  left: 15px; /* 🔹 Esquina superior izquierda  */
-  display: none; /* 🔹 Oculto por defecto al iniciar */
+  left: 15px;
+  display: none; /* la X solo aparece en pantalla completa */
 }
 
-/* --- Ajuste óptico exclusivo del ícono de pantalla completa --- */
+/* Ajuste óptico del ícono de pantalla completa */
 #fullscreen-btn svg {
-  transform: translate(0.5px, 1px); /* 🔹 Corrige alineación fina */
+  transform: translate(0.5px, 1px);
 }
-
-/* Contacto es la última sección: sus elementos solo aparecen con opacidad. Un translateY
-   extendería el alto desplazable de la página más allá del final mientras están ocultos.
-   #contact .hidden (1,1,0) supera a .hidden/.visible sin !important. */
-#contact .hidden {
-  transform: none;
-  margin-bottom: 0;
-  padding-bottom: 0;
-}
-
-
