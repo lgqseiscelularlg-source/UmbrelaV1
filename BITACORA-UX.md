@@ -950,3 +950,122 @@ El espacio vacío visible (desde la leyenda, que es contenido) se reduce un 30�
 3. Interacción entre el revelado `.hidden` (solo sin `reduce`), el desplazamiento de la página y la visibilidad (`IntersectionObserver`).
 
 **Próximo paso sugerido:** en una sesión nueva, registrar en cada `sync()` el valor de `userPaused`, `onScreen`, `mouseOver`, `keyboardUse` y `viewerOpen` (instrumentación temporal, fuera de producción) y repetir el guion hasta capturar una falla. **Validar en iPhone real:** tocar un indicador del RA y deslizar, sin «Reducir movimiento», y comprobar que el avance automático continúa.
+
+---
+
+## Caso técnico — Swiper, autoplay y «Reducir movimiento» en iOS
+
+*Registro para la defensa del Trabajo Final Integrador. Resume el incidente a partir del código, los commits de la rama `claude/determined-hawking-1j40dk` y las entradas anteriores de esta bitácora.*
+
+### 1. Contexto
+
+- **Biblioteca:** [Swiper](https://swiperjs.com/) 11.2.10, fijada por versión desde el CDN jsDelivr (`25c3d31`). No se usan otras dependencias para los carruseles.
+- **Función de los carruseles:**
+  - «¿Qué es la RA?» muestra 6 ejemplos de realidad aumentada en bucle circular, con avance automático cada 6 s.
+  - «Nuestro Servicio» presenta 4 fotos del servicio con avance automático cada 5 s.
+  - Ambos usan un controlador común, `initCarousel` (`js/main.js`). Se encarga del autoplay, la pausa persistente (botón accesible), la pausa temporal (puntero de mouse, foco de teclado, fuera de pantalla con `IntersectionObserver`, visor ampliado abierto), los indicadores con barra de progreso y el visor.
+- **`prefers-reduced-motion`:** es la consulta CSS/JS que expone la opción del sistema operativo. En iOS: Ajustes → Accesibilidad → Movimiento → Reducir movimiento. El sitio la lee con `window.matchMedia("(prefers-reduced-motion: reduce)")` y adapta el comportamiento de los carruseles.
+- **Evolución de la decisión:**
+  - Primero, con la preferencia activa, el autoplay se detenía (`6e54cab`).
+  - Después, por decisión del equipo, se mantuvo el avance automático pero sin animación, con velocidad 0 (`998d0d5`).
+
+### 2. Problemas detectados
+
+Son tres problemas distintos, y conviene no mezclarlos.
+
+**a) Bloqueo del autoplay después del primer avance (funcional).** Se observó en un iPhone real, en Safari y en Chrome, en ambos carruseles:
+- la primera imagen mostraba la barra de progreso y avanzaba a la segunda;
+- desde ahí la barra no volvía a empezar y no había más avances;
+- la navegación manual seguía funcionando.
+
+**b) Transiciones instantáneas y desagradables (visual).** Con «Reducir movimiento» activo, las imágenes de «¿Qué es la RA?» cambiaban de golpe, sin desplazamiento. No era un fallo del código: era la consecuencia directa de la velocidad 0, configurada a propósito. Pero el equipo lo percibió como brusco al probarlo en el iPhone.
+
+**c) Dificultades en las pruebas automatizadas con emulación táctil (método).** Las pruebas se ejecutaron en Chromium (Playwright) emulando un iPhone 13. Aparecieron detenciones que no correspondían al sitio sino al entorno de prueba:
+- **Cursor virtual de Playwright:** existe siempre, incluso en modo táctil. Cuando el carrusel quedaba debajo de él (por el desplazamiento de la página o la animación de revelado), el navegador emitía un `pointerenter` de tipo `mouse` y se activaba la pausa por mouse encima, que es el comportamiento previsto. En un iPhone no hay puntero de mouse.
+- **Emulación incompleta de iOS:** Chromium no reproduce de forma idéntica Safari iOS. Por ejemplo, en una corrección anterior (`b7e5645`) se vio que iOS no envía `mouseleave` tras un toque, mientras que Chromium sí lo hace en la mayoría de los casos.
+- **Fallo intermitente sin causa confirmada:** en la última sesión, el guion de escenarios registró a veces una detención del RA móvil tras pulsar un indicador. Ocurrió solo en la emulación y sin «Reducir movimiento». Su causa **no quedó confirmada** (ver la entrada «ABIERTO · Fallo intermitente…»). En la validación en iPhone real, la navegación manual y el autoplay funcionaron correctamente.
+
+### 3. Causas técnicas
+
+**Problema (a), confirmado en el código de Swiper y reproducido en Chromium (`cadf5ac`):**
+- **`speed: 0`:** desde `998d0d5`, con la preferencia activa, `initCarousel` configuraba `speed: 0`. Cada cambio de imagen se aplicaba sin transición CSS.
+- **`autoplay.waitForTransition`** (por defecto `true`): en cada cambio de imagen, el autoplay de Swiper se pausa (`beforeTransitionStart` → `pause(true, true)`). Solo se reanuda al recibir un evento `transitionend` en el contenedor de las diapositivas (`swiper-wrapper`).
+- **Por qué el evento nunca llegaba:**
+  - Los efectos usados entonces, `fade` en Servicio y `creative` en RA, no mueven el contenedor (`virtualTranslate`). Swiper fabrica ese `transitionend` cuando termina la animación de la diapositiva, pero solo si la duración es distinta de 0 (condición `duration !== 0` en `effectVirtualTransitionEnd`).
+  - Con velocidad 0 no había transición, el evento no se generaba y el autoplay quedaba en `running = true, paused = true` indefinidamente.
+  - Como `running` seguía en `true`, la función `sync()` de `initCarousel` no lo reiniciaba. La barra de progreso quedaba congelada porque el tiempo restante no avanzaba.
+  - En términos generales, el navegador no emite `transitionend` cuando no hay transición. Por eso cualquier combinación de velocidad 0 con `waitForTransition: true` puede dejar el autoplay esperando.
+- **Por qué el primer avance sí ocurría:** el primer temporizador ya estaba programado. El bloqueo empezaba en la pausa que Swiper hace dentro de ese primer cambio.
+- **Evidencia:** registro de eventos `slideChange → autoplayPause → … → autoplay` sin ningún `autoplayResume` posterior. El mismo patrón apareció en ambos carruseles en Chromium con la preferencia emulada, y coincidía exactamente con lo observado en el iPhone.
+
+**Problema (b), confirmado:**
+- Con velocidad 0, Swiper aplica la nueva posición en un solo cuadro. En la medición: un salto de 270px en un cuadro a 390px, frente a unos 34 cuadros intermedios con velocidad 600.
+- Además, una regla CSS anulaba la transición de escala y atenuación de las imágenes con la preferencia activa.
+- **Conclusión:** el cambio «brusco» no se debía a un error del efecto visual. Era el resultado de haber traducido «reducir movimiento» como «sin ninguna animación».
+
+**Lo que no se confirmó:** la causa del fallo intermitente de las pruebas automatizadas (apartado 2c). Las hipótesis son el cursor virtual, una condición de pausa de `sync()` que queda activa, y la interacción con el revelado `.hidden` y el `IntersectionObserver`. Siguen siendo hipótesis.
+
+### 4. Soluciones implementadas
+
+| Objetivo | Cambio | Archivo / función | Commit |
+|---|---|---|---|
+| Que los toques no dejen el carrusel pausado en iPhone | La pausa por puntero usa `pointerenter`/`pointerleave` y solo cuenta `pointerType === "mouse"`; la pausa por teclado queda en una variable aparte | `js/main.js`, `initCarousel` | `b7e5645` |
+| Evitar el bloqueo tras el primer avance | `autoplay.waitForTransition` deja de ser siempre `true`: no se espera la transición cuando no la hay; se actualiza también si cambia la preferencia con la página abierta | `js/main.js`, `initCarousel` | `cadf5ac` |
+| Generalizar la protección | `initCarousel` acepta `speed` como función `(reducido) => ms` y `speedMedia` (consultas de medios). La función `speedFor()` calcula la velocidad efectiva y `applySpeed()` la recalcula al cambiar la preferencia o el tamaño de pantalla, con la regla **`waitForTransition = velocidad efectiva > 0`** | `js/main.js`, `initCarousel`, `speedFor`, `applySpeed` | `ac79939` |
+| Transición fluida de 600 ms en RA móvil | RA: `speed: (reduced) => mobileQuery.matches ? 600 : reduced ? 0 : 800`, con `speedMedia: [mobileQuery]` (≤ 768px). Escala y atenuación de las diapositivas móviles en 0,6 s (`transition: transform 0.6s`). La regla CSS de movimiento reducido que anula esas transiciones queda solo para escritorio: `@media (prefers-reduced-motion: reduce) and (min-width: 769px)` | `js/main.js`, llamada a `initCarousel` del RA; `css/styles.css` | `ac79939` |
+| Efecto horizontal simple en lugar de `creative` | RA con el efecto `slide` estándar de Swiper y la profundidad resuelta solo con CSS (escala y capa oscura) | `js/main.js`, `css/styles.css` | `98bcfbd` (y ajustes de escritorio `22a1cc9`, `1045bfb`, `17a5706`) |
+| Navegación manual y pausa accesible | Se conservan los indicadores (tocar para ir a una imagen), el deslizamiento táctil, las flechas en escritorio y el **botón de pausa persistente** (44 × 44px, etiqueta «Pausar/Reanudar avance automático»), incorporado en todos los tamaños en `998d0d5` | `index.html`, `css/styles.css`, `initCarousel` | `998d0d5` |
+
+**Comportamiento resultante:**
+
+| Carrusel / tamaño | Sin «Reducir movimiento» | Con «Reducir movimiento» |
+|---|---|---|
+| RA en móvil | 600 ms | 600 ms |
+| RA en escritorio | 800 ms | 0 (cambio instantáneo) |
+| «Nuestro Servicio» | 800 ms | 0 |
+
+En todos los casos `waitForTransition` es `true` solo si hay transición. El autoplay de RA es cada 6 s y el de Servicio cada 5 s.
+
+### 5. Accesibilidad y decisión de producto
+
+- **Decisión consciente:** en móvil, el carrusel «¿Qué es la RA?» **mantiene un desplazamiento animado de 600 ms aunque la persona haya activado «Reducir movimiento»**. El equipo priorizó la fluidez visual sobre el cambio instantáneo, que se percibía brusco.
+- **Este componente no respeta por completo** la preferencia de accesibilidad del dispositivo. No debe presentarse como conforme a ella.
+- **Medidas que reducen el impacto** (no lo eliminan):
+  - movimiento solo horizontal y breve, sin giros, zoom ni perspectiva;
+  - el escritorio y «Nuestro Servicio» siguen eliminando la animación con la preferencia activa;
+  - el resto del sitio la respeta.
+- **Control de pausa persistente:** es una medida complementaria y está relacionada con el criterio WCAG 2.2.2 (poder pausar contenido que se mueve solo). El avance también se detiene fuera de pantalla y con el visor abierto. Esto **no equivale a cumplir automáticamente todas las pautas de accesibilidad**: no se realizó una auditoría formal de accesibilidad de estos componentes.
+
+### 6. Validación
+
+- **Pruebas automatizadas en Chromium** (Playwright con emulación táctil de iPhone 13 y de varios anchos, en sesiones anteriores):
+  - registro de eventos de Swiper para reproducir el bloqueo;
+  - recorridos cuadro a cuadro para medir la duración y los saltos de las transiciones;
+  - 5 o más avances automáticos seguidos, con y sin la preferencia emulada;
+  - escenarios táctiles: indicadores, deslizar, visor, pausa y reanudación, salir y volver a la sección;
+  - comparación de estilos y de píxeles para comprobar que el escritorio no cambiaba.
+  
+  Los resultados y sus números están en las entradas de los commits citados.
+- **Limitaciones de la emulación:**
+  - Chromium no es Safari ni WebKit;
+  - la emulación táctil conserva un cursor de mouse virtual que puede activar pausas inexistentes en un iPhone;
+  - algunos comportamientos de iOS (eventos de compatibilidad tras un toque) no se reproducen igual;
+  - por eso **ninguna corrección se dio por cerrada con la sola prueba en Chromium**;
+  - el fallo intermitente observado en la emulación sigue sin causa confirmada.
+- **Validación manual en iPhone real (Safari y Chrome), realizada por el usuario** y confirmada como satisfactoria:
+  - «¿Qué es la RA?» presenta transiciones fluidas, incluso con «Reducir movimiento» activado;
+  - la navegación manual, el autoplay y el botón de pausa funcionan correctamente;
+  - el diseño móvil de «Nuestro Servicio» quedó aprobado.
+  
+  Con esto ambas secciones quedan aprobadas. **Para esta entrada no se ejecutaron pruebas nuevas.**
+
+### 7. Lecciones aprendidas
+
+- **Probar en dispositivos reales:** el bloqueo y la sensación de brusquedad se detectaron en un iPhone. La emulación ayudó a reproducir y medir, pero también introdujo falsos positivos (el cursor virtual). La validación final solo fue concluyente en el dispositivo real.
+- **Preferencias del sistema y bibliotecas JavaScript:** una preferencia de accesibilidad bien intencionada (`speed: 0`) chocó con una suposición interna de la biblioteca: que siempre llega un evento de fin de transición. Al adaptar una biblioteca a una preferencia del sistema, hay que revisar qué eventos y estados espera.
+- **Separar problemas funcionales de decisiones visuales:** el bloqueo del autoplay era un error y se corrigió primero, con evidencia. La transición instantánea era una consecuencia de diseño y se decidió aparte, como decisión de producto con su compromiso de accesibilidad documentado.
+- **Documentar durante el MVP:** registrar síntomas, hipótesis, evidencias y commits en esta bitácora evitó repetir correcciones especulativas. Permitió distinguir lo confirmado de lo no confirmado y deja material verificable para explicar las decisiones.
+
+### 8. Resumen para la defensa
+
+Los carruseles de RealityTour usan la biblioteca Swiper, que avanza automáticamente y, antes de cada nuevo avance, espera la señal del navegador que indica que terminó la animación anterior. Para respetar la opción «Reducir movimiento» de iOS habíamos configurado la animación con duración cero. Sin animación, el navegador nunca emitía esa señal, y por eso los carruseles avanzaban una sola vez y quedaban detenidos. Lo confirmamos en el código de la biblioteca y lo reprodujimos en pruebas automatizadas. La solución fue que el carrusel espere la señal solo cuando realmente hay una animación. Después, como el cambio instantáneo resultaba brusco, decidimos de forma consciente usar en el carrusel móvil «¿Qué es la RA?» un desplazamiento breve de 600 ms incluso con esa opción activada, y conservamos un botón para pausarlo. Documentamos que esto no respeta por completo la preferencia de accesibilidad. El resultado fue validado por el usuario en un iPhone real.
