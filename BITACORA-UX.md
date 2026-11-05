@@ -1357,3 +1357,87 @@ No se agregaron `defer` ni `async` ni se cambiaron los tipos de script. No hay r
   - el título de `index.html` («Realidad Aumentada») no sigue el formato de las otras páginas («… | RealityTour»); es contenido, no estructura.
 
 **Archivos modificados:** `index.html`, `realitytour.html` y `BITACORA-UX.md`. **Commit:** el que contiene esta entrada, «Etapa 4: HTML válido y carga de recursos ordenada sin cambiar el comportamiento».
+
+---
+
+## Mejora estructural — Etapa 5: validación integral y cierre técnico
+
+*Etapa de validación: no se modificó código fuente. Solo se actualiza esta bitácora.*
+
+### Resumen de las cinco etapas
+
+| Etapa | Commit | Qué se hizo |
+|---|---|---|
+| 1 · `realitytour.js` | `36d938f` | Cámara organizada en `initCamera()`, sin variables globales; se inicializa si existe el `<video>` (ya no depende de la URL); funciones por responsabilidad; sin la lógica de pantalla completa duplicada |
+| 2 · `main.js` | `640310d` | Punto de entrada único con `initNavigation()`, `initHeader()`, `initScrollReveal()` e `initCarousels()`; visor, `initCarousel()` y Swiper sin cambios (verificado línea por línea); sin código muerto ni comentarios desactualizados |
+| 3 · CSS | `9af85d3` | `styles.css` en 12 secciones por componente; duplicados consolidados (`.biography-section`, `.svc-controls`); 0 `!important`; leyenda de puntos de corte; sin emojis ni código comentado |
+| 4 · HTML | `d72178a` | Script del video dentro del `<head>` (donde el navegador ya lo ubicaba), `lang="es"` en `index.html`, 0 errores de análisis HTML; orden de carga sin cambios |
+| 5 · Validación | este commit | Batería final y cierre |
+
+Cada etapa fue validada en un iPhone real por el usuario (1 a 4) y con pruebas automatizadas antes y después en Chromium.
+
+### Estado final de la estructura
+
+| Archivo | Líneas | Responsabilidad |
+|---|---|---|
+| `index.html` | 279 | Inicio: portada con video, «¿Qué es la RA?», «Nuestro Servicio», «¿Quiénes somos?», contacto y Botpress |
+| `larioja.html` | 322 | Guía «Descubrí La Rioja» |
+| `realitytour.html` | 76 | Pantalla de cámara |
+| `css/styles.css` | 1.583 | Estilos comunes y de todas las secciones, por componente |
+| `css/larioja.css` | 477 | Estilos propios de La Rioja (sin cambios; ya estaba ordenado) |
+| `js/main.js` | 374 | Menú, encabezado, revelado, visor y carruseles (común a las tres páginas) |
+| `js/realitytour.js` | 93 | Cámara (solo en `realitytour.html`) |
+
+- **Dependencias externas** (solo las que ya existían): Swiper 11.2.10 por CDN, con versión fija, y Botpress Webchat v3.7.
+- No se agregaron bibliotecas, frameworks, archivos ni pasos de compilación.
+- No hay cambios pendientes en la rama (sincronizada con `origin`).
+
+### Pruebas finales y resultados (Chromium, una ejecución de cada batería)
+
+| Área | Prueba | Resultado |
+|---|---|---|
+| Navegación | Menú → La Rioja, logo → `index.html#home`, botón RealityTour → `realitytour.html`, «Inicio», «Nuestro Servicio» (`#services` arriba y menú cerrado), «Volver» de La Rioja, índice de La Rioja (5 destinos existentes), en iPhone 13 y 1366px | Correcto, 0 errores JS |
+| Menú y encabezado | Abrir y cerrar, Escape con foco devuelto, cierre al pasar a escritorio, cierre al elegir un enlace; encabezado en 6 posiciones de desplazamiento (3 páginas × móvil/escritorio × con y sin `reduce`) | Idéntico a la Etapa 4 aprobada |
+| Revelado | Elementos `.hidden` visibles al recorrer cada página | Idéntico a la Etapa 4 |
+| Carruseles | Escenarios táctiles (indicador, deslizar, visor, pausa y reanudación, fuera de pantalla y regreso, progreso, cambio de preferencia en vivo) | 22/22 con `reduce` y 22/22 sin la preferencia |
+| Autoplay | Avances seguidos: RA cada ~6,6 s (6 s más 0,6 s) y Servicio cada 5 s | 5 y 6 avances, con y sin `reduce` |
+| Transición RA móvil | 7 avances a 390px | ~34 cuadros / ~600 ms por avance, 0 saltos, con y sin `reduce`; leyenda oculta |
+| Escritorio | Autoplay, visor, flecha, pausa con mouse encima; transiciones anuladas con `reduce` | Correcto |
+| Cámara (simulada) | Inicio con la trasera, cambio a la frontal deteniendo la pista anterior, pantalla completa, X, doble clic, liberación en `beforeunload`, caso sin `mediaDevices` | Idéntica a la referencia |
+| Video | Atributos (`autoplay`, `muted`, `loop`, `playsinline`, `preload`), primer `play()` en `DOMContentLoaded`, reintento con clic o toque tras un rechazo forzado | Idéntico a la Etapa 4 |
+| Recursos locales | 3 páginas × móvil/escritorio: respuestas con error, imágenes rotas, desborde horizontal | 0 / 0 / 0px |
+| Botpress | Integración del código: `inject.js` y la configuración (`defer`) se cargan después de `main.js` | Correcta (ver limitaciones) |
+| Visual | Huella de estilos calculados de las 3 páginas × 7 anchos (320–1366px, incluidos los cortes 768 y 900) × con y sin `reduce` + menú, visor y pantalla completa; páginas completas a 390 y 1366px | 0 diferencias y 6/6 capturas idénticas, **tanto contra la Etapa 4 como contra el estado previo a la reorganización de CSS y HTML (`640310d`)**, sin contar el idioma interno por `lang="es"` |
+
+### Limitaciones del entorno de pruebas
+- **No hay Safari ni iPhone en el entorno:** las validaciones reales en iPhone de las Etapas 1 a 4 las hizo el usuario. En esta etapa todo es Chromium con emulación.
+- **CDN bloqueados:** el entorno rechaza `cdn.jsdelivr.net` y `cdn.botpress.cloud`. Swiper se sirvió en las pruebas desde su copia local de la misma versión (11.2.10). **No se pudo comprobar que Botpress funcione**: solo que su código está integrado y en el orden correcto.
+- **Cámara simulada** (`--use-fake-device-for-media-stream`): no se probó una cámara física.
+- **Video:** el autoplay real depende del dispositivo; se verificaron sus atributos, su lógica y los reintentos, no la reproducción en un iPhone.
+
+### Deuda técnica clasificada
+
+**Importante antes de agregar funcionalidades:** ninguna que impida o comprometa el desarrollo. Una recomendación: al sumar código nuevo, seguir el patrón actual (una función `init…()` por componente y comprobación de que existan sus elementos) para no volver a mezclar responsabilidades.
+
+**Mejora futura (puede esperar sin afectar el MVP):**
+- **Orden de carga de Swiper** (su hoja después de `styles.css`): obliga a usar algunos selectores más específicos. Cambiarlo requiere una revisión visual completa.
+- **Pantalla completa de la cámara con estilos en línea** desde `realitytour.js`: podría pasar a una clase CSS.
+- **Cámara sin `navigator.mediaDevices`** (navegadores antiguos o HTTP no seguro): se produce un error y los botones dejan de responder. En GitHub Pages (HTTPS) no ocurre. Conviene resolverlo si la RA definitiva se apoya en esta cámara.
+- **Botón «RealityTour» de la portada** con `onclick` en lugar de un enlace.
+- **`index.html`:** sangrías irregulares en el `<body>` y un título que no sigue el formato de las otras páginas.
+- **`styles.css` y `main.js` siguen siendo un solo archivo cada uno:** con las secciones ya ordenadas, separarlos sería sencillo si crecen.
+
+**Limitación conocida (aceptada):**
+- **Ahorro de batería de iPhone:** puede impedir el autoplay del video de portada.
+- **RA móvil con «Reducir movimiento»:** mantiene un desplazamiento de 600 ms, una decisión de producto documentada (no respeta por completo la preferencia; el botón de pausa sigue disponible).
+- **Fallo intermitente del autoplay RA tras pulsar un indicador:** observado solo en la emulación, sin causa confirmada. No se reprodujo en las ejecuciones de las Etapas 2 a 5 ni en el iPhone real. Sigue registrado como abierto.
+- **Pruebas sin Safari ni CDN:** ver las limitaciones del entorno.
+
+### Evaluación breve para los requisitos académicos (sin implementar)
+
+**No hay impedimentos técnicos evidentes en el código actual.** Hay un aspecto de plataforma a decidir:
+- **Estadísticas, feedback y base de datos:** el sitio es estático (GitHub Pages, sin servidor propio). Guardar feedback o estadísticas, o consultar una base de datos, requerirá un servicio externo o un backend. Esa elección se hará al definir los requisitos. En el código, `main.js` admite una nueva función `init…()` sin tocar las existentes, y las páginas ya cargan scripts propios al final del `<body>`.
+- **Actualización de información y contenido 3D:** `realitytour.js` tiene un punto de entrada claro (`initCamera()`) donde integrar la RA. Mostrar contenido 3D probablemente requerirá una biblioteca específica, una dependencia nueva a decidir en su momento. La estructura no lo impide.
+
+### Conclusión
+**La reorganización puede considerarse finalizada.** RealityTour conserva su diseño (verificado contra el estado previo) y su funcionamiento. La estructura queda dividida por responsabilidades en los cinco archivos de código, y no se conocen impedimentos técnicos críticos para empezar la fase de requisitos académicos. Queda pendiente solo la deuda clasificada como mejora futura y las limitaciones aceptadas.
