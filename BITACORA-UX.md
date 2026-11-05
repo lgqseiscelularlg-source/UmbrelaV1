@@ -1298,3 +1298,62 @@ Quedan 0 `!important` en `styles.css` (las dos menciones restantes están en com
 - **No se probó en un iPhone real en esta etapa.** Como los estilos calculados son idénticos, el riesgo es bajo, pero conviene una mirada rápida.
 
 **Archivos modificados:** `css/styles.css` y `BITACORA-UX.md`. **Commit:** el que contiene esta entrada, «Etapa 3: organizar styles.css por componentes sin cambiar el diseño».
+
+---
+
+## Mejora estructural — Etapa 4: HTML y carga de recursos
+
+*Cuarta de cinco etapas. Se modificaron `index.html` y `realitytour.html` (y esta bitácora). `larioja.html` no requirió cambios. No se avanzó a la Etapa 5.*
+
+**Revisión:** análisis de las tres páginas con un analizador HTML conforme al estándar (`html5lib`, instalado solo en el entorno de pruebas). Resultado: `larioja.html` y `realitytour.html` sin errores; `index.html` con 2. Se revisaron además la carga de estilos y scripts, la navegación y los identificadores.
+
+**Problemas encontrados:**
+1. **Script del video de portada entre `</head>` y `<body>`** (`index.html`), posición no válida. Se verificó en Chromium que el navegador lo corrige solo: lo ubica como **último elemento del `<head>`**, después de Swiper, y lo ejecuta en ese punto.
+2. **`<html lang="en">`** en `index.html`, cuyo contenido está en español. Las otras dos páginas ya usaban `lang="es"`.
+3. **Comentario HTML con `--`** (`--svc-ratio`), que el estándar no permite dentro de comentarios. Inofensivo, pero es un error de análisis.
+4. **Formato del `<head>` de `index.html`:** comentarios con sangría fuera de lugar, una etiqueta `<link>` partida en varias líneas con espacios sobrantes y líneas en blanco entre `</head>` y `<body>`.
+5. **Comentarios obsoletos en `realitytour.html`:** dos líneas de contenido de ejemplo comentado dentro de `#reality-content` («Bienvenido a RealityTour», «Aquí agregas el contenido…»).
+
+**Correcciones:**
+- **Video:** el script pasa **dentro del `<head>`, como su último elemento**: exactamente donde el navegador ya lo ubicaba. Se le agregó un comentario breve. Su lógica es idéntica, solo cambió la sangría: espera a `DOMContentLoaded`, fuerza `muted` y llama a `play()`; si se rechaza, reintenta una vez con el primer clic o toque. **No se trasladó a `main.js`**, porque eso cambiaría el orden de ejecución: hoy su `DOMContentLoaded` se registra antes que el de `main.js`. No se tocaron el elemento `<video>` (`autoplay`, `muted`, `loop`, `playsinline`, `preload="auto"`, fuente) ni el manejo de errores. No se agregó nada para el modo de ahorro de batería de iPhone (comportamiento aceptado).
+- **`index.html`:** `lang="es"`, `<head>` ordenado, comentario sin `--` (ahora «la variable CSS svc-ratio de styles.css») y comentario sobre la hoja de Swiper que remite a la Etapa 3.
+- **`realitytour.html`:** se quitaron los dos comentarios obsoletos; la sección `#reality-content` se conserva vacía.
+
+**Orden de carga (sin cambios, verificado igual antes y después):**
+
+| Página | Estilos | Scripts |
+|---|---|---|
+| `index.html` | `styles.css` → `swiper-bundle.min.css` | revelado (en línea, `<head>`) → Swiper (`<head>`) → video (en línea, `<head>`) → `main.js` (final del `<body>`) → Botpress `inject.js` → configuración de Botpress (`defer`) |
+| `larioja.html` | `styles.css` → `larioja.css` | revelado (en línea) → `main.js` |
+| `realitytour.html` | `styles.css` | `main.js` → `realitytour.js` |
+
+Cada orden tiene una razón:
+- **Swiper:** su script debe cargarse antes de `main.js`, y su hoja sigue después de `styles.css` (decisión de la Etapa 3).
+- **Scripts propios:** van al final del `<body>`, así que encuentran sus elementos ya creados.
+- **Botpress:** carga después del sitio.
+
+No se agregaron `defer` ni `async` ni se cambiaron los tipos de script. No hay referencias duplicadas.
+
+**Navegación (sin cambios):** logo e «Inicio» con `#home` en `index.html` e `index.html#home` en las otras dos páginas; mismos enlaces internos, enlaces entre páginas, identificadores de sección y atributos de accesibilidad.
+
+**Pruebas (Chromium con emulación; no se probó Safari ni un iPhone real en esta etapa):**
+- **Analizador HTML:** 0 errores en las tres páginas (antes, 2 en `index.html`).
+- **Video**, en iPhone 13 emulado y escritorio, con reproducción normal y con `play()` rechazado a propósito: **idéntico antes y después**. Se compararon:
+  - los atributos y propiedades del elemento (`muted`, `autoplay`, `loop`, `playsInline`, `preload`, fuente);
+  - la ubicación del script (`<head>`);
+  - el momento del primer `play()` (en `DOMContentLoaded`, fase `interactive`);
+  - el registro de los reintentos (`document:click` y `window:touchstart`, ambos `once`) y su ejecución con un clic o un toque.
+- **Huella de estilos calculados** (3 páginas × 7 anchos × con y sin `reduce`, más menú abierto, visor abierto, cámara en pantalla completa y `:hover`): **0 diferencias**, salvo la propiedad interna `-webkit-locale` («en» → «es»), que es el efecto esperado de `lang`.
+- **Píxeles de página completa** a 390 y 1366px en las tres páginas: **idénticos**.
+- **Huella de comportamiento** de la Etapa 2 (12 combinaciones: menú, encabezado, revelado, ambos carruseles, visor, listeners): idéntica; 0 errores JS.
+- **Cámara simulada:** idéntica a la referencia de la Etapa 1.
+- **Scripts y estilos:** mismo orden y ubicación, incluido Botpress.
+
+**Riesgos y pendientes:**
+- **`lang="es"`** no cambia nada visible en Chromium, pero sí el idioma con que los lectores de pantalla leen `index.html` (ahora correcto) y la forma en que Safari puede aplicar reglas de idioma. Conviene una mirada en el iPhone.
+- **Sin modificar** (documentado, no implementado):
+  - el botón «RealityTour» de la portada usa `onclick` en línea (`window.location.href='realitytour.html'`) en lugar de un enlace. Cambiarlo a `<a>` sería más semántico, pero modifica el elemento y sus estilos de botón;
+  - `index.html` conserva sangrías irregulares en el `<body>` (secciones sin sangría). Se dejaron así porque reordenarlas no mejora el mantenimiento lo suficiente;
+  - el título de `index.html` («Realidad Aumentada») no sigue el formato de las otras páginas («… | RealityTour»); es contenido, no estructura.
+
+**Archivos modificados:** `index.html`, `realitytour.html` y `BITACORA-UX.md`. **Commit:** el que contiene esta entrada, «Etapa 4: HTML válido y carga de recursos ordenada sin cambiar el comportamiento».

@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <!-- Evita que iOS y Android subrayen o conviertan en links los teléfonos y correos -->
+    <!-- Evita que iOS y Android conviertan en enlaces los teléfonos, correos y direcciones -->
     <meta name="format-detection" content="telephone=no">
     <meta name="format-detection" content="email=no">
     <meta name="format-detection" content="address=no">
@@ -21,35 +21,30 @@
         });
       })(document.documentElement);
     </script>
-        <!-- Swiper CSS -->
-    <link
-      rel="stylesheet"
-      href="https://cdn.jsdelivr.net/npm/swiper@11.2.10/swiper-bundle.min.css"
-    />    
-    <!-- Swiper JS -->
+    <!-- Swiper (carruseles): su hoja va después de styles.css a propósito; ver la Etapa 3 en la bitácora -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11.2.10/swiper-bundle.min.css" />
     <script src="https://cdn.jsdelivr.net/npm/swiper@11.2.10/swiper-bundle.min.js"></script>
+    <!-- Video de portada: intenta reproducirlo al cargar la página; si el navegador lo bloquea,
+         lo vuelve a intentar con el primer toque o clic -->
+    <script>
+      document.addEventListener("DOMContentLoaded", () => {
+        const video = document.getElementById("mobileVideo");
 
-  </head>
-    
-<script>
-document.addEventListener("DOMContentLoaded", () => {
-  const video = document.getElementById("mobileVideo");
-
-  if (video) {
-    video.muted = true;
-    const tryPlay = () => {
-      video.play().catch(() => {
-        // algunos navegadores requieren interacción
-        document.addEventListener("click", () => video.play(), { once: true });
-        window.addEventListener("touchstart", () => video.play(), { once: true });
+        if (video) {
+          video.muted = true;
+          const tryPlay = () => {
+            video.play().catch(() => {
+              // algunos navegadores requieren interacción
+              document.addEventListener("click", () => video.play(), { once: true });
+              window.addEventListener("touchstart", () => video.play(), { once: true });
+            });
+          };
+          tryPlay();
+        }
       });
-    };
-    tryPlay();
-  }
-});
-</script>
+    </script>
+  </head>
 
-  
   <body>
     <header>
       <nav aria-label="Navegación principal">
@@ -183,7 +178,7 @@ document.addEventListener("DOMContentLoaded", () => {
 <section id="services" class="services-section">
   <div class="svc-stage">
     <!-- Showcase: para usar las imágenes definitivas basta con reemplazar cada <img> (la proporción
-         del marco se define en --svc-ratio, en styles.css) -->
+         del marco se define en la variable CSS svc-ratio de styles.css) -->
     <div class="rt-carousel svc-carousel hidden" role="region" aria-roledescription="carrusel"
          aria-label="Imágenes del servicio" data-delay="5000">
       <div class="swiper svc-swiper">
